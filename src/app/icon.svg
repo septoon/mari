@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="mariBg" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#f6f2ed" />
+      <stop offset="100%" stop-color="#dbe5e1" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="120" fill="url(#mariBg)" />
+  <circle cx="256" cy="256" r="194" fill="none" opacity=".38" stroke="#0c4d55" stroke-width="8" />
+  <circle cx="256" cy="256" r="170" fill="none" opacity=".18" stroke="#0c4d55" stroke-width="4" />
+  <path d="M146 342V169h31l79 111 80-111h30v173h-34V226l-66 91h-20l-66-92v117z" fill="#0c4d55" />
+  <path d="M402 128l12 29 29 12-29 12-12 29-12-29-29-12 29-12zM120 370l8 20 20 8-20 8-8 20-8-20-20-8 20-8z" fill="#b48a52" opacity=".82" />
+</svg>
