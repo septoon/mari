@@ -22,6 +22,10 @@ import { useClientSession } from '@/components/client-session-provider';
 import { ButtonLink } from '@/components/ui/button';
 import { readApiOk } from '@/lib/api/browser';
 import {
+  reachYandexMetrikaGoal,
+  yandexMetrikaGoals
+} from '@/components/analytics/yandex-metrika-goals';
+import {
   appointmentCreatedSchema,
   slotsResultSchema,
   type CreatedAppointment,
@@ -297,6 +301,12 @@ export function BookingPanel({
       });
 
       const payload = await readApiOk(response, appointmentCreatedSchema);
+      reachYandexMetrikaGoal(yandexMetrikaGoals.bookingCreated, {
+        order_price: payload.appointment.prices.finalTotal,
+        currency: 'RUB',
+        services_count: payload.appointment.services.length,
+        specialist_name: payload.appointment.staff.name
+      });
 
       startTransition(() => {
         setSelectedServiceIds([]);

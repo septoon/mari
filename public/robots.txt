@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /account
+Disallow: /account/login
+Disallow: /account/register
+Disallow: /account/recover
+Disallow: /reset-password
+
+Host: localhost:3001
+Sitemap: http://localhost:3001/sitemap.xml

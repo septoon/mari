@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev --port 3001",
+    "generate:seo": "node scripts/generate-seo.mjs",
     "build": "next build",
+    "postbuild": "npm run generate:seo",
     "start": "next start --port 3001",
     "lint": "eslint"
   },

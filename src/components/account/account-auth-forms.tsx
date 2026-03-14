@@ -5,6 +5,10 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState, type ClipboardEvent, type FormEvent } from 'react';
 import { z } from 'zod';
 
+import {
+  reachYandexMetrikaGoal,
+  yandexMetrikaGoals
+} from '@/components/analytics/yandex-metrika-goals';
 import { useClientSession } from '@/components/client-session-provider';
 import { readApiOk } from '@/lib/api/browser';
 import { clientProfileSchema } from '@/lib/api/contracts';
@@ -171,6 +175,7 @@ export function AccountLoginForm() {
       });
       const payload = await readApiOk(response, clientResponseSchema);
 
+      reachYandexMetrikaGoal(yandexMetrikaGoals.loginSuccess);
       setAuthenticatedClient(payload.client);
       router.push('/account');
     } catch (error) {
@@ -271,6 +276,7 @@ export function AccountRegisterForm() {
       });
       const payload = await readApiOk(response, clientResponseSchema);
 
+      reachYandexMetrikaGoal(yandexMetrikaGoals.registerSuccess);
       setAuthenticatedClient(payload.client);
       router.push('/account');
     } catch (error) {
@@ -386,6 +392,10 @@ export function AccountRecoverForm() {
       });
       const payload = await readApiOk(response, resetResponseSchema);
 
+      reachYandexMetrikaGoal(yandexMetrikaGoals.passwordResetRequested, {
+        has_email: Boolean(form.email.trim()),
+        has_phone: Boolean(form.phone.trim())
+      });
       setFeedback({
         type: 'success',
         text: payload.sent

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Cormorant_Garamond, Manrope } from 'next/font/google';
 
+import { YandexMetrika } from '@/components/analytics/yandex-metrika';
 import { PwaRegister } from '@/components/pwa-register';
 
 import './globals.css';
@@ -65,6 +66,7 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body suppressHydrationWarning className={`${sans.variable} ${serif.variable} font-sans antialiased`}>
+        <YandexMetrika />
         <PwaRegister />
         {children}
       </body>
