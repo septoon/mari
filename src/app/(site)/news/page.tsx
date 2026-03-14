@@ -23,7 +23,7 @@ export default function NewsPage() {
           title="Новости салона, сезонные предложения и важные обновления."
           description="Здесь рассказываем о новых процедурах, пространствах, форматах ухода и приятных изменениях в MARI."
           breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Новости' }]}
-          actions={<ButtonLink href="/contacts#booking">Записаться</ButtonLink>}
+          actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
         />
 
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -40,7 +40,7 @@ export default function NewsPage() {
         actions={
           <>
             <ButtonLink href="/about">О бренде</ButtonLink>
-            <ButtonLink href="/contacts#booking" variant="secondary">
+            <ButtonLink href="/booking" variant="secondary">
               Записаться
             </ButtonLink>
           </>

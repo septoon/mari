@@ -26,8 +26,8 @@ export async function generateMetadata({
 
   if (!master) {
     return createPageMetadata({
-      title: 'Мастер',
-      description: 'Профиль мастера MARI.',
+      title: 'Специалист',
+      description: 'Профиль специалиста MARI.',
       path: '/masters'
     });
   }
@@ -63,16 +63,16 @@ export default async function MasterDetailPage({
           description={master.summary}
           breadcrumbs={[
             { label: 'Главная', href: '/' },
-            { label: 'Мастера', href: '/masters' },
+            { label: 'Специалисты', href: '/masters' },
             { label: master.name }
           ]}
           actions={
             <>
-              <ButtonLink href={`/contacts?master=${master.slug}#booking`}>
-                Записаться к мастеру
+              <ButtonLink href={`/booking?master=${master.slug}`}>
+                Записаться к специалисту
               </ButtonLink>
               <ButtonLink href="/masters" variant="secondary">
-                Все мастера
+                Все специалисты
               </ButtonLink>
             </>
           }
@@ -84,7 +84,7 @@ export default async function MasterDetailPage({
 
         <section className="grid gap-6 lg:grid-cols-[0.88fr_1.12fr]">
           <article className="surface-card p-6">
-            <p className="text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">О мастере</p>
+            <p className="text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">О специалисте</p>
             <div className="mt-5 space-y-4 text-sm text-[color:var(--muted)]">
               <div className="rounded-[1.5rem] border border-[color:var(--line)] bg-white/72 p-4">
                 <p className="font-medium text-[color:var(--foreground)]">Специализация</p>
@@ -103,17 +103,17 @@ export default async function MasterDetailPage({
 
           <article className="surface-card p-6">
             <p className="text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">Подход</p>
-            <h2 className="mt-4 font-serif text-4xl text-[color:var(--ink)]">Выбирайте мастера по направлению и стилю работы.</h2>
+            <h2 className="mt-4 font-serif text-4xl text-[color:var(--ink)]">Выбирайте специалиста по направлению и стилю работы.</h2>
             <p className="mt-4 text-sm leading-7 text-[color:var(--muted)]">
-              На странице собраны ключевые направления мастера и список услуг, чтобы вы могли быстро понять, подходит ли вам этот специалист.
+              На странице собраны ключевые направления специалиста и список услуг, чтобы вы могли быстро понять, подходит ли вам этот специалист.
             </p>
           </article>
         </section>
 
         <section className="mt-16">
           <SectionHeading
-            eyebrow="Услуги мастера"
-            title="Услуги, на которые можно записаться к этому мастеру."
+            eyebrow="Услуги специалиста"
+            title="Услуги, на которые можно записаться к этому специалисту."
             description="Сравните процедуры по времени и стоимости и выберите ту, которая подходит именно вам."
           />
           <div className="mt-8 grid gap-6 md:grid-cols-2">
@@ -133,13 +133,13 @@ export default async function MasterDetailPage({
       </Container>
 
       <CtaPanel
-        eyebrow="Запись к мастеру"
-        title="Если мастер подходит вам по направлению, переходите к записи."
+        eyebrow="Запись к специалисту"
+        title="Если специалист подходит вам по направлению, переходите к записи."
         description="Осталось выбрать услугу и удобное время визита."
         actions={
           <>
-            <ButtonLink href={`/contacts?master=${master.slug}#booking`}>
-              Записаться к мастеру
+            <ButtonLink href={`/booking?master=${master.slug}`}>
+              Записаться к специалисту
             </ButtonLink>
             <ButtonLink href="/contacts" variant="secondary">
               Контакты салона

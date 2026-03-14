@@ -24,7 +24,7 @@ export default async function PricesPage() {
           title="Цены без сложных условий."
           description="Смотрите услуги, длительность и ориентир по стоимости, чтобы сразу спланировать визит."
           breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Цены' }]}
-          actions={<ButtonLink href="/contacts#booking">Записаться</ButtonLink>}
+          actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
           details={[
             `${catalog.services.length} услуг в прайсе.`,
             'Из прайса можно сразу перейти в карточку процедуры.'
@@ -63,7 +63,7 @@ export default async function PricesPage() {
         actions={
           <>
             <ButtonLink href="/services">Каталог услуг</ButtonLink>
-            <ButtonLink href="/contacts#booking" variant="secondary">
+            <ButtonLink href="/booking" variant="secondary">
               Записаться
             </ButtonLink>
           </>

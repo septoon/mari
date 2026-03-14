@@ -11,7 +11,7 @@ export function SiteFooter() {
           <div className="max-w-md">
             <p className="font-serif text-4xl tracking-[0.18em] text-[color:var(--ink)]">MARI</p>
             <p className="mt-3 text-sm leading-7 text-[color:var(--muted)]">
-              Салон красоты с тёплой атмосферой, сильными мастерами и удобной записью на любимые процедуры.
+              Салон красоты с тёплой атмосферой, сильными специалистами и удобной записью на любимые процедуры.
             </p>
             <div className="mt-6 space-y-2 text-sm text-[color:var(--muted-strong)]">
               <a href={siteConfig.phoneHref} className="block transition hover:text-[color:var(--foreground)]">

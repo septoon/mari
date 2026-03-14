@@ -13,7 +13,7 @@ export function SpecialistsGrid({ specialists }: SpecialistsGridProps) {
   return (
     <section id="specialists" className="rounded-[2rem] border border-[color:var(--line)] bg-[color:var(--panel-strong)] px-6 py-8 md:px-8">
       <div className="max-w-2xl">
-        <p className="section-kicker">Мастера</p>
+        <p className="section-kicker">Специалисты</p>
         <h2 className="section-title">Люди, к которым хочется возвращаться.</h2>
         <p className="section-copy">
           Познакомьтесь со специалистами MARI, их направлением работы и процедурами, которые можно выбрать для визита.
@@ -22,7 +22,7 @@ export function SpecialistsGrid({ specialists }: SpecialistsGridProps) {
 
       {specialists.length === 0 ? (
         <div className="mt-8 rounded-[1.5rem] border border-dashed border-[color:var(--line)] bg-white/70 px-6 py-10 text-sm text-[color:var(--ink-muted)]">
-          Сейчас профили мастеров обновляются. Позвоните нам, и мы поможем выбрать специалиста.
+          Сейчас профили специалистов обновляются. Позвоните нам, и мы поможем выбрать специалиста.
         </div>
       ) : (
         <div className="mt-8 grid gap-5 lg:grid-cols-3">

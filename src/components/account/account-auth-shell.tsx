@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 
-import { MariEmblem } from '@/components/mari-emblem';
 import { Breadcrumbs } from '@/components/ui/breadcrumbs';
 import { Container } from '@/components/ui/container';
 
@@ -60,9 +59,7 @@ export function AccountAuthShell({
               </div>
 
               <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
-                <div className="flex justify-center lg:justify-start">
-                  <MariEmblem compact />
-                </div>
+
                 <div className="rounded-[1.7rem] border border-white/70 bg-white/66 p-5 text-sm leading-7 text-[color:var(--muted)] shadow-[0_20px_55px_rgba(12,77,85,0.08)]">
                   {heroNote}
                 </div>

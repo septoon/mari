@@ -85,7 +85,7 @@ export default async function ServiceDetailPage({
           ]}
           actions={
             <>
-              <ButtonLink href={`/contacts?service=${service.slug}#booking`}>
+              <ButtonLink href={`/booking?service=${service.slug}`}>
                 Записаться
               </ButtonLink>
               <ButtonLink href={`/services/${service.categorySlug}`} variant="secondary">
@@ -120,7 +120,7 @@ export default async function ServiceDetailPage({
               <div className="rounded-[1.5rem] border border-[color:var(--line)] bg-white/72 p-4">
                 <p className="inline-flex items-center gap-2 font-medium text-[color:var(--foreground)]">
                   <UserRound className="h-4 w-4 text-[color:var(--accent-strong)]" />
-                  Мастера
+                  Специалисты
                 </p>
                 <p className="mt-3">{masters.length} специалистов выполняют эту услугу</p>
               </div>
@@ -131,7 +131,7 @@ export default async function ServiceDetailPage({
             <p className="text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">О процедуре</p>
             <h2 className="mt-4 font-serif text-4xl text-[color:var(--ink)]">Всё важное о процедуре в одном месте.</h2>
             <p className="mt-4 text-sm leading-7 text-[color:var(--muted)]">
-              Здесь собраны описание, ориентир по стоимости, длительность и список мастеров, чтобы вы могли быстро принять решение о визите.
+              Здесь собраны описание, ориентир по стоимости, длительность и список специалистов, чтобы вы могли быстро принять решение о визите.
             </p>
             <div className="mt-6 rounded-[1.5rem] border border-[color:var(--line)] bg-white/72 p-5 text-sm leading-7 text-[color:var(--muted)]">
               {service.description?.trim() || 'Подробности по процедуре подскажет мастер перед началом визита. Ниже можно выбрать специалиста и перейти к записи.'}
@@ -141,7 +141,7 @@ export default async function ServiceDetailPage({
 
         <section className="mt-16">
           <SectionHeading
-            eyebrow="Мастера"
+            eyebrow="Специалисты"
             title="Кто выполняет эту услугу."
             description="Выберите специалиста, который работает с этой процедурой, и перейдите к удобному времени."
           />
@@ -190,7 +190,7 @@ export default async function ServiceDetailPage({
         description="Если вы уже определились с процедурой, перейдите к записи и соберите визит в несколько шагов."
         actions={
           <>
-            <ButtonLink href={`/contacts?service=${service.slug}#booking`}>
+            <ButtonLink href={`/booking?service=${service.slug}`}>
               Записаться на услугу
             </ButtonLink>
             <ButtonLink href="/prices" variant="secondary">

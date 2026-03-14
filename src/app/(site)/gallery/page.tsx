@@ -23,7 +23,7 @@ export default function GalleryPage() {
           title="Галерея настроения, образов и пространства MARI."
           description="Собрали здесь детали, которые передают атмосферу салона, характер процедур и наше отношение к красоте."
           breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Галерея' }]}
-          actions={<ButtonLink href="/contacts#booking">Записаться</ButtonLink>}
+          actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
         />
 
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -40,7 +40,7 @@ export default function GalleryPage() {
         actions={
           <>
             <ButtonLink href="/services">Смотреть услуги</ButtonLink>
-            <ButtonLink href="/contacts#booking" variant="secondary">
+            <ButtonLink href="/booking" variant="secondary">
               Записаться
             </ButtonLink>
           </>

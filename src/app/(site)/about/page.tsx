@@ -33,7 +33,7 @@ export default function AboutPage() {
           title="MARI — салон, в котором красота ощущается спокойно и естественно."
           description="Мы соединяем сильную экспертизу мастеров, тёплый сервис и пространство, куда хочется возвращаться."
           breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'О салоне' }]}
-          actions={<ButtonLink href="/contacts#booking">Записаться</ButtonLink>}
+          actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
         />
 
         <section className="grid gap-6 lg:grid-cols-[1fr_1fr]">

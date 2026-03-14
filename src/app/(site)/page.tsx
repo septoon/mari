@@ -14,7 +14,7 @@ import { getLiveCatalog } from '@/lib/live-catalog';
 export const metadata = createPageMetadata({
   title: 'Главная',
   description:
-    'MARI Beauty Salon: услуги, мастера, цены и онлайн-запись в салон красоты.'
+    'MARI Beauty Salon: услуги, специалисты, цены и онлайн-запись в салон красоты.'
 });
 
 const valuePillars = [
@@ -23,7 +23,7 @@ const valuePillars = [
     text: 'На сайте легко сравнить услуги, посмотреть длительность и сразу перейти к записи.'
   },
   {
-    title: 'Сильные мастера',
+    title: 'Сильные специалисты',
     text: 'У каждого специалиста есть профиль с направлениями работы и удобным переходом к записи.'
   },
   {
@@ -49,18 +49,18 @@ export default async function HomePage() {
           <div className="rounded-[2rem] border border-[color:var(--line)] bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(247,241,234,0.88)_52%,rgba(232,224,215,0.8)_100%)] px-6 py-8 shadow-[0_35px_110px_rgba(41,30,18,0.08)] md:px-8 md:py-10">
             <p className="section-kicker">Салон красоты MARI</p>
             <h1 className="headline-xl max-w-4xl">
-              Услуги, мастера
+              Услуги, специалисты
               <br />
               и запись
               <br />
               в одном спокойном ритме.
             </h1>
             <p className="mt-6 max-w-2xl text-base leading-8 text-[color:var(--muted)]">
-              Здесь можно выбрать услугу, познакомиться с мастерами, посмотреть цены и сразу подобрать удобное время для визита.
+              Здесь можно выбрать услугу, познакомиться со специалистами, посмотреть цены и сразу подобрать удобное время для визита.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <ButtonLink href="/contacts#booking">
+              <ButtonLink href="/booking">
                 Записаться
                 <ArrowRight className="h-4 w-4" />
               </ButtonLink>
@@ -79,7 +79,7 @@ export default async function HomePage() {
                 <p className="mt-3 font-serif text-4xl text-[color:var(--ink)]">{catalog.services.length}</p>
               </div>
               <div className="surface-card p-5">
-                <p className="text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">Мастера</p>
+                <p className="text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">Специалисты</p>
                 <p className="mt-3 font-serif text-4xl text-[color:var(--ink)]">{catalog.specialists.length}</p>
               </div>
             </div>
@@ -158,10 +158,10 @@ export default async function HomePage() {
       <section className="py-10 md:py-14">
         <Container>
           <SectionHeading
-            eyebrow="Мастера"
-            title="Мастера, которым доверяют постоянные гости."
+            eyebrow="Специалисты"
+            title="Специалисты, которым доверяют постоянные гости."
             description="Познакомьтесь со специалистами, их направлениями и выберите того, кто подходит именно вам."
-            action={<ButtonLink href="/masters" variant="secondary">Все мастера</ButtonLink>}
+            action={<ButtonLink href="/masters" variant="secondary">Все специалисты</ButtonLink>}
           />
           <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
             {masters.map((master) => (
@@ -194,7 +194,7 @@ export default async function HomePage() {
                 <div className="surface-card p-4">{catalog.salon.workingHours}</div>
               </div>
               <div className="mt-8 flex flex-wrap gap-3">
-                <ButtonLink href="/contacts#booking">Записаться</ButtonLink>
+                <ButtonLink href="/booking">Записаться</ButtonLink>
                 <ButtonLink href="/contacts" variant="secondary">
                   Контакты салона
                 </ButtonLink>
@@ -208,7 +208,7 @@ export default async function HomePage() {
                   Онлайн-запись
                 </p>
                 <p className="mt-4 text-sm leading-7 text-[color:var(--muted)]">
-                  Выберите услуги, мастера и удобное время в одном аккуратном сценарии записи.
+                  Выберите услуги, специалиста и удобное время в одном аккуратном сценарии записи.
                 </p>
               </div>
               <div className="surface-card p-6">
@@ -236,13 +236,13 @@ export default async function HomePage() {
 
       <CtaPanel
         eyebrow="Запись"
-        title="Выберите услугу, мастера и удобное время для визита."
+        title="Выберите услугу, специалиста и удобное время для визита."
         description="Основные разделы сайта собраны так, чтобы от знакомства с салоном вы могли сразу перейти к записи."
         actions={
           <>
-            <ButtonLink href="/contacts#booking">Записаться</ButtonLink>
+            <ButtonLink href="/booking">Записаться</ButtonLink>
             <ButtonLink href="/masters" variant="secondary">
-              Выбрать мастера
+              Выбрать специалиста
             </ButtonLink>
           </>
         }

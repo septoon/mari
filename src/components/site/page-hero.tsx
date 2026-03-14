@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 
 import { Breadcrumbs } from '@/components/ui/breadcrumbs';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/classnames';
 
 type BreadcrumbItem = {
@@ -15,7 +14,6 @@ export function PageHero({
   description,
   breadcrumbs,
   actions,
-  details,
   className,
   titleClassName
 }: {
@@ -38,17 +36,6 @@ export function PageHero({
           <p className="mt-6 max-w-2xl text-base leading-8 text-[color:var(--muted)]">{description}</p>
           {actions ? <div className="mt-8 flex flex-wrap gap-3">{actions}</div> : null}
         </div>
-
-        {details?.length ? (
-          <div className="grid gap-3 sm:grid-cols-2">
-            {details.map((detail) => (
-              <div key={detail} className="surface-card p-5 text-sm leading-7 text-[color:var(--muted)]">
-                <Badge className="mb-4">Mari detail</Badge>
-                {detail}
-              </div>
-            ))}
-          </div>
-        ) : null}
       </div>
     </section>
   );

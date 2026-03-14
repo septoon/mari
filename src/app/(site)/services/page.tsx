@@ -27,7 +27,7 @@ export default async function ServicesPage() {
           title="Каталог услуг MARI."
           description="Выберите направление, сравните процедуры по времени и стоимости и перейдите к записи в пару шагов."
           breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Услуги' }]}
-          actions={<ButtonLink href="/contacts#booking">Записаться</ButtonLink>}
+          actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
           details={[
             `${catalog.serviceCategories.length} категорий и ${catalog.services.length} активных услуг.`,
             'Из карточки услуги можно сразу перейти к подробностям и записи.'
@@ -90,7 +90,7 @@ export default async function ServicesPage() {
         description="Можно перейти в карточку процедуры, сравнить варианты или сразу открыть запись."
         actions={
           <>
-            <ButtonLink href="/contacts#booking">Записаться</ButtonLink>
+            <ButtonLink href="/booking">Записаться</ButtonLink>
             <ButtonLink href="/masters" variant="secondary">
               Выбрать мастера
             </ButtonLink>

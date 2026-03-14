@@ -40,7 +40,7 @@ export default function GiftCardsPage() {
           breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Подарочные сертификаты' }]}
           actions={
             <>
-              <ButtonLink href="/contacts#booking">Оформить сертификат</ButtonLink>
+              <ButtonLink href="/booking">Оформить сертификат</ButtonLink>
               <ButtonLink href="/contacts" variant="secondary">
                 Задать вопрос
               </ButtonLink>
@@ -74,7 +74,7 @@ export default function GiftCardsPage() {
         description="Мы поможем выбрать номинал, формат отправки и подскажем, как лучше использовать сертификат."
         actions={
           <>
-            <ButtonLink href="/contacts#booking">Оформить сертификат</ButtonLink>
+            <ButtonLink href="/booking">Оформить сертификат</ButtonLink>
             <ButtonLink href="/offers" variant="secondary">
               Смотреть предложения
             </ButtonLink>

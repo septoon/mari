@@ -59,7 +59,7 @@ export default async function NewsDetailPage({
             { label: 'Новости', href: '/news' },
             { label: article.title }
           ]}
-          actions={<ButtonLink href="/contacts#booking">Записаться</ButtonLink>}
+          actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
           details={[new Date(article.publishedAt).toLocaleDateString('ru-RU')]}
         />
 
@@ -77,7 +77,7 @@ export default async function NewsDetailPage({
         actions={
           <>
             <ButtonLink href="/services">Смотреть услуги</ButtonLink>
-            <ButtonLink href="/contacts#booking" variant="secondary">
+            <ButtonLink href="/booking" variant="secondary">
               Записаться
             </ButtonLink>
           </>

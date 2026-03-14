@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useState, type ClipboardEvent, type FormEvent } from 'react';
 import { z } from 'zod';
 
 import { useClientSession } from '@/components/client-session-provider';
@@ -20,6 +20,7 @@ const resetResponseSchema = z.object({
 
 const inputClassName =
   'w-full rounded-[1.3rem] border border-[color:var(--line)] bg-[color:var(--panel)] px-4 py-3.5 text-sm text-[color:var(--foreground)] outline-none transition placeholder:text-[color:var(--muted-strong)] focus:border-[color:var(--accent-strong)]';
+const phoneInputClassName = `${inputClassName} pl-14`;
 
 const submitClassName =
   'inline-flex w-full items-center justify-center rounded-full bg-[color:var(--button-bg)] px-5 py-3.5 text-sm font-medium text-white transition hover:bg-[color:var(--button-bg-hover)] hover:text-white disabled:cursor-not-allowed disabled:opacity-60';
@@ -28,6 +29,70 @@ type Feedback = {
   type: 'error' | 'success';
   text: string;
 } | null;
+
+const normalizePhoneDigits = (value: string) => {
+  const digits = value.replace(/\D/g, '');
+
+  if (!digits) {
+    return '';
+  }
+
+  if ((digits.startsWith('7') || digits.startsWith('8')) && digits.length > 10) {
+    return digits.slice(1, 11);
+  }
+
+  return digits.slice(0, 10);
+};
+
+const normalizePhonePaste = (value: string) => {
+  const digits = value.replace(/\D/g, '');
+
+  if (!digits) {
+    return '';
+  }
+
+  if (digits.length === 11 && (digits.startsWith('7') || digits.startsWith('8'))) {
+    return digits.slice(1);
+  }
+
+  return digits.length > 10 ? digits.slice(-10) : digits;
+};
+
+const toPhoneE164 = (phoneTail: string) => {
+  const digits = phoneTail.trim();
+  return digits ? `+7${digits}` : '';
+};
+
+function PhoneInput({
+  value,
+  onChange
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const handlePaste = (event: ClipboardEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    onChange(normalizePhonePaste(event.clipboardData.getData('text')));
+  };
+
+  return (
+    <div className="relative">
+      <span className="pointer-events-none absolute inset-y-0 left-4 inline-flex items-center text-sm font-medium text-[color:var(--foreground)]">
+        +7
+      </span>
+      <input
+        value={value}
+        onChange={(event) => onChange(normalizePhoneDigits(event.target.value))}
+        onPaste={handlePaste}
+        autoComplete="tel-national"
+        inputMode="numeric"
+        maxLength={10}
+        placeholder="9780001818"
+        className={phoneInputClassName}
+      />
+    </div>
+  );
+}
 
 function FeedbackMessage({ feedback }: { feedback: Feedback }) {
   if (!feedback) {
@@ -100,7 +165,7 @@ export function AccountLoginForm() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          phone: form.phone.trim(),
+          phone: toPhoneE164(form.phone),
           password: form.password
         })
       });
@@ -130,12 +195,9 @@ export function AccountLoginForm() {
     <form onSubmit={handleSubmit} className="grid gap-5">
       <label className="space-y-2">
         <span className="text-xs uppercase tracking-[0.24em] text-[color:var(--muted-strong)]">Телефон</span>
-        <input
+        <PhoneInput
           value={form.phone}
-          onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))}
-          autoComplete="tel"
-          placeholder="+7 978 000-18-18"
-          className={inputClassName}
+          onChange={(phone) => setForm((current) => ({ ...current, phone }))}
         />
       </label>
 
@@ -203,7 +265,7 @@ export function AccountRegisterForm() {
         body: JSON.stringify({
           name: form.name.trim() || undefined,
           email: form.email.trim() || undefined,
-          phone: form.phone.trim(),
+          phone: toPhoneE164(form.phone),
           password: form.password
         })
       });
@@ -256,12 +318,9 @@ export function AccountRegisterForm() {
 
       <label className="space-y-2">
         <span className="text-xs uppercase tracking-[0.24em] text-[color:var(--muted-strong)]">Телефон</span>
-        <input
+        <PhoneInput
           value={form.phone}
-          onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))}
-          autoComplete="tel"
-          placeholder="+7 978 000-18-18"
-          className={inputClassName}
+          onChange={(phone) => setForm((current) => ({ ...current, phone }))}
         />
       </label>
 
@@ -322,7 +381,7 @@ export function AccountRecoverForm() {
         },
         body: JSON.stringify({
           email: form.email.trim() || undefined,
-          phone: form.phone.trim() || undefined
+          phone: toPhoneE164(form.phone) || undefined
         })
       });
       const payload = await readApiOk(response, resetResponseSchema);
@@ -360,12 +419,9 @@ export function AccountRecoverForm() {
 
       <label className="space-y-2">
         <span className="text-xs uppercase tracking-[0.24em] text-[color:var(--muted-strong)]">Телефон</span>
-        <input
+        <PhoneInput
           value={form.phone}
-          onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))}
-          autoComplete="tel"
-          placeholder="+7 978 000-18-18"
-          className={inputClassName}
+          onChange={(phone) => setForm((current) => ({ ...current, phone }))}
         />
       </label>
 

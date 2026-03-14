@@ -44,7 +44,7 @@ export function SiteHeader() {
           : 'border-[color:var(--line)] hover:border-[color:var(--accent-strong)]'
       )}
     >
-      <span className="h-full w-full overflow-hidden rounded-full">
+      <span className="inline-flex h-full w-full items-center justify-center overflow-hidden rounded-full">
         {accountAvatar}
       </span>
       {session.authenticated ? (

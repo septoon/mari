@@ -2,11 +2,12 @@
 
 import Link from 'next/link';
 import { UserRound, X } from 'lucide-react';
-import { useEffect, useSyncExternalStore } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 
 import { useClientSession } from '@/components/client-session-provider';
-import { ButtonLink } from '@/components/ui/button';
+import { Button, ButtonLink } from '@/components/ui/button';
 import { cn } from '@/lib/classnames';
 import { siteConfig } from '@/lib/site';
 
@@ -21,14 +22,39 @@ export function MobileNavDrawer({
   pathname,
   onClose
 }: MobileNavDrawerProps) {
-  const { session } = useClientSession();
+  const router = useRouter();
+  const { session, setLoggedOut } = useClientSession();
   const isClient = useSyncExternalStore(
     () => () => {},
     () => true,
     () => false
   );
+  const [logoutSubmitting, setLogoutSubmitting] = useState(false);
   const accountInitial = session.client?.name?.trim().charAt(0).toUpperCase();
   const accountLabel = session.client?.name?.trim() || session.client?.phoneE164 || 'Личный кабинет';
+
+  const handleLogout = async () => {
+    setLogoutSubmitting(true);
+
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST'
+      });
+      setLoggedOut();
+      onClose();
+
+      if (pathname === '/account' || pathname.startsWith('/account/')) {
+        router.replace('/account/login');
+        return;
+      }
+
+      router.refresh();
+    } catch (error) {
+      console.error('[MOBILE_LOGOUT_FAILED]', error);
+    } finally {
+      setLogoutSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     if (!isClient || !open) {
@@ -134,6 +160,10 @@ export function MobileNavDrawer({
           </nav>
 
           <div className="mt-auto flex flex-col gap-3 border-t border-[color:var(--line)] pt-5">
+            <a href={siteConfig.phoneHref} className="px-4 text-sm text-[color:var(--muted-strong)]">
+              {siteConfig.phone}
+            </a>
+
             {session.authenticated ? (
               <Link
                 href="/account"
@@ -148,15 +178,23 @@ export function MobileNavDrawer({
                   <span className="block text-xs text-[color:var(--muted-strong)]">Личный кабинет</span>
                 </span>
               </Link>
-            ) : (
-              <a href={siteConfig.phoneHref} className="px-4 text-sm text-[color:var(--muted-strong)]">
-                {siteConfig.phone}
-              </a>
-            )}
+            ) : null}
 
-            <ButtonLink href="/account" size="sm" className="w-full" onClick={onClose}>
-              Личный кабинет
-            </ButtonLink>
+            {session.authenticated ? (
+              <Button
+                type="button"
+                size="sm"
+                className="w-full"
+                onClick={handleLogout}
+                disabled={logoutSubmitting}
+              >
+                {logoutSubmitting ? 'Выхожу...' : 'Выйти'}
+              </Button>
+            ) : (
+              <ButtonLink href="/account/login" size="sm" className="w-full" onClick={onClose}>
+                Вход
+              </ButtonLink>
+            )}
           </div>
         </div>
       </aside>

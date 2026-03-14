@@ -330,9 +330,7 @@ export function BookingPanel({
 
         <div>
           <h2 className="font-serif text-4xl leading-tight md:text-5xl">
-            Выберите услуги,
-            <br />
-            мастера и время визита.
+            Выберите услугу
           </h2>
           <p className="mt-3 max-w-2xl text-base leading-7 text-white/76">
             Сначала добавьте услуги, затем выберите дату и свободное окно. В конце останется только подтвердить визит.

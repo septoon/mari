@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'MARI Beauty Salon',
     short_name: 'MARI',
-    description: 'Салон красоты MARI: услуги, мастера, запись и личный кабинет.',
+    description: 'Салон красоты MARI: услуги, специалисты, запись и личный кабинет.',
     start_url: '/',
     display: 'standalone',
     background_color: '#f4f0eb',

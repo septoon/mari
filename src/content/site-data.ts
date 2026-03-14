@@ -614,7 +614,7 @@ export const offers: OfferItem[] = [
     description: 'Удобный формат для тех, кто хочет освежить образ за одно посещение и не тратить лишнее время.',
     badge: '-15%',
     priceNote: 'По будням до 15:00, по предварительной записи',
-    ctaHref: '/contacts?offer=weekday-signature#booking'
+    ctaHref: '/booking?offer=weekday-signature'
   },
   {
     slug: 'facial-membership',
@@ -623,7 +623,7 @@ export const offers: OfferItem[] = [
     description: 'Формат для тех, кто хочет ухаживать за кожей регулярно и видеть стабильный результат без спешки.',
     badge: '4 визита',
     priceNote: 'Персональный график и приоритет при выборе времени',
-    ctaHref: '/contacts?offer=facial-membership#booking'
+    ctaHref: '/booking?offer=facial-membership'
   },
   {
     slug: 'gift-season',

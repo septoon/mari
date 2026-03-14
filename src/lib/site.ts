@@ -4,7 +4,7 @@ export const siteConfig = {
   name: 'MARI Beauty Salon',
   shortName: 'MARI',
   description:
-    'Салон красоты MARI: услуги, мастера, цены, подарочные сертификаты и личный кабинет.',
+    'Салон красоты MARI: услуги, специалисты, цены, подарочные сертификаты и личный кабинет.',
   phone: '+7 (978) 000-18-18',
   phoneHref: 'tel:+79780001818',
   email: 'hello@maribeauty.ru',
@@ -13,8 +13,9 @@ export const siteConfig = {
   accentLabel: 'Салон красоты',
   nav: [
     { href: '/services', label: 'Услуги' },
-    { href: '/masters', label: 'Мастера' },
+    { href: '/masters', label: 'Специалисты' },
     { href: '/prices', label: 'Цены' },
+    { href: '/booking', label: 'Запись' },
     { href: '/offers', label: 'Акции' },
     { href: '/gallery', label: 'Галерея' },
     { href: '/about', label: 'О салоне' },
@@ -25,8 +26,9 @@ export const siteConfig = {
       title: 'Навигация',
       items: [
         { href: '/services', label: 'Услуги' },
-        { href: '/masters', label: 'Мастера' },
-        { href: '/prices', label: 'Цены' }
+        { href: '/masters', label: 'Специалисты' },
+        { href: '/prices', label: 'Цены' },
+        { href: '/booking', label: 'Запись' }
       ]
     },
     {

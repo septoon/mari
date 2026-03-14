@@ -23,7 +23,7 @@ export default function OffersPage() {
           title="Специальные предложения MARI."
           description="Здесь собраны выгодные форматы визитов, бонусы и идеи для тех, кто хочет попробовать больше за один визит."
           breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Акции' }]}
-          actions={<ButtonLink href="/contacts#booking">Записаться</ButtonLink>}
+          actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
         />
 
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -39,7 +39,7 @@ export default function OffersPage() {
         description="Если акция вам подходит, переходите к записи или задайте вопрос по сертификатам и форматам визита."
         actions={
           <>
-            <ButtonLink href="/contacts#booking">Записаться</ButtonLink>
+            <ButtonLink href="/booking">Записаться</ButtonLink>
             <ButtonLink href="/gift-cards" variant="secondary">
               Сертификаты
             </ButtonLink>

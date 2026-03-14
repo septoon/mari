@@ -5,7 +5,6 @@ import { useSearchParams } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 import { z } from 'zod';
 
-import { MariEmblem } from '@/components/mari-emblem';
 import { readApiOk } from '@/lib/api/browser';
 import { clientProfileSchema } from '@/lib/api/contracts';
 
@@ -70,9 +69,6 @@ export function ResetPasswordForm() {
   return (
     <main className="mx-auto flex min-h-screen max-w-6xl items-center px-4 py-10 sm:px-6 lg:px-8">
       <div className="grid w-full gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <section className="flex items-center justify-center rounded-[2rem] border border-[color:var(--line)] bg-white/72 p-8 shadow-[0_25px_70px_rgba(12,77,85,0.08)]">
-          <MariEmblem compact />
-        </section>
 
         <section className="rounded-[2rem] border border-[color:var(--line)] bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(238,243,241,0.82))] p-8 shadow-[0_25px_70px_rgba(12,77,85,0.08)]">
           <p className="section-kicker">Смена пароля</p>

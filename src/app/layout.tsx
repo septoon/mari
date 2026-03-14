@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     template: '%s | MARI Beauty Salon'
   },
   description:
-    'Салон красоты MARI: услуги, мастера, цены, онлайн-запись и личный кабинет.',
+    'Салон красоты MARI: услуги, специалисты, цены, онлайн-запись и личный кабинет.',
   manifest: '/manifest.webmanifest',
   applicationName: 'MARI Beauty Salon',
   appleWebApp: {
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'MARI Beauty Salon',
     description:
-      'Салон красоты MARI: услуги, мастера, цены, онлайн-запись и личный кабинет.',
+      'Салон красоты MARI: услуги, специалисты, цены, онлайн-запись и личный кабинет.',
     url: siteUrl,
     siteName: 'MARI Beauty Salon',
     locale: 'ru_RU',
@@ -64,7 +64,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru">
-      <body className={`${sans.variable} ${serif.variable} font-sans antialiased`}>
+      <body suppressHydrationWarning className={`${sans.variable} ${serif.variable} font-sans antialiased`}>
         <PwaRegister />
         {children}
       </body>

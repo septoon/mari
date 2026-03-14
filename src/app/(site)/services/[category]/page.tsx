@@ -66,7 +66,7 @@ export default async function ServiceCategoryPage({
           ]}
           actions={
             <>
-              <ButtonLink href="/contacts#booking">Записаться</ButtonLink>
+              <ButtonLink href="/booking">Записаться</ButtonLink>
               <ButtonLink href="/services" variant="secondary">
                 Все категории
               </ButtonLink>
@@ -125,7 +125,7 @@ export default async function ServiceCategoryPage({
         description="Можно открыть карточку процедуры, посмотреть цену и сразу подобрать удобное время."
         actions={
           <>
-            <ButtonLink href="/contacts#booking">Записаться</ButtonLink>
+            <ButtonLink href="/booking">Записаться</ButtonLink>
             <ButtonLink href="/prices" variant="secondary">
               Смотреть цены
             </ButtonLink>
