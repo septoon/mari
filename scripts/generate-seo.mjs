@@ -118,11 +118,20 @@ Sitemap: ${siteUrl}/sitemap.xml
 `;
 };
 
-const readJson = async (path) => JSON.parse(await readFile(path, 'utf8'));
+const readJson = async (path, fallback = null) => {
+  try {
+    return JSON.parse(await readFile(path, 'utf8'));
+  } catch (error) {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'ENOENT') {
+      return fallback;
+    }
+    throw error;
+  }
+};
 
 const main = async () => {
-  const routesManifest = await readJson(resolve(nextDir, 'routes-manifest.json'));
-  const prerenderManifest = await readJson(resolve(nextDir, 'prerender-manifest.json'));
+  const routesManifest = await readJson(resolve(nextDir, 'routes-manifest.json'), { staticRoutes: [] });
+  const prerenderManifest = await readJson(resolve(nextDir, 'prerender-manifest.json'), { routes: {} });
 
   const staticRoutes = (routesManifest.staticRoutes ?? [])
     .map((item) => normalizeRoute(item.page))

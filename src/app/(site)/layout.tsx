@@ -8,6 +8,8 @@ import { SiteHeader } from '@/components/site/site-header';
 import { getLiveCatalog } from '@/lib/live-catalog';
 import { getSitePrivacyPolicyContent } from '@/lib/site-content';
 
+export const dynamic = 'force-dynamic';
+
 export default async function SiteLayout({ children }: { children: ReactNode }) {
   const [catalog, privacyPolicy] = await Promise.all([
     getLiveCatalog(),
