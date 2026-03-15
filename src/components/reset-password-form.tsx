@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 import { z } from 'zod';
 
+import { LoadingLabel } from '@/components/ui/loading-indicator';
 import { readApiOk } from '@/lib/api/browser';
 import { clientProfileSchema } from '@/lib/api/contracts';
 
@@ -113,9 +114,10 @@ export function ResetPasswordForm() {
             <button
               type="submit"
               disabled={submitting}
+              aria-busy={submitting}
               className="mt-2 rounded-full bg-[color:var(--button-bg)] px-5 py-3 text-sm font-medium text-white transition hover:bg-[color:var(--button-bg-hover)] disabled:opacity-60"
             >
-              {submitting ? 'Обновляю пароль...' : 'Сохранить новый пароль'}
+              {submitting ? <LoadingLabel label="Обновляю пароль..." /> : 'Сохранить новый пароль'}
             </button>
           </form>
 

@@ -287,7 +287,11 @@ export const getLiveCatalog = cache(async () => {
     };
   });
 
-  const salon = mapSalon(landing.bootstrap.config.contacts[0] ?? null);
+  const primaryContact =
+    landing.bootstrap.config.contacts.find((item) => item.isPrimary) ??
+    landing.bootstrap.config.contacts[0] ??
+    null;
+  const salon = mapSalon(primaryContact);
 
   return {
     ...landing,

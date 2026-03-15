@@ -1,9 +1,13 @@
 import Link from 'next/link';
 
 import { Container } from '@/components/ui/container';
+import { getLiveCatalog } from '@/lib/live-catalog';
 import { siteConfig } from '@/lib/site';
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const catalog = await getLiveCatalog();
+  const salon = catalog.salon;
+
   return (
     <footer className="border-t border-[color:var(--line)] bg-white/58">
       <Container className="py-12">
@@ -14,13 +18,13 @@ export function SiteFooter() {
               Салон красоты с тёплой атмосферой, сильными специалистами и удобной записью на любимые процедуры.
             </p>
             <div className="mt-6 space-y-2 text-sm text-[color:var(--muted-strong)]">
-              <a href={siteConfig.phoneHref} className="block transition hover:text-[color:var(--foreground)]">
-                {siteConfig.phone}
+              <a href={salon.phoneHref} className="block transition hover:text-[color:var(--foreground)]">
+                {salon.phone}
               </a>
-              <a href={`mailto:${siteConfig.email}`} className="block transition hover:text-[color:var(--foreground)]">
-                {siteConfig.email}
+              <a href={`mailto:${salon.email}`} className="block transition hover:text-[color:var(--foreground)]">
+                {salon.email}
               </a>
-              <p>{siteConfig.address}</p>
+              <p>{salon.address}</p>
             </div>
           </div>
 

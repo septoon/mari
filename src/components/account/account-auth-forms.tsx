@@ -10,6 +10,7 @@ import {
   yandexMetrikaGoals
 } from '@/components/analytics/yandex-metrika-goals';
 import { useClientSession } from '@/components/client-session-provider';
+import { LoadingLabel } from '@/components/ui/loading-indicator';
 import { readApiOk } from '@/lib/api/browser';
 import { clientProfileSchema } from '@/lib/api/contracts';
 
@@ -139,7 +140,11 @@ function AuthLinks({
 function StateMessage({ text }: { text: string }) {
   return (
     <div className="rounded-[1.6rem] border border-[color:var(--line)] bg-[color:var(--panel)] px-5 py-6 text-sm text-[color:var(--muted)]">
-      {text}
+      <LoadingLabel
+        label={text}
+        className="text-[color:var(--muted)]"
+        spinnerClassName="text-[color:var(--muted-strong)]"
+      />
     </div>
   );
 }
@@ -220,8 +225,8 @@ export function AccountLoginForm() {
 
       <FeedbackMessage feedback={feedback} />
 
-      <button type="submit" disabled={submitting} className={submitClassName}>
-        {submitting ? 'Вхожу...' : 'Войти'}
+      <button type="submit" disabled={submitting} aria-busy={submitting} className={submitClassName}>
+        {submitting ? <LoadingLabel label="Вхожу..." /> : 'Войти'}
       </button>
 
       <AuthLinks
@@ -344,8 +349,8 @@ export function AccountRegisterForm() {
 
       <FeedbackMessage feedback={feedback} />
 
-      <button type="submit" disabled={submitting} className={submitClassName}>
-        {submitting ? 'Создаю кабинет...' : 'Создать кабинет'}
+      <button type="submit" disabled={submitting} aria-busy={submitting} className={submitClassName}>
+        {submitting ? <LoadingLabel label="Создаю кабинет..." /> : 'Создать кабинет'}
       </button>
 
       <AuthLinks
@@ -437,8 +442,8 @@ export function AccountRecoverForm() {
 
       <FeedbackMessage feedback={feedback} />
 
-      <button type="submit" disabled={submitting} className={submitClassName}>
-        {submitting ? 'Отправляю...' : 'Отправить ссылку'}
+      <button type="submit" disabled={submitting} aria-busy={submitting} className={submitClassName}>
+        {submitting ? <LoadingLabel label="Отправляю..." /> : 'Отправить ссылку'}
       </button>
 
       {resetLink ? (

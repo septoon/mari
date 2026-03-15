@@ -68,21 +68,6 @@ export default async function HomePage() {
                 Выбрать услугу
               </ButtonLink>
             </div>
-
-            <div className="mt-10 grid gap-4 sm:grid-cols-3">
-              <div className="surface-card p-5">
-                <p className="text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">Категории</p>
-                <p className="mt-3 font-serif text-4xl text-[color:var(--ink)]">{catalog.serviceCategories.length}</p>
-              </div>
-              <div className="surface-card p-5">
-                <p className="text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">Услуги</p>
-                <p className="mt-3 font-serif text-4xl text-[color:var(--ink)]">{catalog.services.length}</p>
-              </div>
-              <div className="surface-card p-5">
-                <p className="text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">Специалисты</p>
-                <p className="mt-3 font-serif text-4xl text-[color:var(--ink)]">{catalog.specialists.length}</p>
-              </div>
-            </div>
           </div>
 
           <EditorialVisual

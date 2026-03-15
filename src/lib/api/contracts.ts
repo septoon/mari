@@ -293,6 +293,29 @@ export const slotsQuerySchema = z.object({
   anyStaff: z.boolean().optional()
 });
 
+export const slotDaysQuerySchema = z.object({
+  from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  days: z.number().int().min(1).max(31).default(14),
+  serviceIds: z.array(z.string().uuid()).min(1),
+  staffId: z.string().uuid().optional(),
+  anyStaff: z.boolean().optional()
+});
+
+export const slotDaysResultSchema = z.object({
+  from: z.string(),
+  days: z.number().int().positive(),
+  stepMinutes: z.number().int().positive(),
+  durationSec: z.number().int().positive(),
+  items: z.array(
+    z.object({
+      date: z.string(),
+      hasSlots: z.boolean(),
+      totalSlots: z.number().int().nonnegative(),
+      firstSlotAt: z.string().datetime().nullable()
+    })
+  )
+});
+
 export const slotsResultSchema = z.object({
   date: z.string(),
   stepMinutes: z.number().int().positive(),
@@ -505,5 +528,6 @@ export type ContactPoint = z.infer<typeof contactPointSchema>;
 export type CreatedAppointment = z.infer<typeof appointmentCreatedSchema>;
 export type Service = z.infer<typeof serviceSchema>;
 export type ServiceList = z.infer<typeof serviceListSchema>;
+export type SlotDaysResult = z.infer<typeof slotDaysResultSchema>;
 export type SlotsResult = z.infer<typeof slotsResultSchema>;
 export type SpecialistCard = z.infer<typeof specialistCardSchema>;

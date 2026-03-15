@@ -1,12 +1,12 @@
 'use client';
 
-import Link from 'next/link';
 import { ImagePlus, LogOut, TicketX, Trash2, UserRound } from 'lucide-react';
 import { startTransition, useCallback, useEffect, useState } from 'react';
 import { z } from 'zod';
 
 import { useClientSession } from '@/components/client-session-provider';
 import { ButtonLink } from '@/components/ui/button';
+import { LoadingLabel } from '@/components/ui/loading-indicator';
 import { readApiOk } from '@/lib/api/browser';
 import {
   cancelAppointmentResultSchema,
@@ -83,8 +83,9 @@ export function AccountPanel() {
     z.infer<typeof clientAppointmentsSchema>['items']
   >([]);
   const [loadingAppointments, setLoadingAppointments] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [avatarSubmitting, setAvatarSubmitting] = useState(false);
+  const [logoutSubmitting, setLogoutSubmitting] = useState(false);
+  const [cancellingAppointmentId, setCancellingAppointmentId] = useState<string | null>(null);
+  const [avatarAction, setAvatarAction] = useState<'upload' | 'delete' | null>(null);
   const [feedback, setFeedback] = useState<{ type: 'error' | 'success'; text: string } | null>(
     null,
   );
@@ -127,7 +128,7 @@ export function AccountPanel() {
   }, [loadAppointments, session.authenticated]);
 
   const submitLogout = async () => {
-    setSubmitting(true);
+    setLogoutSubmitting(true);
     setFeedback(null);
 
     try {
@@ -146,12 +147,12 @@ export function AccountPanel() {
         text: error instanceof Error ? error.message : 'Не удалось завершить сеанс',
       });
     } finally {
-      setSubmitting(false);
+      setLogoutSubmitting(false);
     }
   };
 
   const cancelAppointment = async (id: string) => {
-    setSubmitting(true);
+    setCancellingAppointmentId(id);
     setFeedback(null);
 
     try {
@@ -175,12 +176,12 @@ export function AccountPanel() {
         text: error instanceof Error ? error.message : 'Не удалось отменить запись',
       });
     } finally {
-      setSubmitting(false);
+      setCancellingAppointmentId(null);
     }
   };
 
   const submitAvatarUpload = async (file: File) => {
-    setAvatarSubmitting(true);
+    setAvatarAction('upload');
     setFeedback(null);
 
     try {
@@ -205,12 +206,12 @@ export function AccountPanel() {
         text: error instanceof Error ? error.message : 'Не удалось обновить аватарку',
       });
     } finally {
-      setAvatarSubmitting(false);
+      setAvatarAction(null);
     }
   };
 
   const submitAvatarDelete = async () => {
-    setAvatarSubmitting(true);
+    setAvatarAction('delete');
     setFeedback(null);
 
     try {
@@ -230,12 +231,13 @@ export function AccountPanel() {
         text: error instanceof Error ? error.message : 'Не удалось удалить аватарку',
       });
     } finally {
-      setAvatarSubmitting(false);
+      setAvatarAction(null);
     }
   };
 
   const permanentDiscount = session.client?.discount.permanentPercent ?? null;
   const appointmentCount = appointments.length;
+  const avatarSubmitting = avatarAction !== null;
 
   return (
     <section
@@ -244,10 +246,13 @@ export function AccountPanel() {
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-2xl">
           <p className="section-kicker">Личный кабинет</p>
-          <h2 className="section-title">Профиль, записи и история визитов.</h2>
+          <h2 className="section-title">
+            {session.authenticated ? 'Профиль, записи и история визитов.' : 'Войдите или создайте кабинет.'}
+          </h2>
           <p className="section-copy">
-            Здесь можно посмотреть ближайшие визиты, обновить фото профиля, проверить скидку и при
-            необходимости отменить запись.
+            {session.authenticated
+              ? 'Здесь можно посмотреть ближайшие визиты, обновить фото профиля, проверить скидку и при необходимости отменить запись.'
+              : 'После входа будут доступны профиль, история визитов, записи и все основные действия в личном кабинете.'}
           </p>
         </div>
 
@@ -259,10 +264,17 @@ export function AccountPanel() {
             <button
               type="button"
               onClick={submitLogout}
-              disabled={submitting}
+              disabled={logoutSubmitting || Boolean(cancellingAppointmentId)}
+              aria-busy={logoutSubmitting}
               className="inline-flex items-center gap-2 rounded-full border border-[color:var(--line)] px-5 py-3 text-sm font-medium text-[color:var(--ink)] disabled:opacity-60">
-              <LogOut className="h-4 w-4" />
-              Выйти
+              {logoutSubmitting ? (
+                <LoadingLabel label="Выхожу..." size="sm" spinnerClassName="text-[color:var(--ink)]" />
+              ) : (
+                <>
+                  <LogOut className="h-4 w-4" />
+                  Выйти
+                </>
+              )}
             </button>
           </div>
         ) : (
@@ -290,46 +302,13 @@ export function AccountPanel() {
 
       {status === 'loading' ? (
         <div className="mt-8 rounded-[1.5rem] border border-[color:var(--line)] bg-[color:var(--panel)] px-6 py-8 text-sm text-[color:var(--ink-muted)]">
-          Проверяю вход...
+          <LoadingLabel
+            label="Проверяю вход..."
+            className="text-[color:var(--ink-muted)]"
+            spinnerClassName="text-[color:var(--ink-muted)]"
+          />
         </div>
-      ) : status === 'ready' && !session.authenticated ? (
-        <div className="mt-8 grid gap-5 lg:grid-cols-3">
-          {[
-            {
-              href: '/account/login',
-              title: 'Вход',
-              description: 'Открыть историю визитов, будущие записи и профиль в личном кабинете.',
-            },
-            {
-              href: '/account/register',
-              title: 'Регистрация',
-              description:
-                'Создать кабинет, чтобы сохранить данные и быстрее записываться на следующие визиты.',
-            },
-            {
-              href: '/account/recover',
-              title: 'Восстановление',
-              description: 'Получить ссылку для смены пароля по телефону или email.',
-            },
-          ].map((item) => (
-            <article
-              key={item.href}
-              className="rounded-[1.5rem] border border-[color:var(--line)] bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(241,245,243,0.86))] p-5">
-              <p className="text-xs uppercase tracking-[0.24em] text-[color:var(--ink-muted)]">
-                {item.title}
-              </p>
-              <p className="mt-4 text-base leading-7 text-[color:var(--muted)]">
-                {item.description}
-              </p>
-              <Link
-                href={item.href}
-                className="mt-6 inline-flex rounded-full border border-[color:var(--line)] bg-white px-5 py-3 text-sm font-medium text-[color:var(--ink)] transition hover:border-[color:var(--accent-strong)]">
-                Открыть страницу
-              </Link>
-            </article>
-          ))}
-        </div>
-      ) : (
+      ) : !session.authenticated ? null : (
         <div className="mt-8 space-y-5">
           <div className="grid gap-5 xl:grid-cols-[0.78fr_1.22fr]">
             <div className="rounded-[1.5rem] border border-[color:var(--line)] bg-[color:var(--panel)] p-5">
@@ -360,8 +339,14 @@ export function AccountPanel() {
                   <div className="mt-4 flex flex-wrap gap-3">
                     <label
                       className={`inline-flex cursor-pointer items-center gap-2 rounded-full border border-[color:var(--line)] bg-white px-4 py-2 text-sm font-medium text-[color:var(--ink)] ${avatarSubmitting ? 'pointer-events-none opacity-60' : ''}`}>
-                      <ImagePlus className="h-4 w-4" />
-                      {session.client?.avatarUrl ? 'Заменить фото' : 'Добавить фото'}
+                      {avatarAction === 'upload' ? (
+                        <LoadingLabel label="Обновляю фото..." size="sm" spinnerClassName="text-[color:var(--ink)]" />
+                      ) : (
+                        <>
+                          <ImagePlus className="h-4 w-4" />
+                          {session.client?.avatarUrl ? 'Заменить фото' : 'Добавить фото'}
+                        </>
+                      )}
                       <input
                         type="file"
                         accept="image/*"
@@ -380,9 +365,16 @@ export function AccountPanel() {
                       type="button"
                       onClick={submitAvatarDelete}
                       disabled={avatarSubmitting || !session.client?.avatarUrl}
+                      aria-busy={avatarAction === 'delete'}
                       className="inline-flex items-center gap-2 rounded-full border border-[#c4847d]/35 bg-[#f5dddb] px-4 py-2 text-sm font-medium text-[#7d3a37] disabled:opacity-60">
-                      <Trash2 className="h-4 w-4" />
-                      Удалить фото
+                      {avatarAction === 'delete' ? (
+                        <LoadingLabel label="Удаляю фото..." size="sm" spinnerClassName="text-[#7d3a37]" />
+                      ) : (
+                        <>
+                          <Trash2 className="h-4 w-4" />
+                          Удалить фото
+                        </>
+                      )}
                     </button>
                   </div>
                   <p className="mt-3 text-xs uppercase tracking-[0.18em] text-[color:var(--ink-muted)]">
@@ -441,7 +433,12 @@ export function AccountPanel() {
                 </h3>
               </div>
               {loadingAppointments ? (
-                <span className="text-sm text-[color:var(--ink-muted)]">Обновляю...</span>
+                <LoadingLabel
+                  label="Обновляю..."
+                  size="sm"
+                  className="text-sm text-[color:var(--ink-muted)]"
+                  spinnerClassName="text-[color:var(--ink-muted)]"
+                />
               ) : null}
             </div>
 
@@ -479,10 +476,17 @@ export function AccountPanel() {
                           <button
                             type="button"
                             onClick={() => cancelAppointment(appointment.id)}
-                            disabled={submitting}
+                            disabled={logoutSubmitting || Boolean(cancellingAppointmentId)}
+                            aria-busy={cancellingAppointmentId === appointment.id}
                             className="inline-flex items-center gap-2 rounded-full bg-[#7b4642] px-4 py-2 text-sm font-medium text-white disabled:opacity-60">
-                            <TicketX className="h-4 w-4" />
-                            Отменить
+                            {cancellingAppointmentId === appointment.id ? (
+                              <LoadingLabel label="Отменяю..." size="sm" />
+                            ) : (
+                              <>
+                                <TicketX className="h-4 w-4" />
+                                Отменить
+                              </>
+                            )}
                           </button>
                         ) : null}
                       </div>

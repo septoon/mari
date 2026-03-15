@@ -8,7 +8,7 @@ type Size = 'sm' | 'md' | 'lg';
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    'bg-[color:var(--button-bg)] text-white shadow-[0_20px_45px_rgba(106,103,98,0.24)] hover:bg-[color:var(--button-bg-hover)] hover:text-white',
+    'bg-[color:var(--button-bg)] text-white shadow-[0_20px_45px_rgba(36,94,99,0.24)] hover:bg-[color:var(--button-bg-hover)] hover:text-white',
   secondary:
     'border border-[color:var(--line-strong)] bg-white/88 text-[color:var(--ink)] hover:border-[color:var(--accent-strong)] hover:bg-[color:var(--surface-strong)] hover:text-[color:var(--ink)]',
   ghost: 'text-[color:var(--foreground)] hover:bg-white/55'

@@ -8,6 +8,7 @@ import { createPortal } from 'react-dom';
 
 import { useClientSession } from '@/components/client-session-provider';
 import { Button, ButtonLink } from '@/components/ui/button';
+import { LoadingLabel } from '@/components/ui/loading-indicator';
 import { cn } from '@/lib/classnames';
 import { siteConfig } from '@/lib/site';
 
@@ -187,8 +188,9 @@ export function MobileNavDrawer({
                 className="w-full"
                 onClick={handleLogout}
                 disabled={logoutSubmitting}
+                aria-busy={logoutSubmitting}
               >
-                {logoutSubmitting ? 'Выхожу...' : 'Выйти'}
+                {logoutSubmitting ? <LoadingLabel label="Выхожу..." size="sm" /> : 'Выйти'}
               </Button>
             ) : (
               <ButtonLink href="/account/login" size="sm" className="w-full" onClick={onClose}>
