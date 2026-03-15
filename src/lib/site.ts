@@ -43,7 +43,7 @@ export const siteConfig = {
   ]
 } as const;
 
-export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3001').replace(/\/+$/, '');
+export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://maribeauty.ru').replace(/\/+$/, '');
 export const siteImageUrl = `${siteUrl}/image.webp`;
 export const defaultMetaImage = {
   url: siteImageUrl,
