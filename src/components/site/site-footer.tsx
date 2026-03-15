@@ -4,9 +4,18 @@ import { Container } from '@/components/ui/container';
 import { getLiveCatalog } from '@/lib/live-catalog';
 import { siteConfig } from '@/lib/site';
 
-export async function SiteFooter() {
-  const catalog = await getLiveCatalog();
-  const salon = catalog.salon;
+type SiteFooterProps = {
+  salon?: {
+    name: string;
+    phone: string;
+    phoneHref: string;
+    email: string;
+    address: string;
+  };
+};
+
+export async function SiteFooter({ salon: providedSalon }: SiteFooterProps) {
+  const salon = providedSalon ?? (await getLiveCatalog()).salon;
 
   return (
     <footer className="border-t border-[color:var(--line)] bg-white/58">
@@ -46,7 +55,7 @@ export async function SiteFooter() {
 
         <div className="mt-10 flex flex-col gap-2 border-t border-[color:var(--line)] pt-6 text-sm text-[color:var(--muted)] sm:flex-row sm:items-center sm:justify-between">
           <p>© 2026 Mari Beauty Salon</p>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-4">
             <Link href="/news" className="transition hover:text-[color:var(--foreground)]">
               Новости
             </Link>
@@ -56,7 +65,24 @@ export async function SiteFooter() {
             <Link href="/gift-cards" className="transition hover:text-[color:var(--foreground)]">
               Сертификаты
             </Link>
+            <Link href="/privacy-policy" className="transition hover:text-[color:var(--foreground)]">
+              Политика конфиденциальности
+            </Link>
           </div>
+        </div>
+
+        <div className="mt-4 border-t border-[color:var(--line)] pt-4 text-sm text-[color:var(--muted)]">
+          <p>
+            Раработано студией{' '}
+            <a
+              href="https://lumastack.ru"
+              target="_blank"
+              rel="noreferrer"
+              className="font-semibold text-[color:var(--foreground)] transition hover:text-[color:var(--accent-strong)]"
+            >
+              LumaStack
+            </a>
+          </p>
         </div>
       </Container>
     </footer>

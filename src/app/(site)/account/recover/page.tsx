@@ -1,6 +1,7 @@
 import { AccountRecoverForm } from '@/components/account/account-auth-forms';
 import { AccountAuthShell } from '@/components/account/account-auth-shell';
 import { createPageMetadata } from '@/lib/site';
+import { getSitePrivacyPolicyContent } from '@/lib/site-content';
 
 export const metadata = createPageMetadata({
   title: 'Восстановление доступа',
@@ -8,7 +9,9 @@ export const metadata = createPageMetadata({
   path: '/account/recover'
 });
 
-export default function AccountRecoverPage() {
+export default async function AccountRecoverPage() {
+  const privacyPolicy = await getSitePrivacyPolicyContent();
+
   return (
     <AccountAuthShell
       breadcrumbs={[
@@ -23,7 +26,7 @@ export default function AccountRecoverPage() {
       heroDescription="Если забыли пароль, достаточно оставить телефон или email. Ссылку для смены пароля отправим автоматически."
       heroNote="После перехода по ссылке из письма вы сможете задать новый пароль и снова войти в кабинет."
     >
-      <AccountRecoverForm />
+      <AccountRecoverForm consentLabel={privacyPolicy.accountConsentLabel} />
     </AccountAuthShell>
   );
 }

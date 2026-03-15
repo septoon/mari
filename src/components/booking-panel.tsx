@@ -23,6 +23,7 @@ import {
   yandexMetrikaGoals
 } from '@/components/analytics/yandex-metrika-goals';
 import { useClientSession } from '@/components/client-session-provider';
+import { ConsentCheckbox } from '@/components/legal/consent-checkbox';
 import { ButtonLink } from '@/components/ui/button';
 import { LoadingLabel } from '@/components/ui/loading-indicator';
 import { readApiOk } from '@/lib/api/browser';
@@ -44,12 +45,18 @@ import {
   formatTime,
   weekdayLabel
 } from '@/lib/format';
+import {
+  applyBookingPageTemplate,
+  type BookingPageContent
+} from '@/lib/booking-page-content';
 
 type BookingPanelProps = {
   services: Service[];
   specialists: SpecialistCard[];
   maintenanceMode: boolean;
   maintenanceMessage?: string | null;
+  content: BookingPageContent;
+  consentLabel: string;
 };
 
 type SelectedSlot = {
@@ -89,7 +96,9 @@ export function BookingPanel({
   services,
   specialists,
   maintenanceMode,
-  maintenanceMessage
+  maintenanceMessage,
+  content,
+  consentLabel
 }: BookingPanelProps) {
   const { session } = useClientSession();
   const [minBookingDate] = useState(() => getLocalDate(0));
@@ -108,6 +117,7 @@ export function BookingPanel({
   const [selectedCategoryId, setSelectedCategoryId] = useState('all');
   const [catalogOpen, setCatalogOpen] = useState(true);
   const [cartReady, setCartReady] = useState(false);
+  const [consentAccepted, setConsentAccepted] = useState(false);
 
   const deferredServiceQuery = useDeferredValue(serviceQuery.trim().toLowerCase());
   const serviceIdsKey = selectedServiceIds.join(',');
@@ -162,7 +172,25 @@ export function BookingPanel({
     : '0 ₽';
   const selectedServicesLabel = hasSelectedServices
     ? selectedServices.map((service) => service.nameOnline ?? service.name).join(' · ')
-    : 'Услуги пока не выбраны';
+    : content.confirmation.summaryServicesEmpty;
+  const confirmationDescription = session.authenticated
+    ? applyBookingPageTemplate(content.confirmation.authenticatedDescriptionTemplate, {
+        client: session.client?.name || session.client?.phoneE164
+      })
+    : content.confirmation.guestDescription;
+  const discountDescription = hasPermanentDiscount
+    ? applyBookingPageTemplate(content.confirmation.discountDescriptionTemplate, {
+        discount: permanentDiscountPercent
+      })
+    : '';
+  const summaryDiscountLabel = hasPermanentDiscount
+    ? applyBookingPageTemplate(content.confirmation.discountSummaryTemplate, {
+        discount: permanentDiscountPercent
+      })
+    : '';
+  const basePriceLabel = applyBookingPageTemplate(content.confirmation.basePriceTemplate, {
+    price: formatPriceRange(totalMin, totalMax)
+  });
 
   const requestSlots = useCallback(async () => {
     if (!selectedServiceIds.length || !selectedDate) {
@@ -331,6 +359,11 @@ export function BookingPanel({
       return;
     }
 
+    if (!consentAccepted) {
+      setErrorMessage('Подтвердите согласие на обработку персональных данных.');
+      return;
+    }
+
     setIsSubmitting(true);
     setErrorMessage(null);
     setSuccess(null);
@@ -382,21 +415,20 @@ export function BookingPanel({
         <div className="min-w-0 space-y-6">
           <div className="flex flex-wrap items-center gap-3">
             <p className="rounded-full border border-white/18 bg-white/8 px-4 py-2 text-xs uppercase tracking-[0.32em] text-white/78">
-              Онлайн-запись
+              {content.panel.eyebrow}
             </p>
             <p className="inline-flex items-center gap-2 rounded-full border border-white/14 bg-white/8 px-4 py-2 text-sm text-white/78">
               <ShieldCheck className="h-4 w-4" />
-              Свободное время онлайн
+              {content.panel.availabilityBadge}
             </p>
           </div>
 
           <div className="max-w-3xl">
             <h2 className="font-serif text-3xl leading-tight sm:text-4xl lg:text-5xl">
-              Соберите визит без хаоса.
+              {content.panel.title}
             </h2>
             <p className="mt-3 text-sm leading-7 text-white/76 sm:text-base">
-              Добавьте услуги, выберите мастера и слот, затем подтвердите запись. Вся форма теперь
-              работает как единый поток и не разваливается на мобильных и широких экранах.
+              {content.panel.description}
             </p>
           </div>
 
@@ -411,11 +443,10 @@ export function BookingPanel({
               <div className="min-w-0">
                 <p className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.28em] text-white/58">
                   <ShoppingBag className="h-4 w-4" />
-                  Корзина услуг
+                  {content.panel.cartEyebrow}
                 </p>
                 <p className="mt-2 max-w-2xl text-sm leading-6 text-white/72">
-                  Выбирайте услуги в каталоге ниже. Корзина, длительность и итоговая стоимость
-                  обновляются сразу.
+                  {content.panel.cartDescription}
                 </p>
               </div>
 
@@ -424,7 +455,7 @@ export function BookingPanel({
                 onClick={() => setCatalogOpen((value) => !value)}
                 className="rounded-full border border-white/14 bg-white/10 px-4 py-2.5 text-sm text-white/82 transition hover:bg-white/14"
               >
-                {catalogOpen ? 'Скрыть каталог' : 'Показать каталог'}
+                {catalogOpen ? content.panel.hideCatalogLabel : content.panel.showCatalogLabel}
               </button>
             </div>
 
@@ -432,7 +463,7 @@ export function BookingPanel({
               <div className="min-w-0 rounded-[1.35rem] border border-white/10 bg-[#f7f3ed] p-4 text-[color:var(--ink)]">
                 <div className="flex items-center justify-between gap-4">
                   <p className="text-xs uppercase tracking-[0.24em] text-[color:var(--ink-muted)]">
-                    В корзине
+                    {content.panel.cartListLabel}
                   </p>
                   <span className="text-sm text-[color:var(--ink-muted)]">
                     {selectedServices.length} поз.
@@ -468,13 +499,15 @@ export function BookingPanel({
                   </div>
                 ) : (
                   <div className="mt-4 rounded-[1.2rem] border border-dashed border-[color:var(--line)] bg-white/70 px-4 py-5 text-sm text-[color:var(--ink-muted)]">
-                    Корзина пока пустая. Добавьте одну или несколько услуг ниже.
+                    {content.panel.emptyCartMessage}
                   </div>
                 )}
               </div>
 
               <div className="rounded-[1.35rem] border border-white/10 bg-white/6 p-4">
-                <p className="text-xs uppercase tracking-[0.24em] text-white/58">Сводка корзины</p>
+                <p className="text-xs uppercase tracking-[0.24em] text-white/58">
+                  {content.panel.cartSummaryLabel}
+                </p>
                 <div className="mt-4 space-y-3 text-sm text-white/82">
                   <div className="flex items-center justify-between gap-4">
                     <span>Услуги</span>
@@ -500,8 +533,7 @@ export function BookingPanel({
                   </div>
                   {hasPermanentDiscount ? (
                     <div className="rounded-[1.1rem] border border-[#f0d78b]/35 bg-[#fff7dd] px-4 py-3 text-sm text-[#73571d]">
-                      Постоянная скидка:{' '}
-                      <span className="font-semibold">-{permanentDiscountPercent}%</span>
+                      <span className="font-semibold">{summaryDiscountLabel}</span>
                     </div>
                   ) : null}
                 </div>
@@ -516,7 +548,7 @@ export function BookingPanel({
                     <input
                       value={serviceQuery}
                       onChange={(event) => setServiceQuery(event.target.value)}
-                      placeholder="Поиск услуги"
+                      placeholder={content.panel.searchPlaceholder}
                       className="w-full rounded-full border border-white/14 bg-white/10 py-3 pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-white/36 focus:border-white/28"
                     />
                   </label>
@@ -531,7 +563,7 @@ export function BookingPanel({
                           : 'border-white/14 bg-white/8 text-white/78 hover:bg-white/12'
                       }`}
                     >
-                      Все
+                      {content.panel.allCategoryLabel}
                     </button>
                     {serviceCategories.map((category) => (
                       <button
@@ -553,7 +585,7 @@ export function BookingPanel({
                 <div className="mt-4 grid gap-3 sm:grid-cols-2 2xl:grid-cols-3">
                   {services.length === 0 ? (
                     <div className="rounded-[1.2rem] border border-dashed border-white/18 px-4 py-5 text-sm text-white/70">
-                      Список услуг обновляется. Если нужен быстрый подбор, позвоните нам.
+                      {content.panel.emptyCatalogMessage}
                     </div>
                   ) : visibleServices.length ? (
                     visibleServices.map((service) => {
@@ -602,15 +634,17 @@ export function BookingPanel({
                     })
                   ) : (
                     <div className="rounded-[1.2rem] border border-dashed border-white/18 px-4 py-5 text-sm text-white/70">
-                      По текущему фильтру услуги не найдены.
+                      {content.panel.emptySearchMessage}
                     </div>
                   )}
                 </div>
 
                 {filteredServices.length > visibleServices.length ? (
                   <p className="mt-3 text-xs text-white/55">
-                    Показаны первые {visibleServices.length} услуг из {filteredServices.length}.
-                    Уточните поиск или категорию.
+                    {applyBookingPageTemplate(content.panel.resultsHintTemplate, {
+                      visible: visibleServices.length,
+                      total: filteredServices.length
+                    })}
                   </p>
                 ) : null}
               </div>
@@ -622,20 +656,20 @@ export function BookingPanel({
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0">
                   <p className="text-xs uppercase tracking-[0.28em] text-white/58">
-                    Когда и к кому
+                    {content.schedule.title}
                   </p>
                   <p className="mt-2 text-sm leading-6 text-white/70">
-                    Выберите дату из ближайших двух недель или укажите ее вручную.
+                    {content.schedule.description}
                   </p>
                 </div>
                 <div className="rounded-full border border-white/12 bg-white/6 px-3 py-1.5 text-[11px] text-white/56">
-                  14 дней вперед
+                  {content.schedule.daysAheadLabel}
                 </div>
               </div>
 
               {!hasSelectedServices ? (
                 <div className="mt-5 rounded-[1.2rem] border border-dashed border-white/18 px-4 py-5 text-sm text-white/70">
-                  Сначала добавьте услуги, затем выберите дату и мастера.
+                  {content.schedule.emptySelectionMessage}
                 </div>
               ) : (
                 <div className="mt-5 grid gap-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7">
@@ -679,13 +713,15 @@ export function BookingPanel({
 
               <div className="mt-5 grid gap-4 md:grid-cols-2">
                 <label className="block space-y-2">
-                  <span className="text-xs uppercase tracking-[0.24em] text-white/58">Мастер</span>
+                  <span className="text-xs uppercase tracking-[0.24em] text-white/58">
+                    {content.schedule.masterLabel}
+                  </span>
                   <select
                     value={selectedStaffId}
                     onChange={(event) => setSelectedStaffId(event.target.value)}
                     className="w-full rounded-[1.05rem] border border-white/16 bg-white/8 px-4 py-3 text-sm text-white outline-none transition focus:border-white/30"
                   >
-                    <option value="any">Любой доступный мастер</option>
+                    <option value="any">{content.schedule.anyMasterLabel}</option>
                     {availableSpecialists.map((specialist) => (
                       <option key={specialist.staffId} value={specialist.staffId}>
                         {specialist.name}
@@ -696,7 +732,7 @@ export function BookingPanel({
 
                 <label className="block space-y-2">
                   <span className="text-xs uppercase tracking-[0.24em] text-white/58">
-                    Выбрать дату вручную
+                    {content.schedule.manualDateLabel}
                   </span>
                   <input
                     type="date"
@@ -718,14 +754,19 @@ export function BookingPanel({
                 </p>
                 <p className="mt-1 text-xs leading-6 text-white/58">
                   {!hasSelectedServices
-                    ? 'Сначала выберите услуги'
+                    ? content.schedule.dateHintEmpty
                     : loadingSlots
-                      ? 'Проверяем доступность'
+                      ? content.schedule.dateHintLoading
                       : slotCount > 0
                         ? firstAvailableSlot
-                          ? `Первое окно с ${formatTime(firstAvailableSlot)}`
-                          : `Окон: ${slotCount}`
-                        : 'Свободных окон на этот день нет'}
+                          ? applyBookingPageTemplate(
+                              content.schedule.dateHintFirstSlotTemplate,
+                              { time: formatTime(firstAvailableSlot) }
+                            )
+                          : applyBookingPageTemplate(content.schedule.dateHintSlotsTemplate, {
+                              count: slotCount
+                            })
+                        : content.schedule.dateHintNoSlots}
                 </p>
               </div>
             </div>
@@ -734,10 +775,10 @@ export function BookingPanel({
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0">
                   <p className="text-xs uppercase tracking-[0.28em] text-white/58">
-                    Свободное время
+                    {content.schedule.slotsTitle}
                   </p>
                   <p className="mt-2 text-sm leading-6 text-white/70">
-                    Показываем только слоты, подходящие под состав услуг и выбранную дату.
+                    {content.schedule.slotsDescription}
                   </p>
                 </div>
                 {loadingSlots ? (
@@ -753,7 +794,7 @@ export function BookingPanel({
               <div className="mt-5 space-y-4">
                 {!hasSelectedServices ? (
                   <div className="rounded-[1.2rem] border border-dashed border-white/18 px-4 py-5 text-sm text-white/70">
-                    Сначала добавьте услуги в корзину.
+                    {content.schedule.slotsEmptyServices}
                   </div>
                 ) : hasAvailableSlots && slots ? (
                   slots.results.map((group) => (
@@ -802,14 +843,14 @@ export function BookingPanel({
                         </div>
                       ) : (
                         <div className="mt-3 rounded-[1rem] border border-white/12 px-4 py-3 text-sm text-white/44">
-                          Нет окон
+                          {content.schedule.noWindowsLabel}
                         </div>
                       )}
                     </div>
                   ))
                 ) : (
                   <div className="rounded-[1.2rem] border border-dashed border-white/18 px-4 py-5 text-sm text-white/70">
-                    На выбранную дату свободных окон пока нет.
+                    {content.schedule.slotsEmptyResults}
                   </div>
                 )}
               </div>
@@ -823,26 +864,25 @@ export function BookingPanel({
         >
           <div>
             <p className="text-xs uppercase tracking-[0.28em] text-[color:var(--ink-muted)]">
-              Подтверждение
+              {content.confirmation.eyebrow}
             </p>
-            <h3 className="mt-3 font-serif text-3xl">Подтверждение визита.</h3>
+            <h3 className="mt-3 font-serif text-3xl">{content.confirmation.title}</h3>
             <p className="mt-2 text-sm leading-6 text-[color:var(--ink-muted)]">
-              {session.authenticated
-                ? `Записываем как ${session.client?.name || session.client?.phoneE164}.`
-                : 'Чтобы завершить запись, сначала войдите в личный кабинет.'}
+              {confirmationDescription}
             </p>
           </div>
 
           {!session.authenticated ? (
             <div className="rounded-[1.35rem] border border-[color:var(--line)] bg-[linear-gradient(180deg,rgba(244,240,235,0.94),rgba(235,241,239,0.8))] px-5 py-5">
               <p className="text-sm leading-7 text-[color:var(--ink-muted)]">
-                Чтобы подтвердить выбранные услуги и время, войдите в личный кабинет или создайте
-                его за пару минут.
+                {content.confirmation.loginCalloutDescription}
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
-                <ButtonLink href="/account/login">Войти</ButtonLink>
+                <ButtonLink href="/account/login">
+                  {content.confirmation.loginButtonLabel}
+                </ButtonLink>
                 <ButtonLink href="/account/register" variant="secondary">
-                  Создать кабинет
+                  {content.confirmation.registerButtonLabel}
                 </ButtonLink>
               </div>
             </div>
@@ -850,16 +890,14 @@ export function BookingPanel({
             <div className="rounded-[1.3rem] border border-[color:var(--line)] bg-[color:var(--panel)] px-4 py-4 text-sm text-[color:var(--ink-muted)]">
               <div className="inline-flex items-center gap-2 text-[color:var(--ink)]">
                 <UserRound className="h-4 w-4" />
-                Ваш профиль
+                {content.confirmation.profileLabel}
               </div>
               <p className="mt-2">
                 {session.client?.name || 'Имя пока не заполнено'} · {session.client?.phoneE164}
               </p>
               {hasPermanentDiscount ? (
                 <div className="mt-3 rounded-2xl border border-[#f0d78b] bg-[#fff8df] px-4 py-3 text-sm text-[#7d6120]">
-                  Ваша постоянная скидка:{' '}
-                  <span className="font-semibold">{permanentDiscountPercent}%</span>. Она применяется
-                  автоматически, пока вы не используете промокод.
+                  {discountDescription}
                 </div>
               ) : null}
             </div>
@@ -869,24 +907,24 @@ export function BookingPanel({
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="space-y-2">
                 <span className="text-xs uppercase tracking-[0.24em] text-[color:var(--ink-muted)]">
-                  Промокод
+                  {content.confirmation.promoLabel}
                 </span>
                 <input
                   value={promoCode}
                   onChange={(event) => setPromoCode(event.target.value)}
-                  placeholder="Если есть"
+                  placeholder={content.confirmation.promoPlaceholder}
                   className="w-full rounded-2xl border border-[color:var(--line)] bg-[color:var(--panel)] px-4 py-3 text-sm outline-none transition focus:border-[color:var(--ink)]"
                 />
               </label>
 
               <label className="space-y-2">
                 <span className="text-xs uppercase tracking-[0.24em] text-[color:var(--ink-muted)]">
-                  Комментарий
+                  {content.confirmation.commentLabel}
                 </span>
                 <input
                   value={comment}
                   onChange={(event) => setComment(event.target.value)}
-                  placeholder="Например: удобно после 18:00"
+                  placeholder={content.confirmation.commentPlaceholder}
                   className="w-full rounded-2xl border border-[color:var(--line)] bg-[color:var(--panel)] px-4 py-3 text-sm outline-none transition focus:border-[color:var(--ink)]"
                 />
               </label>
@@ -894,30 +932,32 @@ export function BookingPanel({
           ) : null}
 
           <div className="rounded-[1.35rem] border border-[color:var(--line)] bg-[linear-gradient(180deg,rgba(244,240,235,0.94),rgba(235,241,239,0.8))] px-5 py-4">
-            <p className="text-xs uppercase tracking-[0.24em] text-[color:var(--ink-muted)]">Итог</p>
+            <p className="text-xs uppercase tracking-[0.24em] text-[color:var(--ink-muted)]">
+              {content.confirmation.summaryTitle}
+            </p>
             <div className="mt-4 grid gap-4 text-sm text-[color:var(--ink-muted)]">
               <div className="rounded-[1.1rem] border border-white/50 bg-white/60 px-4 py-3">
                 <p className="text-[11px] uppercase tracking-[0.22em] text-[color:var(--ink-muted)]">
-                  Услуги
+                  {content.confirmation.summaryServicesLabel}
                 </p>
                 <p className="mt-2 leading-6 text-[color:var(--ink)]">{selectedServicesLabel}</p>
               </div>
 
               <div className="rounded-[1.1rem] border border-white/50 bg-white/60 px-4 py-3">
                 <p className="text-[11px] uppercase tracking-[0.22em] text-[color:var(--ink-muted)]">
-                  Время
+                  {content.confirmation.summaryTimeLabel}
                 </p>
                 <p className="mt-2 leading-6 text-[color:var(--ink)]">
                   {selectedSlot
                     ? `${selectedSlot.staffName} · ${formatBookingDateTime(selectedSlot.startAt)}`
-                    : 'Слот пока не выбран'}
+                    : content.confirmation.summarySlotEmpty}
                 </p>
               </div>
 
               <div className="flex flex-wrap items-end justify-between gap-3 rounded-[1.1rem] border border-white/50 bg-white/60 px-4 py-3">
                 <div>
                   <p className="text-[11px] uppercase tracking-[0.22em] text-[color:var(--ink-muted)]">
-                    К оплате
+                    {content.confirmation.summaryPriceLabel}
                   </p>
                   <p className="mt-2 text-2xl font-semibold text-[color:var(--ink)]">
                     {summaryTotal}
@@ -926,22 +966,30 @@ export function BookingPanel({
 
                 {hasPermanentDiscount ? (
                   <div className="text-right text-xs leading-5 text-[color:var(--ink-muted)]">
-                    <p>
-                      Постоянная скидка:{' '}
-                      <span className="font-semibold text-[color:var(--ink)]">
-                        -{permanentDiscountPercent}%
-                      </span>
-                    </p>
+                    <p>{summaryDiscountLabel}</p>
                     {!promoCode.trim() ? (
-                      <p>Без скидки: {formatPriceRange(totalMin, totalMax)}</p>
+                      <p>{basePriceLabel}</p>
                     ) : (
-                      <p>Если промокод сработает, он заменит постоянную скидку.</p>
+                      <p>{content.confirmation.promoPriorityNotice}</p>
                     )}
                   </div>
                 ) : null}
               </div>
             </div>
           </div>
+
+          {session.authenticated ? (
+            <ConsentCheckbox
+              checked={consentAccepted}
+              onChange={(checked) => {
+                setConsentAccepted(checked);
+                if (checked) {
+                  setErrorMessage(null);
+                }
+              }}
+              label={consentLabel}
+            />
+          ) : null}
 
           {errorMessage ? (
             <div className="rounded-[1.2rem] border border-[#c4847d]/35 bg-[#f5dddb] px-4 py-3 text-sm text-[#7d3a37]">
@@ -951,7 +999,7 @@ export function BookingPanel({
 
           {success ? (
             <div className="rounded-[1.2rem] border border-[#86aa96]/40 bg-[#e3f0e8] px-4 py-4 text-sm text-[#21573b]">
-              <p className="font-semibold">Запись создана.</p>
+              <p className="font-semibold">{content.confirmation.successTitle}</p>
               <p className="mt-1">
                 {success.staff.name} · {formatBookingDateTime(success.startAt)} ·{' '}
                 {formatCurrency(success.prices.finalTotal)}
@@ -966,11 +1014,15 @@ export function BookingPanel({
               aria-busy={isSubmitting}
               className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[color:var(--button-bg)] px-5 py-4 text-sm font-medium text-white transition hover:bg-[color:var(--button-bg-hover)] hover:text-white disabled:cursor-not-allowed disabled:opacity-55"
             >
-              {isSubmitting ? <LoadingLabel label="Создаю запись..." /> : 'Подтвердить запись'}
+              {isSubmitting ? (
+                <LoadingLabel label={content.confirmation.submitLoadingLabel} />
+              ) : (
+                content.confirmation.submitLabel
+              )}
             </button>
           ) : (
             <ButtonLink href="/account/login" className="w-full">
-              Войти для записи
+              {content.confirmation.loginForBookingLabel}
             </ButtonLink>
           )}
         </form>

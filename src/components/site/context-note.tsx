@@ -4,12 +4,14 @@ export function ContextNote({
   service,
   master,
   location,
-  offer
+  offer,
+  phone = siteConfig.phone
 }: {
   service?: string;
   master?: string;
   location?: string;
   offer?: string;
+  phone?: string;
 }) {
   const items = [
     service ? `Услуга: ${service}` : null,
@@ -26,7 +28,7 @@ export function ContextNote({
     <div className="rounded-[1.6rem] border border-[color:var(--line)] bg-white/78 p-5 text-sm leading-7 text-[color:var(--muted)]">
       <p className="text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">Вы уже выбрали</p>
       <p className="mt-3">
-        {items.join(' · ')}. Если хотите быстрее подобрать удобное время, позвоните нам: {siteConfig.phone}.
+        {items.join(' · ')}. Если хотите быстрее подобрать удобное время, позвоните нам: {phone}.
       </p>
     </div>
   );

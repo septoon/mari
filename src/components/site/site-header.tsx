@@ -11,7 +11,14 @@ import { MobileNavDrawer } from '@/components/site/mobile-nav-drawer';
 import { cn } from '@/lib/classnames';
 import { siteConfig } from '@/lib/site';
 
-export function SiteHeader() {
+type SiteHeaderProps = {
+  salon: {
+    phone: string;
+    phoneHref: string;
+  };
+};
+
+export function SiteHeader({ salon }: SiteHeaderProps) {
   const pathname = usePathname();
   const { session } = useClientSession();
   const [open, setOpen] = useState(false);
@@ -114,8 +121,8 @@ export function SiteHeader() {
               </Link>
             ) : (
               <>
-                <a href={siteConfig.phoneHref} className="text-sm text-[color:var(--muted-strong)] transition hover:text-[color:var(--foreground)]">
-                  {siteConfig.phone}
+                <a href={salon.phoneHref} className="text-sm text-[color:var(--muted-strong)] transition hover:text-[color:var(--foreground)]">
+                  {salon.phone}
                 </a>
                 {accountIconLink}
               </>
@@ -136,7 +143,7 @@ export function SiteHeader() {
         </div>
       </header>
 
-      <MobileNavDrawer open={open} pathname={pathname} onClose={() => setOpen(false)} />
+      <MobileNavDrawer open={open} pathname={pathname} salon={salon} onClose={() => setOpen(false)} />
     </>
   );
 }

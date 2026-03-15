@@ -1,10 +1,26 @@
-import { Suspense } from 'react';
+'use client';
+
+import { Suspense, useEffect, useState } from 'react';
 import Script from 'next/script';
 
 import { YandexMetrikaPageTracker } from '@/components/analytics/yandex-metrika-page-tracker';
+import { COOKIE_CONSENT_EVENT, readCookieConsent } from '@/lib/cookie-consent';
 
 export function YandexMetrika({ metrikaId }: { metrikaId?: number }) {
-  if (!metrikaId) {
+  const [consent, setConsent] = useState<'accepted' | 'necessary' | null>(() =>
+    typeof window === 'undefined' ? null : readCookieConsent()
+  );
+
+  useEffect(() => {
+    const handleConsentChanged = () => {
+      setConsent(readCookieConsent());
+    };
+
+    window.addEventListener(COOKIE_CONSENT_EVENT, handleConsentChanged);
+    return () => window.removeEventListener(COOKIE_CONSENT_EVENT, handleConsentChanged);
+  }, []);
+
+  if (!metrikaId || consent !== 'accepted') {
     return null;
   }
 

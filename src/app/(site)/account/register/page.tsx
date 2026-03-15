@@ -1,6 +1,7 @@
 import { AccountRegisterForm } from '@/components/account/account-auth-forms';
 import { AccountAuthShell } from '@/components/account/account-auth-shell';
 import { createPageMetadata } from '@/lib/site';
+import { getSitePrivacyPolicyContent } from '@/lib/site-content';
 
 export const metadata = createPageMetadata({
   title: 'Регистрация кабинета',
@@ -8,7 +9,9 @@ export const metadata = createPageMetadata({
   path: '/account/register'
 });
 
-export default function AccountRegisterPage() {
+export default async function AccountRegisterPage() {
+  const privacyPolicy = await getSitePrivacyPolicyContent();
+
   return (
     <AccountAuthShell
       breadcrumbs={[
@@ -23,7 +26,7 @@ export default function AccountRegisterPage() {
       heroDescription="Создайте кабинет один раз, чтобы сохранить контакты, видеть записи и быстрее оформлять следующие визиты."
       heroNote="После регистрации вы сразу попадёте в кабинет и сможете продолжить запись без повторного входа."
     >
-      <AccountRegisterForm />
+      <AccountRegisterForm consentLabel={privacyPolicy.accountConsentLabel} />
     </AccountAuthShell>
   );
 }

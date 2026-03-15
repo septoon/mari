@@ -10,6 +10,7 @@ import {
   yandexMetrikaGoals
 } from '@/components/analytics/yandex-metrika-goals';
 import { useClientSession } from '@/components/client-session-provider';
+import { ConsentCheckbox } from '@/components/legal/consent-checkbox';
 import { LoadingLabel } from '@/components/ui/loading-indicator';
 import { readApiOk } from '@/lib/api/browser';
 import { clientProfileSchema } from '@/lib/api/contracts';
@@ -239,12 +240,13 @@ export function AccountLoginForm() {
   );
 }
 
-export function AccountRegisterForm() {
+export function AccountRegisterForm({ consentLabel }: { consentLabel: string }) {
   const router = useRouter();
   const { session, status, setAuthenticatedClient } = useClientSession();
   const [form, setForm] = useState({ name: '', email: '', phone: '', password: '' });
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<Feedback>(null);
+  const [consentAccepted, setConsentAccepted] = useState(false);
 
   useEffect(() => {
     if (status === 'ready' && session.authenticated) {
@@ -259,6 +261,14 @@ export function AccountRegisterForm() {
       setFeedback({
         type: 'error',
         text: 'Пароль должен быть не короче 8 символов.'
+      });
+      return;
+    }
+
+    if (!consentAccepted) {
+      setFeedback({
+        type: 'error',
+        text: 'Подтвердите согласие на обработку персональных данных.'
       });
       return;
     }
@@ -349,6 +359,21 @@ export function AccountRegisterForm() {
 
       <FeedbackMessage feedback={feedback} />
 
+      <ConsentCheckbox
+        checked={consentAccepted}
+        onChange={(checked) => {
+          setConsentAccepted(checked);
+          if (checked) {
+            setFeedback((current) =>
+              current?.type === 'error' && current.text === 'Подтвердите согласие на обработку персональных данных.'
+                ? null
+                : current
+            );
+          }
+        }}
+        label={consentLabel}
+      />
+
       <button type="submit" disabled={submitting} aria-busy={submitting} className={submitClassName}>
         {submitting ? <LoadingLabel label="Создаю кабинет..." /> : 'Создать кабинет'}
       </button>
@@ -363,11 +388,12 @@ export function AccountRegisterForm() {
   );
 }
 
-export function AccountRecoverForm() {
+export function AccountRecoverForm({ consentLabel }: { consentLabel: string }) {
   const [form, setForm] = useState({ email: '', phone: '' });
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [resetLink, setResetLink] = useState<string | null>(null);
+  const [consentAccepted, setConsentAccepted] = useState(false);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -376,6 +402,14 @@ export function AccountRecoverForm() {
       setFeedback({
         type: 'error',
         text: 'Укажите email или телефон.'
+      });
+      return;
+    }
+
+    if (!consentAccepted) {
+      setFeedback({
+        type: 'error',
+        text: 'Подтвердите согласие на обработку персональных данных.'
       });
       return;
     }
@@ -441,6 +475,21 @@ export function AccountRecoverForm() {
       </label>
 
       <FeedbackMessage feedback={feedback} />
+
+      <ConsentCheckbox
+        checked={consentAccepted}
+        onChange={(checked) => {
+          setConsentAccepted(checked);
+          if (checked) {
+            setFeedback((current) =>
+              current?.type === 'error' && current.text === 'Подтвердите согласие на обработку персональных данных.'
+                ? null
+                : current
+            );
+          }
+        }}
+        label={consentLabel}
+      />
 
       <button type="submit" disabled={submitting} aria-busy={submitting} className={submitClassName}>
         {submitting ? <LoadingLabel label="Отправляю..." /> : 'Отправить ссылку'}

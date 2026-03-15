@@ -135,8 +135,7 @@ const createDefaultBootstrap = (): ClientBootstrap => ({
 
 export const getClientBootstrap = cache(async (): Promise<ClientBootstrap> => {
   return backendRequest(buildBootstrapPath(), clientBootstrapSchema, {
-    cache: 'force-cache',
-    next: { revalidate: 60 }
+    cache: 'no-store'
   });
 });
 

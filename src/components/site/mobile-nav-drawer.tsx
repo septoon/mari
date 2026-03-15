@@ -15,12 +15,17 @@ import { siteConfig } from '@/lib/site';
 type MobileNavDrawerProps = {
   open: boolean;
   pathname: string;
+  salon: {
+    phone: string;
+    phoneHref: string;
+  };
   onClose: () => void;
 };
 
 export function MobileNavDrawer({
   open,
   pathname,
+  salon,
   onClose
 }: MobileNavDrawerProps) {
   const router = useRouter();
@@ -161,8 +166,8 @@ export function MobileNavDrawer({
           </nav>
 
           <div className="mt-auto flex flex-col gap-3 border-t border-[color:var(--line)] pt-5">
-            <a href={siteConfig.phoneHref} className="px-4 text-sm text-[color:var(--muted-strong)]">
-              {siteConfig.phone}
+            <a href={salon.phoneHref} className="px-4 text-sm text-[color:var(--muted-strong)]">
+              {salon.phone}
             </a>
 
             {session.authenticated ? (
