@@ -6,6 +6,7 @@ import { Container } from '@/components/ui/container';
 import { ButtonLink } from '@/components/ui/button';
 import { createPageMetadata } from '@/lib/site';
 import { getLiveCatalog } from '@/lib/live-catalog';
+import { resolveSitePageHero } from '@/lib/site-page-heroes';
 
 export const metadata = createPageMetadata({
   title: 'Контакты',
@@ -45,14 +46,15 @@ export default async function ContactsPage({
   }
 
   const catalog = await getLiveCatalog();
+  const hero = resolveSitePageHero('contacts', catalog.bootstrap.config.extra);
 
   return (
     <main className="pb-14">
       <Container>
         <PageHero
-          eyebrow="Контакты"
-          title="Контакты MARI."
-          description="Позвоните, постройте маршрут или перейдите на отдельную страницу записи, если уже планируете визит."
+          eyebrow={hero.eyebrow}
+          title={hero.title}
+          description={hero.description}
           breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Контакты' }]}
           actions={
             <>

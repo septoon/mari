@@ -9,6 +9,7 @@ import { ButtonLink } from '@/components/ui/button';
 import { SectionHeading } from '@/components/ui/section-heading';
 import { createPageMetadata } from '@/lib/site';
 import { getLiveCatalog } from '@/lib/live-catalog';
+import { resolveSitePageHero } from '@/lib/site-page-heroes';
 
 export async function generateStaticParams() {
   const catalog = await getLiveCatalog();
@@ -53,14 +54,20 @@ export default async function MasterDetailPage({
   }
 
   const services = catalog.services.filter((service) => master.serviceIds.includes(service.id));
+  const hero = resolveSitePageHero('masterDetails', catalog.bootstrap.config.extra, {
+    masterSpecialty: master.specialtyLabel,
+    masterName: master.name,
+    masterSummary: master.summary,
+    masterCategories: master.categoryNames.join(', ')
+  });
 
   return (
     <main className="pb-14">
       <Container>
         <PageHero
-          eyebrow={master.specialtyLabel}
-          title={master.name}
-          description={master.summary}
+          eyebrow={hero.eyebrow}
+          title={hero.title}
+          description={hero.description}
           breadcrumbs={[
             { label: 'Главная', href: '/' },
             { label: 'Специалисты', href: '/masters' },

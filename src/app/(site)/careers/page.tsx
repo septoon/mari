@@ -2,6 +2,8 @@ import { CtaPanel } from '@/components/site/cta-panel';
 import { PageHero } from '@/components/site/page-hero';
 import { Container } from '@/components/ui/container';
 import { ButtonLink } from '@/components/ui/button';
+import { getClientBootstrap } from '@/lib/api/backend';
+import { resolveSitePageHero } from '@/lib/site-page-heroes';
 import { getJobOpenings } from '@/content/queries';
 import { createPageMetadata } from '@/lib/site';
 
@@ -11,16 +13,18 @@ export const metadata = createPageMetadata({
   path: '/careers'
 });
 
-export default function CareersPage() {
+export default async function CareersPage() {
   const jobs = getJobOpenings();
+  const bootstrap = await getClientBootstrap();
+  const hero = resolveSitePageHero('careers', bootstrap.config.extra);
 
   return (
     <main className="pb-14">
       <Container>
         <PageHero
-          eyebrow="Вакансии"
-          title="Присоединяйтесь к команде MARI."
-          description="Ищем мастеров и сервисных специалистов, которым близки аккуратный подход, уважение к гостю и любовь к красивому результату."
+          eyebrow={hero.eyebrow}
+          title={hero.title}
+          description={hero.description}
           breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Вакансии' }]}
           actions={<ButtonLink href="mailto:hr@maribeauty.ru">Откликнуться</ButtonLink>}
         />

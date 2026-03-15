@@ -9,6 +9,7 @@ import { ButtonLink } from '@/components/ui/button';
 import { SectionHeading } from '@/components/ui/section-heading';
 import { createPageMetadata } from '@/lib/site';
 import { getLiveCatalog } from '@/lib/live-catalog';
+import { resolveSitePageHero } from '@/lib/site-page-heroes';
 
 export async function generateStaticParams() {
   const catalog = await getLiveCatalog();
@@ -52,13 +53,21 @@ export default async function ServiceCategoryPage({
     notFound();
   }
 
+  const hero = resolveSitePageHero('serviceCategory', catalog.bootstrap.config.extra, {
+    categoryEyebrow: item.eyebrow,
+    categoryName: item.name,
+    categoryDescription: item.description,
+    categoryHeroText: item.heroText,
+    servicesCount: item.services.length
+  });
+
   return (
     <main className="pb-14">
       <Container>
         <PageHero
-          eyebrow={item.eyebrow}
-          title={item.name}
-          description={item.heroText}
+          eyebrow={hero.eyebrow}
+          title={hero.title}
+          description={hero.description}
           breadcrumbs={[
             { label: 'Главная', href: '/' },
             { label: 'Услуги', href: '/services' },

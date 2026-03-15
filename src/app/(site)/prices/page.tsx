@@ -6,6 +6,7 @@ import { ButtonLink } from '@/components/ui/button';
 import { SectionHeading } from '@/components/ui/section-heading';
 import { createPageMetadata } from '@/lib/site';
 import { getLiveCatalog } from '@/lib/live-catalog';
+import { resolveSitePageHero } from '@/lib/site-page-heroes';
 
 export const metadata = createPageMetadata({
   title: 'Цены',
@@ -15,14 +16,15 @@ export const metadata = createPageMetadata({
 
 export default async function PricesPage() {
   const catalog = await getLiveCatalog();
+  const hero = resolveSitePageHero('prices', catalog.bootstrap.config.extra);
 
   return (
     <main className="pb-14">
       <Container>
         <PageHero
-          eyebrow="Цены"
-          title="Цены без сложных условий."
-          description="Смотрите услуги, длительность и ориентир по стоимости, чтобы сразу спланировать визит."
+          eyebrow={hero.eyebrow}
+          title={hero.title}
+          description={hero.description}
           breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Цены' }]}
           actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
           details={[

@@ -3,6 +3,8 @@ import { EditorialVisual } from '@/components/site/editorial-visual';
 import { PageHero } from '@/components/site/page-hero';
 import { Container } from '@/components/ui/container';
 import { ButtonLink } from '@/components/ui/button';
+import { getClientBootstrap } from '@/lib/api/backend';
+import { resolveSitePageHero } from '@/lib/site-page-heroes';
 import { createPageMetadata } from '@/lib/site';
 
 export const metadata = createPageMetadata({
@@ -29,14 +31,17 @@ const packages = [
   }
 ];
 
-export default function GiftCardsPage() {
+export default async function GiftCardsPage() {
+  const bootstrap = await getClientBootstrap();
+  const hero = resolveSitePageHero('giftCards', bootstrap.config.extra);
+
   return (
     <main className="pb-14">
       <Container>
         <PageHero
-          eyebrow="Подарочные сертификаты"
-          title="Подарочные сертификаты MARI."
-          description="Выберите номинал, формат подарка и подарите близкому красивый визит в салон."
+          eyebrow={hero.eyebrow}
+          title={hero.title}
+          description={hero.description}
           breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Подарочные сертификаты' }]}
           actions={
             <>

@@ -12,6 +12,7 @@ import { SectionHeading } from '@/components/ui/section-heading';
 import { formatCurrency } from '@/lib/format';
 import { createPageMetadata } from '@/lib/site';
 import { getLiveCatalog } from '@/lib/live-catalog';
+import { resolveSitePageHero } from '@/lib/site-page-heroes';
 
 export async function generateStaticParams() {
   const catalog = await getLiveCatalog();
@@ -69,14 +70,20 @@ export default async function ServiceDetailPage({
   const relatedServices = catalog.services
     .filter((item) => item.category.id === service.category.id && item.id !== service.id)
     .slice(0, 4);
+  const hero = resolveSitePageHero('serviceDetails', catalog.bootstrap.config.extra, {
+    categoryEyebrow: category?.eyebrow ?? service.category.name,
+    categoryName: category?.name ?? service.category.name,
+    serviceName: service.displayName,
+    serviceTeaser: service.teaser
+  });
 
   return (
     <main className="pb-14">
       <Container>
         <PageHero
-          eyebrow={category?.eyebrow ?? service.category.name}
-          title={service.displayName}
-          description={service.teaser}
+          eyebrow={hero.eyebrow}
+          title={hero.title}
+          description={hero.description}
           breadcrumbs={[
             { label: 'Главная', href: '/' },
             { label: 'Услуги', href: '/services' },

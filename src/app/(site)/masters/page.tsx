@@ -5,6 +5,7 @@ import { Container } from '@/components/ui/container';
 import { ButtonLink } from '@/components/ui/button';
 import { createPageMetadata } from '@/lib/site';
 import { getLiveCatalog } from '@/lib/live-catalog';
+import { resolveSitePageHero } from '@/lib/site-page-heroes';
 
 export const metadata = createPageMetadata({
   title: 'Специалисты',
@@ -15,14 +16,15 @@ export const metadata = createPageMetadata({
 
 export default async function MastersPage() {
   const catalog = await getLiveCatalog();
+  const hero = resolveSitePageHero('masters', catalog.bootstrap.config.extra);
 
   return (
     <main className="pb-14">
       <Container>
         <PageHero
-          eyebrow="Специалисты"
-          title="Специалисты, которым доверяют постоянные гости."
-          description="Познакомьтесь со специалистами MARI, их направлениями и услугами, на которые можно записаться."
+          eyebrow={hero.eyebrow}
+          title={hero.title}
+          description={hero.description}
           breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Специалисты' }]}
           actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
           details={[

@@ -3,7 +3,9 @@ import { CtaPanel } from '@/components/site/cta-panel';
 import { PageHero } from '@/components/site/page-hero';
 import { Container } from '@/components/ui/container';
 import { ButtonLink } from '@/components/ui/button';
-import { getOffers } from '@/content/queries';
+import { getClientBootstrap } from '@/lib/api/backend';
+import { resolveSitePageHero } from '@/lib/site-page-heroes';
+import { getSiteOffers } from '@/lib/site-content';
 import { createPageMetadata } from '@/lib/site';
 
 export const metadata = createPageMetadata({
@@ -12,16 +14,17 @@ export const metadata = createPageMetadata({
   path: '/offers'
 });
 
-export default function OffersPage() {
-  const offers = getOffers();
+export default async function OffersPage() {
+  const [offers, bootstrap] = await Promise.all([getSiteOffers(), getClientBootstrap()]);
+  const hero = resolveSitePageHero('offers', bootstrap.config.extra);
 
   return (
     <main className="pb-14">
       <Container>
         <PageHero
-          eyebrow="Акции"
-          title="Специальные предложения MARI."
-          description="Здесь собраны выгодные форматы визитов, бонусы и идеи для тех, кто хочет попробовать больше за один визит."
+          eyebrow={hero.eyebrow}
+          title={hero.title}
+          description={hero.description}
           breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Акции' }]}
           actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
         />

@@ -3,7 +3,9 @@ import { CtaPanel } from '@/components/site/cta-panel';
 import { PageHero } from '@/components/site/page-hero';
 import { Container } from '@/components/ui/container';
 import { ButtonLink } from '@/components/ui/button';
-import { getNews } from '@/content/queries';
+import { getClientBootstrap } from '@/lib/api/backend';
+import { resolveSitePageHero } from '@/lib/site-page-heroes';
+import { getSiteNews } from '@/lib/site-content';
 import { createPageMetadata } from '@/lib/site';
 
 export const metadata = createPageMetadata({
@@ -12,16 +14,17 @@ export const metadata = createPageMetadata({
   path: '/news'
 });
 
-export default function NewsPage() {
-  const articles = getNews();
+export default async function NewsPage() {
+  const [articles, bootstrap] = await Promise.all([getSiteNews(), getClientBootstrap()]);
+  const hero = resolveSitePageHero('news', bootstrap.config.extra);
 
   return (
     <main className="pb-14">
       <Container>
         <PageHero
-          eyebrow="Новости"
-          title="Новости салона, сезонные предложения и важные обновления."
-          description="Здесь рассказываем о новых процедурах, пространствах, форматах ухода и приятных изменениях в MARI."
+          eyebrow={hero.eyebrow}
+          title={hero.title}
+          description={hero.description}
           breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Новости' }]}
           actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
         />

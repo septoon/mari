@@ -1,5 +1,6 @@
 import 'server-only';
 
+import { cache } from 'react';
 import { z } from 'zod';
 
 import {
@@ -132,16 +133,20 @@ const createDefaultBootstrap = (): ClientBootstrap => ({
   specialists: []
 });
 
+export const getClientBootstrap = cache(async (): Promise<ClientBootstrap> => {
+  return backendRequest(buildBootstrapPath(), clientBootstrapSchema, {
+    cache: 'force-cache',
+    next: { revalidate: 60 }
+  });
+});
+
 export const getLandingData = async (): Promise<{
   bootstrap: ClientBootstrap;
   services: Service[];
   connectivity: { bootstrap: boolean; services: boolean };
 }> => {
   const [bootstrapResult, servicesResult] = await Promise.allSettled([
-    backendRequest(buildBootstrapPath(), clientBootstrapSchema, {
-      cache: 'force-cache',
-      next: { revalidate: 60 }
-    }),
+    getClientBootstrap(),
     backendRequest('/services/public', serviceListSchema, {
       cache: 'force-cache',
       next: { revalidate: 60 }

@@ -5,9 +5,10 @@ import { ContextNote } from '@/components/site/context-note';
 import { PageHero } from '@/components/site/page-hero';
 import { Container } from '@/components/ui/container';
 import { ButtonLink } from '@/components/ui/button';
-import { getOffers } from '@/content/queries';
 import { createPageMetadata } from '@/lib/site';
 import { getLiveCatalog } from '@/lib/live-catalog';
+import { resolveSitePageHero } from '@/lib/site-page-heroes';
+import { getSiteOffers } from '@/lib/site-content';
 
 export const metadata = createPageMetadata({
   title: 'Запись',
@@ -29,18 +30,19 @@ export default async function BookingPage({
   const masterSlug = firstValue(params.master);
   const offerSlug = firstValue(params.offer);
 
-  const catalog = await getLiveCatalog();
+  const [catalog, offers] = await Promise.all([getLiveCatalog(), getSiteOffers()]);
   const service = serviceSlug ? catalog.services.find((item) => item.slug === serviceSlug) ?? null : null;
   const master = masterSlug ? catalog.specialists.find((item) => item.slug === masterSlug) ?? null : null;
-  const offer = offerSlug ? getOffers().find((item) => item.slug === offerSlug) ?? null : null;
+  const offer = offerSlug ? offers.find((item) => item.slug === offerSlug) ?? null : null;
+  const hero = resolveSitePageHero('booking', catalog.bootstrap.config.extra);
 
   return (
     <main className="pb-14">
       <Container>
         <PageHero
-          eyebrow="Запись"
-          title="Онлайн-запись в MARI."
-          description="Выберите услугу, специалиста и удобное время для визита на отдельной странице записи."
+          eyebrow={hero.eyebrow}
+          title={hero.title}
+          description={hero.description}
           breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Запись' }]}
           actions={
             <>

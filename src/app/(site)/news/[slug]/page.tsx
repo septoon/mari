@@ -5,11 +5,13 @@ import { CtaPanel } from '@/components/site/cta-panel';
 import { PageHero } from '@/components/site/page-hero';
 import { Container } from '@/components/ui/container';
 import { ButtonLink } from '@/components/ui/button';
-import { getNews, getNewsArticle } from '@/content/queries';
+import { getClientBootstrap } from '@/lib/api/backend';
+import { resolveSitePageHero } from '@/lib/site-page-heroes';
+import { getSiteNews, getSiteNewsArticle } from '@/lib/site-content';
 import { createPageMetadata } from '@/lib/site';
 
-export function generateStaticParams() {
-  return getNews().map((article) => ({ slug: article.slug }));
+export async function generateStaticParams() {
+  return (await getSiteNews()).map((article) => ({ slug: article.slug }));
 }
 
 export async function generateMetadata({
@@ -18,7 +20,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const article = getNewsArticle(slug);
+  const article = await getSiteNewsArticle(slug);
 
   if (!article) {
     return createPageMetadata({
@@ -41,19 +43,27 @@ export default async function NewsDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const article = getNewsArticle(slug);
+  const article = await getSiteNewsArticle(slug);
 
   if (!article) {
     notFound();
   }
 
+  const bootstrap = await getClientBootstrap();
+  const hero = resolveSitePageHero('newsArticle', bootstrap.config.extra, {
+    newsCategory: article.category,
+    newsTitle: article.title,
+    newsExcerpt: article.excerpt,
+    newsDate: new Date(article.publishedAt).toLocaleDateString('ru-RU')
+  });
+
   return (
     <main className="pb-14">
       <Container>
         <PageHero
-          eyebrow={article.category}
-          title={article.title}
-          description={article.excerpt}
+          eyebrow={hero.eyebrow}
+          title={hero.title}
+          description={hero.description}
           breadcrumbs={[
             { label: 'Главная', href: '/' },
             { label: 'Новости', href: '/news' },

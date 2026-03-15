@@ -1,6 +1,8 @@
 import { PageHero } from '@/components/site/page-hero';
 import { Container } from '@/components/ui/container';
 import { ButtonLink } from '@/components/ui/button';
+import { getClientBootstrap } from '@/lib/api/backend';
+import { resolveSitePageHero } from '@/lib/site-page-heroes';
 import { createPageMetadata } from '@/lib/site';
 
 export const metadata = createPageMetadata({
@@ -24,14 +26,17 @@ const principles = [
   }
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const bootstrap = await getClientBootstrap();
+  const hero = resolveSitePageHero('about', bootstrap.config.extra);
+
   return (
     <main className="pb-14">
       <Container>
         <PageHero
-          eyebrow="О салоне"
-          title="MARI — салон, в котором красота ощущается спокойно и естественно."
-          description="Мы соединяем сильную экспертизу мастеров, тёплый сервис и пространство, куда хочется возвращаться."
+          eyebrow={hero.eyebrow}
+          title={hero.title}
+          description={hero.description}
           breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'О салоне' }]}
           actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
         />

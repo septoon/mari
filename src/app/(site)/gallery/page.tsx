@@ -3,6 +3,8 @@ import { CtaPanel } from '@/components/site/cta-panel';
 import { PageHero } from '@/components/site/page-hero';
 import { Container } from '@/components/ui/container';
 import { ButtonLink } from '@/components/ui/button';
+import { getClientBootstrap } from '@/lib/api/backend';
+import { resolveSitePageHero } from '@/lib/site-page-heroes';
 import { getGalleryMoments } from '@/content/queries';
 import { createPageMetadata } from '@/lib/site';
 
@@ -12,16 +14,18 @@ export const metadata = createPageMetadata({
   path: '/gallery'
 });
 
-export default function GalleryPage() {
+export default async function GalleryPage() {
   const moments = getGalleryMoments();
+  const bootstrap = await getClientBootstrap();
+  const hero = resolveSitePageHero('gallery', bootstrap.config.extra);
 
   return (
     <main className="pb-14">
       <Container>
         <PageHero
-          eyebrow="Галерея"
-          title="Галерея настроения, образов и пространства MARI."
-          description="Собрали здесь детали, которые передают атмосферу салона, характер процедур и наше отношение к красоте."
+          eyebrow={hero.eyebrow}
+          title={hero.title}
+          description={hero.description}
           breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Галерея' }]}
           actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
         />
