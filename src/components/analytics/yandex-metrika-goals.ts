@@ -3,6 +3,7 @@
 declare global {
   interface Window {
     ym?: (...args: unknown[]) => void;
+    __YANDEX_METRIKA_ID__?: number;
   }
 }
 
@@ -12,8 +13,6 @@ export const yandexMetrikaGoals = {
   registerSuccess: 'register_success',
   passwordResetRequested: 'password_reset_requested'
 } as const;
-
-const METRIKA_ID = 107707126;
 
 export const reachYandexMetrikaGoal = (
   goal: (typeof yandexMetrikaGoals)[keyof typeof yandexMetrikaGoals],
@@ -27,8 +26,10 @@ export const reachYandexMetrikaGoal = (
   let attempts = 0;
 
   const send = () => {
-    if (typeof window.ym === 'function') {
-      window.ym(METRIKA_ID, 'reachGoal', goal, params, callback);
+    const metrikaId = window.__YANDEX_METRIKA_ID__;
+
+    if (metrikaId && typeof window.ym === 'function') {
+      window.ym(metrikaId, 'reachGoal', goal, params, callback);
       return;
     }
 

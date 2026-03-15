@@ -1,5 +1,8 @@
 import type { MetadataRoute } from 'next';
 
+const themeColor = '#245e63';
+const backgroundColor = '#f4f0eb';
+
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'MARI Beauty Salon',
@@ -7,10 +10,16 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'Салон красоты MARI: услуги, специалисты, запись и личный кабинет.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#f4f0eb',
-    theme_color: '#0c4d55',
+    background_color: backgroundColor,
+    theme_color: themeColor,
     lang: 'ru',
     icons: [
+      {
+        src: '/favicon.ico',
+        sizes: 'any',
+        type: 'image/x-icon',
+        purpose: 'any'
+      },
       {
         src: '/app-icon.svg',
         sizes: 'any',

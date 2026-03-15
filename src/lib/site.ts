@@ -43,7 +43,14 @@ export const siteConfig = {
   ]
 } as const;
 
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3001').replace(/\/+$/, '');
+export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3001').replace(/\/+$/, '');
+export const siteImageUrl = `${siteUrl}/image.webp`;
+export const defaultMetaImage = {
+  url: siteImageUrl,
+  width: 1536,
+  height: 1024,
+  alt: 'MARI Beauty Salon'
+} as const;
 
 export const createPageMetadata = ({
   title,
@@ -65,11 +72,13 @@ export const createPageMetadata = ({
     url: path ? `${siteUrl}${path}` : siteUrl,
     siteName: siteConfig.name,
     locale: 'ru_RU',
-    type: 'website'
+    type: 'website',
+    images: [defaultMetaImage]
   },
   twitter: {
     card: 'summary_large_image',
     title,
-    description
+    description,
+    images: [siteImageUrl]
   }
 });

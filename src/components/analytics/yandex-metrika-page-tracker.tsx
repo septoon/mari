@@ -3,14 +3,6 @@
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 
-declare global {
-  interface Window {
-    ym?: (...args: unknown[]) => void;
-  }
-}
-
-const METRIKA_ID = 107707126;
-
 export function YandexMetrikaPageTracker() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -30,7 +22,9 @@ export function YandexMetrikaPageTracker() {
         return;
       }
 
-      if (typeof window.ym !== 'function') {
+      const metrikaId = window.__YANDEX_METRIKA_ID__;
+
+      if (!metrikaId || typeof window.ym !== 'function') {
         if (attempts < 20) {
           attempts += 1;
           window.setTimeout(trackPageView, 150);
@@ -43,7 +37,7 @@ export function YandexMetrikaPageTracker() {
         return;
       }
 
-      window.ym(METRIKA_ID, 'hit', currentUrl, {
+      window.ym(metrikaId, 'hit', currentUrl, {
         referer: lastTrackedUrlRef.current ?? document.referrer,
         title: document.title
       });
