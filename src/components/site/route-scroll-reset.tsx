@@ -1,13 +1,14 @@
 'use client';
 
 import { useLayoutEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSelectedLayoutSegment } from 'next/navigation';
 
 export function RouteScrollReset() {
   const pathname = usePathname();
+  const modalSegment = useSelectedLayoutSegment('modal');
 
   useLayoutEffect(() => {
-    if (!pathname || window.location.hash) {
+    if (!pathname || modalSegment || window.location.hash) {
       return;
     }
 
@@ -23,7 +24,7 @@ export function RouteScrollReset() {
       root.style.scrollBehavior = previousRootBehavior;
       document.body.style.scrollBehavior = previousBodyBehavior;
     });
-  }, [pathname]);
+  }, [modalSegment, pathname]);
 
   return null;
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Search, Sparkles } from 'lucide-react';
 import { useDeferredValue, useState } from 'react';
 
@@ -8,19 +9,6 @@ import type { Service } from '@/lib/api/contracts';
 
 type ServiceCatalogProps = {
   services: Service[];
-};
-
-const emitServiceSelected = (serviceId: string) => {
-  window.dispatchEvent(
-    new CustomEvent('mari:add-service', {
-      detail: { serviceId }
-    })
-  );
-
-  document.getElementById('booking')?.scrollIntoView({
-    behavior: 'smooth',
-    block: 'start'
-  });
 };
 
 export function ServiceCatalog({ services }: ServiceCatalogProps) {
@@ -112,14 +100,13 @@ export function ServiceCatalog({ services }: ServiceCatalogProps) {
                   </p>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => emitServiceSelected(service.id)}
+                <Link
+                  href={`/booking?serviceId=${service.id}`}
                   className="inline-flex items-center gap-2 rounded-full bg-[color:var(--button-bg)] px-4 py-2 text-sm font-medium text-white transition hover:translate-y-[-1px] hover:bg-[color:var(--button-bg-hover)]"
                 >
                   <Sparkles className="h-4 w-4" />
                   Выбрать
-                </button>
+                </Link>
               </div>
             </article>
           ))}

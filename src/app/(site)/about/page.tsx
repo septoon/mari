@@ -66,7 +66,7 @@ export default async function AboutPage() {
 
       <section className="py-10 md:py-14">
         <Container>
-          <div className="rounded-[2rem] border border-[color:var(--line)] bg-[color:var(--ink)] px-6 py-8 text-white shadow-[0_35px_100px_rgba(20,15,12,0.16)] md:px-10 md:py-10">
+          <div className="rounded-[2rem] border border-[color:var(--line)] bg-[#1d5055] px-6 py-8 text-white shadow-[0_35px_100px_rgba(20,15,12,0.16)] md:px-10 md:py-10">
             <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
               <div className="max-w-xl">
                 <p className="text-xs uppercase tracking-[0.28em] text-white/60">Отзывы гостей</p>

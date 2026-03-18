@@ -66,7 +66,7 @@ export function SiteHeader({ salon }: SiteHeaderProps) {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <Link href="/" className="inline-flex items-center gap-4" onClick={() => setOpen(false)}>
             <Image
-              src="/app-icon.png"
+              src="/logo.webp"
               alt="MARI app icon"
               width={44}
               height={44}

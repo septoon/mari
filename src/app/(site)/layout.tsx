@@ -10,7 +10,13 @@ import { getSitePrivacyPolicyContent } from '@/lib/site-content';
 
 export const dynamic = 'force-dynamic';
 
-export default async function SiteLayout({ children }: { children: ReactNode }) {
+export default async function SiteLayout({
+  children,
+  modal
+}: {
+  children: ReactNode;
+  modal: ReactNode;
+}) {
   const [catalog, privacyPolicy] = await Promise.all([
     getLiveCatalog(),
     getSitePrivacyPolicyContent()
@@ -29,6 +35,7 @@ export default async function SiteLayout({ children }: { children: ReactNode }) 
           acceptLabel={privacyPolicy.cookieBannerAcceptLabel}
           necessaryLabel={privacyPolicy.cookieBannerNecessaryLabel}
         />
+        {modal}
       </div>
     </ClientSessionProvider>
   );

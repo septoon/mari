@@ -14,6 +14,7 @@ import { ConsentCheckbox } from '@/components/legal/consent-checkbox';
 import { LoadingLabel } from '@/components/ui/loading-indicator';
 import { readApiOk } from '@/lib/api/browser';
 import { clientProfileSchema } from '@/lib/api/contracts';
+import { normalizePhoneDigits, normalizePhonePaste, toPhoneE164 } from '@/lib/booking/phone';
 
 const clientResponseSchema = z.object({
   client: clientProfileSchema
@@ -35,39 +36,6 @@ type Feedback = {
   type: 'error' | 'success';
   text: string;
 } | null;
-
-const normalizePhoneDigits = (value: string) => {
-  const digits = value.replace(/\D/g, '');
-
-  if (!digits) {
-    return '';
-  }
-
-  if ((digits.startsWith('7') || digits.startsWith('8')) && digits.length > 10) {
-    return digits.slice(1, 11);
-  }
-
-  return digits.slice(0, 10);
-};
-
-const normalizePhonePaste = (value: string) => {
-  const digits = value.replace(/\D/g, '');
-
-  if (!digits) {
-    return '';
-  }
-
-  if (digits.length === 11 && (digits.startsWith('7') || digits.startsWith('8'))) {
-    return digits.slice(1);
-  }
-
-  return digits.length > 10 ? digits.slice(-10) : digits;
-};
-
-const toPhoneE164 = (phoneTail: string) => {
-  const digits = phoneTail.trim();
-  return digits ? `+7${digits}` : '';
-};
 
 function PhoneInput({
   value,
