@@ -6,6 +6,10 @@ import { ButtonLink } from '@/components/ui/button';
 import { createPageMetadata } from '@/lib/site';
 import { getLiveCatalog } from '@/lib/live-catalog';
 import { resolveSitePageHero } from '@/lib/site-page-heroes';
+import {
+  applySpecialistsPageTemplate,
+  getSpecialistsPageContent,
+} from '@/lib/specialists-page-content';
 
 export const metadata = createPageMetadata({
   title: 'Специалисты',
@@ -15,7 +19,10 @@ export const metadata = createPageMetadata({
 });
 
 export default async function MastersPage() {
-  const catalog = await getLiveCatalog();
+  const [catalog, pageContent] = await Promise.all([
+    getLiveCatalog(),
+    getSpecialistsPageContent(),
+  ]);
   const hero = resolveSitePageHero('masters', catalog.bootstrap.config.extra);
 
   return (
@@ -26,10 +33,12 @@ export default async function MastersPage() {
           title={hero.title}
           description={hero.description}
           breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Специалисты' }]}
-          actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
+          actions={<ButtonLink href="/booking">{pageContent.listPage.heroPrimaryCtaLabel}</ButtonLink>}
           details={[
-            `${catalog.specialists.length} специалистов в каталоге.`,
-            'Фильтр по специализации помогает быстро сузить выбор.'
+            applySpecialistsPageTemplate(pageContent.listPage.detailsCountTemplate, {
+              count: catalog.specialists.length,
+            }),
+            pageContent.listPage.detailsFilterText,
           ]}
         />
 
@@ -37,14 +46,14 @@ export default async function MastersPage() {
       </Container>
 
       <CtaPanel
-        eyebrow="Выбор специалиста"
-        title="Выберите специалиста и перейдите к записи."
-        description="На странице специалиста собраны направления работы, услуги и удобный переход к ближайшему визиту."
+        eyebrow={pageContent.listPage.ctaEyebrow}
+        title={pageContent.listPage.ctaTitle}
+        description={pageContent.listPage.ctaDescription}
         actions={
           <>
-            <ButtonLink href="/booking">Записаться</ButtonLink>
+            <ButtonLink href="/booking">{pageContent.listPage.ctaPrimaryLabel}</ButtonLink>
             <ButtonLink href="/services" variant="secondary">
-              Смотреть услуги
+              {pageContent.listPage.ctaSecondaryLabel}
             </ButtonLink>
           </>
         }

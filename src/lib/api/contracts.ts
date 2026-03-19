@@ -525,6 +525,7 @@ export type ClientAppointmentsResult = z.infer<typeof clientAppointmentsSchema>;
 export type ClientProfile = z.infer<typeof clientProfileSchema>;
 export type ClientSession = z.infer<typeof clientSessionSchema>;
 export type ContactPoint = z.infer<typeof contactPointSchema>;
+export type CreateAppointmentInput = z.infer<typeof createAppointmentInputSchema>;
 export type CreatedAppointment = z.infer<typeof appointmentCreatedSchema>;
 export type Service = z.infer<typeof serviceSchema>;
 export type ServiceList = z.infer<typeof serviceListSchema>;

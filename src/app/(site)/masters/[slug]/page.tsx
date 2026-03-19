@@ -10,6 +10,10 @@ import { SectionHeading } from '@/components/ui/section-heading';
 import { createPageMetadata } from '@/lib/site';
 import { getLiveCatalog } from '@/lib/live-catalog';
 import { resolveSitePageHero } from '@/lib/site-page-heroes';
+import {
+  applySpecialistsPageTemplate,
+  getSpecialistsPageContent,
+} from '@/lib/specialists-page-content';
 
 export async function generateStaticParams() {
   const catalog = await getLiveCatalog();
@@ -46,7 +50,10 @@ export default async function MasterDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const catalog = await getLiveCatalog();
+  const [catalog, pageContent] = await Promise.all([
+    getLiveCatalog(),
+    getSpecialistsPageContent(),
+  ]);
   const master = catalog.specialists.find((item) => item.slug === slug);
 
   if (!master) {
@@ -76,52 +83,68 @@ export default async function MasterDetailPage({
           actions={
             <>
               <ButtonLink href={`/booking?master=${master.slug}`}>
-                Записаться к специалисту
+                {pageContent.detailPage.heroPrimaryCtaLabel}
               </ButtonLink>
               <ButtonLink href="/masters" variant="secondary">
-                Все специалисты
+                {pageContent.detailPage.heroSecondaryCtaLabel}
               </ButtonLink>
             </>
           }
           details={[
-            `${services.length} услуг доступно для онлайн-записи.`,
-            `Направления: ${master.categoryNames.slice(0, 3).join(', ')}.`
+            applySpecialistsPageTemplate(pageContent.detailPage.detailsServicesTemplate, {
+              count: services.length,
+            }),
+            applySpecialistsPageTemplate(pageContent.detailPage.detailsCategoriesTemplate, {
+              categories: master.categoryNames.slice(0, 3).join(', '),
+            }),
           ]}
         />
 
         <section className="grid gap-6 lg:grid-cols-[0.88fr_1.12fr]">
           <article className="surface-card p-6">
-            <p className="text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">О специалисте</p>
+            <p className="text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">
+              {pageContent.detailPage.aboutEyebrow}
+            </p>
             <div className="mt-5 space-y-4 text-sm text-[color:var(--muted)]">
               <div className="rounded-[1.5rem] border border-[color:var(--line)] bg-white/72 p-4">
-                <p className="font-medium text-[color:var(--foreground)]">Специализация</p>
+                <p className="font-medium text-[color:var(--foreground)]">
+                  {pageContent.detailPage.aboutSpecialtyLabel}
+                </p>
                 <p className="mt-2">{master.specialtyLabel}</p>
               </div>
               <div className="rounded-[1.5rem] border border-[color:var(--line)] bg-white/72 p-4">
-                <p className="font-medium text-[color:var(--foreground)]">Категории услуг</p>
+                <p className="font-medium text-[color:var(--foreground)]">
+                  {pageContent.detailPage.aboutCategoriesLabel}
+                </p>
                 <p className="mt-2">{master.categoryNames.join(', ')}</p>
               </div>
               <div className="rounded-[1.5rem] border border-[color:var(--line)] bg-white/72 p-4">
-                <p className="font-medium text-[color:var(--foreground)]">Последнее обновление</p>
+                <p className="font-medium text-[color:var(--foreground)]">
+                  {pageContent.detailPage.aboutUpdatedLabel}
+                </p>
                 <p className="mt-2">{new Date(master.updatedAt).toLocaleDateString('ru-RU')}</p>
               </div>
             </div>
           </article>
 
           <article className="surface-card p-6">
-            <p className="text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">Подход</p>
-            <h2 className="mt-4 font-serif text-4xl text-[color:var(--ink)]">Выбирайте специалиста по направлению и стилю работы.</h2>
+            <p className="text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">
+              {pageContent.detailPage.approachEyebrow}
+            </p>
+            <h2 className="mt-4 font-serif text-4xl text-[color:var(--ink)]">
+              {pageContent.detailPage.approachTitle}
+            </h2>
             <p className="mt-4 text-sm leading-7 text-[color:var(--muted)]">
-              На странице собраны ключевые направления специалиста и список услуг, чтобы вы могли быстро понять, подходит ли вам этот специалист.
+              {pageContent.detailPage.approachDescription}
             </p>
           </article>
         </section>
 
         <section className="mt-16">
           <SectionHeading
-            eyebrow="Услуги специалиста"
-            title="Услуги, на которые можно записаться к этому специалисту."
-            description="Сравните процедуры по времени и стоимости и выберите ту, которая подходит именно вам."
+            eyebrow={pageContent.detailPage.servicesEyebrow}
+            title={pageContent.detailPage.servicesTitle}
+            description={pageContent.detailPage.servicesDescription}
           />
           <div className="mt-8 grid gap-6 md:grid-cols-2">
             {services.map((service) => (
@@ -140,16 +163,16 @@ export default async function MasterDetailPage({
       </Container>
 
       <CtaPanel
-        eyebrow="Запись к специалисту"
-        title="Если специалист подходит вам по направлению, переходите к записи."
-        description="Осталось выбрать услугу и удобное время визита."
+        eyebrow={pageContent.detailPage.ctaEyebrow}
+        title={pageContent.detailPage.ctaTitle}
+        description={pageContent.detailPage.ctaDescription}
         actions={
           <>
             <ButtonLink href={`/booking?master=${master.slug}`}>
-              Записаться к специалисту
+              {pageContent.detailPage.ctaPrimaryLabel}
             </ButtonLink>
             <ButtonLink href="/contacts" variant="secondary">
-              Контакты салона
+              {pageContent.detailPage.ctaSecondaryLabel}
             </ButtonLink>
           </>
         }

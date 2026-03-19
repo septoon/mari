@@ -33,7 +33,9 @@ import {
   getBookingDraft,
   getBookingStateDirty,
   getFirstAvailableDate,
+  isFutureBookingSlot,
   getPreviousStep,
+  getSchedulePreviewContext,
   getSlotDaysKey,
   getSlotsKey,
   hasDateSlots
@@ -63,6 +65,12 @@ type Action =
   | { type: 'reset'; state: BookingFlowState };
 
 const BOOKING_SERVICE_STORAGE_KEY = 'mari.booking.selected-service-id';
+const AVAILABILITY_CACHE_TTL_MS = 30_000;
+
+type CacheEntry<T> = {
+  data: T;
+  fetchedAt: number;
+};
 
 const hasSlotInResult = (slots: SlotsResult, slot: BookingSlotSelection | null) =>
   slot
@@ -72,6 +80,34 @@ const hasSlotInResult = (slots: SlotsResult, slot: BookingSlotSelection | null) 
           group.slots.some((item) => item.startAt === slot.startAt)
       )
     : false;
+
+const getFreshCacheValue = <T>(
+  cache: Map<string, CacheEntry<T>>,
+  key: string
+): T | null => {
+  const cached = cache.get(key);
+  if (!cached) {
+    return null;
+  }
+
+  if (Date.now() - cached.fetchedAt > AVAILABILITY_CACHE_TTL_MS) {
+    cache.delete(key);
+    return null;
+  }
+
+  return cached.data;
+};
+
+const setCacheValue = <T>(
+  cache: Map<string, CacheEntry<T>>,
+  key: string,
+  data: T
+) => {
+  cache.set(key, {
+    data,
+    fetchedAt: Date.now()
+  });
+};
 
 const reducer = (state: BookingFlowState, action: Action): BookingFlowState => {
   switch (action.type) {
@@ -100,7 +136,6 @@ const reducer = (state: BookingFlowState, action: Action): BookingFlowState => {
         ...state,
         selectedCategoryId: action.categoryId,
         selectedServiceId: action.serviceId,
-        selectedStaffId: null,
         selectedDate: null,
         selectedSlot: null,
         slotDays: null,
@@ -120,7 +155,6 @@ const reducer = (state: BookingFlowState, action: Action): BookingFlowState => {
         step: 'service',
         selectedCategoryId: action.categoryId,
         selectedServiceId: null,
-        selectedStaffId: null,
         selectedDate: null,
         selectedSlot: null,
         slotDays: null,
@@ -376,11 +410,15 @@ const reducer = (state: BookingFlowState, action: Action): BookingFlowState => {
 export function useBookingFlow({
   services,
   specialists,
-  initialSelection
+  initialSelection,
+  restoreStoredService = true,
+  startStep
 }: {
   services: Service[];
   specialists: SpecialistCard[];
   initialSelection?: BookingInitialSelection;
+  restoreStoredService?: boolean;
+  startStep?: BookingStep;
 }) {
   const { session } = useClientSession();
   const initialState = useMemo(
@@ -388,15 +426,27 @@ export function useBookingFlow({
       createInitialBookingState({
         services,
         initialSelection,
+        startStep,
         sessionName: session.client?.name,
         sessionPhone: session.client?.phoneE164
       }),
-    [initialSelection, services, session.client?.name, session.client?.phoneE164]
+    [initialSelection, services, session.client?.name, session.client?.phoneE164, startStep]
   );
   const [state, dispatch] = useReducer(reducer, initialState);
-  const slotDaysCacheRef = useRef(new Map<string, SlotDaysResult>());
-  const slotsCacheRef = useRef(new Map<string, SlotsResult>());
+  const [availabilityVersion, refreshAvailability] = useReducer((value: number) => value + 1, 0);
+  const slotDaysCacheRef = useRef(new Map<string, CacheEntry<SlotDaysResult>>());
+  const slotsCacheRef = useRef(new Map<string, CacheEntry<SlotsResult>>());
   const restoredServiceRef = useRef(false);
+
+  const clearAvailabilityCache = useCallback(() => {
+    slotDaysCacheRef.current.clear();
+    slotsCacheRef.current.clear();
+  }, []);
+
+  const invalidateAvailability = useCallback(() => {
+    clearAvailabilityCache();
+    refreshAvailability();
+  }, [clearAvailabilityCache]);
 
   const categories = useMemo(() => getBookingCategories(services), [services]);
   const selectedService = useMemo(
@@ -410,10 +460,80 @@ export function useBookingFlow({
         : null,
     [specialists, state.selectedStaffId]
   );
+  const availableServices = useMemo(() => {
+    if (!selectedStaff || state.selectedStaffId === 'any') {
+      return services;
+    }
+
+    const supportedServiceIds = new Set(selectedStaff.services.map((service) => service.id));
+    return services.filter((service) => supportedServiceIds.has(service.id));
+  }, [selectedStaff, services, state.selectedStaffId]);
   const availableSpecialists = useMemo(
     () => getAvailableSpecialists(specialists, state.selectedServiceId),
     [specialists, state.selectedServiceId]
   );
+  const schedulePreviewContext = useMemo(
+    () =>
+      getSchedulePreviewContext({
+        selectedServiceId: state.selectedServiceId,
+        selectedStaffId: state.selectedStaffId,
+        specialists
+      }),
+    [specialists, state.selectedServiceId, state.selectedStaffId]
+  );
+  const shouldLoadSlotDays =
+    Boolean(state.selectedServiceId && state.selectedStaffId) || state.step === 'date';
+  const slotDaysEffectInput = useMemo(() => {
+    const serviceId = schedulePreviewContext?.serviceId ?? null;
+    const staffId = schedulePreviewContext?.staffId ?? null;
+
+    if (!shouldLoadSlotDays || !serviceId || !staffId) {
+      return null;
+    }
+
+    return {
+      key: `${serviceId}:${staffId}`,
+      serviceId,
+      staffId
+    };
+  }, [schedulePreviewContext?.serviceId, schedulePreviewContext?.staffId, shouldLoadSlotDays]);
+  const slotsEffectInput = useMemo(() => {
+    const date = state.selectedDate;
+
+    if (!date) {
+      return null;
+    }
+
+    if (state.selectedServiceId && state.selectedStaffId) {
+      return {
+        key: `${state.selectedServiceId}:${state.selectedStaffId}:${date}`,
+        serviceId: state.selectedServiceId,
+        staffId: state.selectedStaffId,
+        date
+      };
+    }
+
+    const serviceId = schedulePreviewContext?.serviceId ?? null;
+    const staffId = schedulePreviewContext?.staffId ?? null;
+
+    if (state.step !== 'date' || !serviceId || !staffId) {
+      return null;
+    }
+
+    return {
+      key: `${serviceId}:${staffId}:${date}`,
+      serviceId,
+      staffId,
+      date
+    };
+  }, [
+    schedulePreviewContext?.serviceId,
+    schedulePreviewContext?.staffId,
+    state.selectedDate,
+    state.selectedServiceId,
+    state.selectedStaffId,
+    state.step
+  ]);
   const canChooseAnyStaff = availableSpecialists.length > 1;
   const hasCategoryStep = categories.length > 1;
   const previousStep = getPreviousStep({
@@ -454,6 +574,10 @@ export function useBookingFlow({
   }, [session.authenticated, session.client?.name, session.client?.phoneE164, state.clientForm.name, state.clientForm.phone]);
 
   useEffect(() => {
+    if (!restoreStoredService) {
+      return;
+    }
+
     if (restoredServiceRef.current) {
       return;
     }
@@ -481,7 +605,7 @@ export function useBookingFlow({
       categoryId: storedService.category.id
     });
     dispatch({ type: 'set-step', step: 'service' });
-  }, [initialSelection?.serviceId, services]);
+  }, [initialSelection?.serviceId, restoreStoredService, services]);
 
   useEffect(() => {
     if (state.selectedServiceId) {
@@ -519,12 +643,27 @@ export function useBookingFlow({
   }, [availableSpecialists, canChooseAnyStaff, state.selectedStaffId]);
 
   useEffect(() => {
-    const serviceId = state.selectedServiceId;
-    const staffId = state.selectedStaffId;
-    if (!serviceId || !staffId) {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        invalidateAvailability();
+      }
+    };
+
+    window.addEventListener('focus', invalidateAvailability);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener('focus', invalidateAvailability);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [invalidateAvailability]);
+
+  useEffect(() => {
+    if (!slotDaysEffectInput) {
       return;
     }
 
+    const { serviceId, staffId } = slotDaysEffectInput;
     const requestFrom = new Date();
     requestFrom.setMinutes(requestFrom.getMinutes() - requestFrom.getTimezoneOffset());
     const from = requestFrom.toISOString().slice(0, 10);
@@ -534,7 +673,7 @@ export function useBookingFlow({
       return;
     }
 
-    const cached = slotDaysCacheRef.current.get(cacheKey);
+    const cached = getFreshCacheValue(slotDaysCacheRef.current, cacheKey);
     if (cached) {
       dispatch({
         type: 'slot-days-success',
@@ -554,7 +693,7 @@ export function useBookingFlow({
       signal: controller.signal
     })
       .then((result) => {
-        slotDaysCacheRef.current.set(cacheKey, result);
+        setCacheValue(slotDaysCacheRef.current, cacheKey, result);
         dispatch({
           type: 'slot-days-success',
           data: result,
@@ -573,23 +712,20 @@ export function useBookingFlow({
       });
 
     return () => controller.abort();
-  }, [state.selectedServiceId, state.selectedStaffId]);
+  }, [availabilityVersion, slotDaysEffectInput]);
 
   useEffect(() => {
-    const serviceId = state.selectedServiceId;
-    const staffId = state.selectedStaffId;
-    const date = state.selectedDate;
-
-    if (!serviceId || !staffId || !date) {
+    if (!slotsEffectInput) {
       return;
     }
 
+    const { serviceId, staffId, date } = slotsEffectInput;
     const cacheKey = getSlotsKey({ serviceId, staffId, date });
     if (!cacheKey) {
       return;
     }
 
-    const cached = slotsCacheRef.current.get(cacheKey);
+    const cached = getFreshCacheValue(slotsCacheRef.current, cacheKey);
     if (cached) {
       dispatch({ type: 'slots-success', data: cached });
       return;
@@ -605,7 +741,7 @@ export function useBookingFlow({
       signal: controller.signal
     })
       .then((result) => {
-        slotsCacheRef.current.set(cacheKey, result);
+        setCacheValue(slotsCacheRef.current, cacheKey, result);
         dispatch({ type: 'slots-success', data: result });
       })
       .catch((error: unknown) => {
@@ -620,19 +756,21 @@ export function useBookingFlow({
       });
 
     return () => controller.abort();
-  }, [state.selectedDate, state.selectedServiceId, state.selectedStaffId]);
+  }, [availabilityVersion, slotsEffectInput]);
 
   const reset = useCallback(() => {
+    invalidateAvailability();
     dispatch({
       type: 'reset',
       state: createInitialBookingState({
         services,
         initialSelection,
+        startStep,
         sessionName: session.client?.name,
         sessionPhone: session.client?.phoneE164
       })
     });
-  }, [initialSelection, services, session.client?.name, session.client?.phoneE164]);
+  }, [initialSelection, invalidateAvailability, services, session.client?.name, session.client?.phoneE164, startStep]);
 
   const goBack = useCallback(() => {
     if (!previousStep) {
@@ -645,15 +783,15 @@ export function useBookingFlow({
 
   const requestStep = useCallback(
     (step: BookingStep) => {
-      const guards: Record<Exclude<BookingStep, 'category' | 'success'>, boolean> = {
-        service: Boolean(state.selectedCategoryId || categories.length === 1),
-        staff: Boolean(state.selectedServiceId),
+      const guards: Record<Exclude<BookingStep, 'overview' | 'category' | 'success'>, boolean> = {
+        service: true,
+        staff: true,
         date: Boolean(state.selectedServiceId && state.selectedStaffId),
         time: Boolean(state.selectedServiceId && state.selectedStaffId && state.selectedDate),
         client: Boolean(state.selectedSlot)
       };
 
-      if (step === 'category' || step === 'success') {
+      if (step === 'overview' || step === 'category' || step === 'success') {
         dispatch({ type: 'set-step', step });
         return true;
       }
@@ -665,7 +803,7 @@ export function useBookingFlow({
       dispatch({ type: 'set-step', step });
       return true;
     },
-    [categories.length, state.selectedCategoryId, state.selectedDate, state.selectedServiceId, state.selectedSlot, state.selectedStaffId]
+    [state.selectedDate, state.selectedServiceId, state.selectedSlot, state.selectedStaffId]
   );
 
   const selectCategory = useCallback((categoryId: string) => {
@@ -706,6 +844,50 @@ export function useBookingFlow({
     dispatch({ type: 'select-slot', slot });
   }, []);
 
+  const openDateCalendar = useCallback(
+    ({
+      staffId,
+      date
+    }: {
+      staffId?: BookingStaffChoice;
+      date?: string | null;
+    } = {}) => {
+      const nextStaffId = staffId ?? state.selectedStaffId ?? 'any';
+
+      if (nextStaffId !== state.selectedStaffId) {
+        dispatch({ type: 'select-staff', staffId: nextStaffId });
+      }
+
+      if (date !== undefined) {
+        dispatch({ type: 'select-date', date });
+      }
+
+      dispatch({ type: 'set-step', step: 'date' });
+    },
+    [state.selectedStaffId]
+  );
+
+  const selectPreviewSlot = useCallback(
+    (slot: BookingSlotSelection) => {
+      if (!state.selectedServiceId) {
+        openDateCalendar({
+          staffId: slot.staffId,
+          date: slot.startAt.slice(0, 10)
+        });
+        return;
+      }
+
+      if (slot.staffId !== state.selectedStaffId) {
+        dispatch({ type: 'select-staff', staffId: slot.staffId });
+      }
+
+      dispatch({ type: 'select-date', date: slot.startAt.slice(0, 10) });
+      dispatch({ type: 'select-slot', slot });
+      dispatch({ type: 'set-step', step: 'time' });
+    },
+    [openDateCalendar, state.selectedServiceId, state.selectedStaffId]
+  );
+
   const updateClientForm = useCallback((patch: Partial<BookingClientForm>) => {
     dispatch({ type: 'update-client-form', patch });
   }, []);
@@ -737,6 +919,14 @@ export function useBookingFlow({
       return false;
     }
 
+    if (!isFutureBookingSlot(state.selectedSlot.startAt)) {
+      dispatch({
+        type: 'set-submit-error',
+        message: 'Это время уже прошло. Выберите другой слот.'
+      });
+      return false;
+    }
+
     if (Object.keys(formErrors).length > 0) {
       dispatch({ type: 'set-form-errors', errors: formErrors });
       return false;
@@ -745,11 +935,11 @@ export function useBookingFlow({
     dispatch({ type: 'submit-start' });
 
     try {
+      const slotStaffId = state.selectedSlot.staffId;
       const payload = await createAppointment({
         payload: {
           serviceIds: [state.selectedServiceId],
-          staffId: state.selectedStaffId === 'any' ? undefined : state.selectedStaffId,
-          anyStaff: state.selectedStaffId === 'any',
+          staffId: slotStaffId,
           startAt: state.selectedSlot.startAt,
           comment: state.clientForm.comment.trim() || undefined,
           promoCode: state.clientForm.promoCode.trim() || undefined,
@@ -767,6 +957,7 @@ export function useBookingFlow({
         specialist_name: payload.appointment.staff.name
       });
 
+      clearAvailabilityCache();
       dispatch({ type: 'submit-success', appointment: payload.appointment });
       return true;
     } catch (error) {
@@ -779,7 +970,7 @@ export function useBookingFlow({
       });
       return false;
     }
-  }, [state.clientForm.comment, state.clientForm.consentAccepted, state.clientForm.name, state.clientForm.phone, state.clientForm.promoCode, state.selectedServiceId, state.selectedSlot, state.selectedStaffId]);
+  }, [clearAvailabilityCache, state.clientForm.comment, state.clientForm.consentAccepted, state.clientForm.name, state.clientForm.phone, state.clientForm.promoCode, state.selectedServiceId, state.selectedSlot, state.selectedStaffId]);
 
   return {
     state,
@@ -791,6 +982,7 @@ export function useBookingFlow({
     previousStep,
     selectedService,
     selectedStaff,
+    availableServices,
     availableSpecialists,
     canChooseAnyStaff,
     selectedDateAvailability,
@@ -799,6 +991,8 @@ export function useBookingFlow({
     selectStaff,
     selectDate,
     selectSlot,
+    openDateCalendar,
+    selectPreviewSlot,
     updateClientForm,
     requestStep,
     goBack,

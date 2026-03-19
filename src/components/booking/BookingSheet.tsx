@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import { useCallback, useEffect, useRef, useSyncExternalStore } from 'react';
 import { Sheet, type SheetRef } from 'react-modal-sheet';
 
 import { BookingFlow } from '@/components/booking/BookingFlow';
@@ -12,6 +13,23 @@ type BookingSheetProps = BookingPageClientProps & {
   onClose: () => void;
 };
 
+const BREAKPOINT_QUERY = '(min-width: 1024px)';
+
+const subscribeDesktop = (callback: () => void) => {
+  if (typeof window === 'undefined') {
+    return () => {};
+  }
+
+  const mediaQuery = window.matchMedia(BREAKPOINT_QUERY);
+  mediaQuery.addEventListener('change', callback);
+  return () => mediaQuery.removeEventListener('change', callback);
+};
+
+const getDesktopSnapshot = () =>
+  typeof window !== 'undefined' && window.matchMedia(BREAKPOINT_QUERY).matches;
+
+const subscribeClient = () => () => {};
+
 export function BookingSheet({
   open,
   onClose,
@@ -19,15 +37,51 @@ export function BookingSheet({
   specialists,
   maintenanceMode,
   maintenanceMessage,
-  consentLabel,
-  initialSelection
+  consentLabel
 }: BookingSheetProps) {
   const ref = useRef<SheetRef>(null);
+  const didInitializeOpenRef = useRef(false);
+  const isClient = useSyncExternalStore(subscribeClient, () => true, () => false);
+  const isDesktop = useSyncExternalStore(subscribeDesktop, getDesktopSnapshot, () => false);
   const flow = useBookingFlow({
     services,
     specialists,
-    initialSelection
+    restoreStoredService: false,
+    startStep: 'overview'
   });
+
+  const handleDismiss = useCallback(() => {
+    if (flow.requestClose()) {
+      onClose();
+    }
+  }, [flow, onClose]);
+
+  useEffect(() => {
+    if (!open) {
+      didInitializeOpenRef.current = false;
+      return;
+    }
+
+    if (didInitializeOpenRef.current) {
+      return;
+    }
+
+    didInitializeOpenRef.current = true;
+    flow.reset();
+  }, [flow, open]);
+
+  useEffect(() => {
+    if (!isClient || !isDesktop || !open) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isClient, isDesktop, open]);
 
   useEffect(() => {
     if (!open) {
@@ -40,58 +94,87 @@ export function BookingSheet({
       }
 
       event.preventDefault();
-      if (flow.requestClose()) {
-        onClose();
-      }
+      handleDismiss();
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [flow, onClose, open]);
+  }, [handleDismiss, open]);
+
+  const flowContent = (
+    <BookingFlow
+      flow={flow}
+      services={services}
+      consentLabel={consentLabel}
+      maintenanceMode={maintenanceMode}
+      maintenanceMessage={maintenanceMessage}
+      variant="sheet"
+      onClose={handleDismiss}
+      onDone={() => {
+        flow.reset();
+        onClose();
+      }}
+    />
+  );
+
+  if (isClient && isDesktop) {
+    return createPortal(
+      <div
+        className={`fixed inset-0 z-[110] transition-opacity duration-300 ${
+          open ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
+        }`}
+        aria-hidden={!open}
+      >
+        <button
+          type="button"
+          className="absolute inset-0 bg-[rgba(13,34,37,0.42)] backdrop-blur-sm"
+          onClick={handleDismiss}
+          aria-label="Закрыть запись"
+        />
+
+        <aside
+          role="dialog"
+          aria-modal="true"
+          aria-label="Онлайн-запись"
+          className={`absolute inset-y-0 left-0 z-[111] flex w-[min(48rem,calc(100vw-4rem))] max-w-full flex-col overflow-hidden rounded-r-[2rem] border-r border-[color:var(--line)] bg-[color:var(--background)] shadow-[24px_0_80px_rgba(19,29,31,0.18)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+            open ? 'translate-x-0' : '-translate-x-full'
+          }`}
+          onClick={(event) => event.stopPropagation()}
+        >
+          {flowContent}
+        </aside>
+      </div>,
+      document.body
+    );
+  }
 
   return (
     <Sheet
       ref={ref}
       isOpen={open}
-      onClose={() => {
-        if (flow.requestClose()) {
-          onClose();
-        }
-      }}
+      detent="full"
+      onClose={handleDismiss}
       snapPoints={[0, 0.72, 1]}
       initialSnap={2}
       disableDismiss={flow.state.loading.submit}
       disableScrollLocking
       tweenConfig={{ ease: 'easeOut', duration: 0.24 }}
     >
-      <Sheet.Container className="!mx-auto !w-full !max-w-[52rem] !rounded-t-[2rem] !bg-transparent md:!mb-6 md:!rounded-[2rem]">
-        <Sheet.Header />
-        <Sheet.Content>
-          <BookingFlow
-            flow={flow}
-            services={services}
-            consentLabel={consentLabel}
-            maintenanceMode={maintenanceMode}
-            maintenanceMessage={maintenanceMessage}
-            variant="sheet"
-            onClose={() => {
-              if (flow.requestClose()) {
-                onClose();
-              }
-            }}
-            onDone={() => {
-              flow.reset();
-              onClose();
-            }}
-          />
+      <Sheet.Container className="!mx-auto !w-full !max-w-[52rem] !overflow-hidden !bg-[color:var(--background)] !shadow-[0_-24px_80px_rgba(19,29,31,0.16)] md:!mb-6 md:!rounded-[2rem]">
+        <Sheet.Header className="!bg-[color:var(--background)]">
+          <div className="flex h-6 items-center justify-center bg-[color:var(--background)]">
+            <span className="h-1 w-11 rounded-full bg-[color:var(--line-strong)]" />
+          </div>
+        </Sheet.Header>
+        <Sheet.Content
+          className="!flex !min-h-0 !flex-1 !bg-[color:var(--background)]"
+          scrollClassName="!flex !min-h-full !flex-col !overflow-hidden !bg-[color:var(--background)]"
+        >
+          {flowContent}
         </Sheet.Content>
       </Sheet.Container>
       <Sheet.Backdrop
-        onClick={() => {
-          if (flow.requestClose()) {
-            onClose();
-          }
-        }}
+        onClick={handleDismiss}
         className="!bg-[rgba(13,34,37,0.42)] !backdrop-blur-sm"
       />
     </Sheet>

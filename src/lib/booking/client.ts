@@ -8,6 +8,7 @@ import {
   type SlotDaysResult,
   type SlotsResult
 } from '@/lib/api/contracts';
+import { filterSlotDaysResult, filterSlotsResult } from '@/lib/booking/utils';
 import { readApiOk } from '@/lib/api/browser';
 
 export const fetchSlotDays = async ({
@@ -38,7 +39,8 @@ export const fetchSlotDays = async ({
     signal
   });
 
-  return readApiOk(response, slotDaysResultSchema) as Promise<SlotDaysResult>;
+  const payload = await readApiOk(response, slotDaysResultSchema);
+  return filterSlotDaysResult(payload) as SlotDaysResult;
 };
 
 export const fetchSlots = async ({
@@ -68,7 +70,8 @@ export const fetchSlots = async ({
     signal
   });
 
-  return readApiOk(response, slotsResultSchema) as Promise<SlotsResult>;
+  const payload = await readApiOk(response, slotsResultSchema);
+  return filterSlotsResult(payload) as SlotsResult;
 };
 
 export const createAppointment = async ({

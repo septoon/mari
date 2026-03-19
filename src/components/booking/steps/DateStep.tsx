@@ -1,24 +1,36 @@
 'use client';
 
-import type { SlotDaysResult } from '@/lib/api/contracts';
-import { formatBookingDate, weekdayLabel } from '@/lib/format';
+import type { BookingSlotSelection } from '@/lib/booking/types';
+import type { SlotDaysResult, SlotsResult } from '@/lib/api/contracts';
+import { groupSlotsByTimeOfDay } from '@/lib/booking/utils';
+import { formatBookingDate, formatTime, weekdayLabel } from '@/lib/format';
 
 type DateStepProps = {
   slotDays: SlotDaysResult | null;
+  slots: SlotsResult | null;
   selectedDate: string | null;
+  selectedSlot: BookingSlotSelection | null;
   loading: boolean;
+  slotsLoading: boolean;
   error: string | null;
+  slotsError: string | null;
   onSelect: (date: string) => void;
+  onSelectSlot: (slot: BookingSlotSelection) => void;
 };
 
 const weekdayFormatter = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'];
 
 export function DateStep({
   slotDays,
+  slots,
   selectedDate,
+  selectedSlot,
   loading,
+  slotsLoading,
   error,
-  onSelect
+  slotsError,
+  onSelect,
+  onSelectSlot
 }: DateStepProps) {
   if (loading) {
     return (
@@ -44,12 +56,13 @@ export function DateStep({
   if (!slotDays?.items.length) {
     return (
       <div className="rounded-[1.5rem] border border-dashed border-[color:var(--line)] bg-[color:var(--panel)] px-5 py-6 text-sm text-[color:var(--muted)]">
-        Сначала выберите специалиста.
+        Пока не удалось построить календарь. Выберите специалиста или услугу и попробуйте снова.
       </div>
     );
   }
 
   const firstAvailable = slotDays.items.find((item) => item.hasSlots)?.date ?? null;
+  const groupedSlots = groupSlotsByTimeOfDay(slots);
 
   return (
     <div className="space-y-5">
@@ -110,6 +123,76 @@ export function DateStep({
           Свободных дат в ближайшие недели пока нет.
         </div>
       )}
+
+      {selectedDate ? (
+        <div className="space-y-5">
+          {slotsLoading ? (
+            <>
+              {Array.from({ length: 3 }, (_, index) => (
+                <div key={index} className="space-y-3">
+                  <div className="h-5 w-24 animate-pulse rounded-full bg-[color:var(--panel)]" />
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    {Array.from({ length: 6 }, (__unused, slotIndex) => (
+                      <div
+                        key={slotIndex}
+                        className="h-12 animate-pulse rounded-[1rem] bg-[color:var(--panel)]"
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </>
+          ) : slotsError ? (
+            <div className="rounded-[1.5rem] border border-[#c4847d]/35 bg-[#f5dddb] px-5 py-4 text-sm text-[#7d3a37]">
+              {slotsError}
+            </div>
+          ) : groupedSlots.length ? (
+            groupedSlots.map((group) => (
+              <section key={group.label} className="space-y-3">
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className="text-[1.65rem] font-semibold text-[color:var(--ink)]">{group.label}</h3>
+                  <span className="text-xs text-[color:var(--muted-strong)]">{group.items.length} слотов</span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                  {group.items.map((slot) => {
+                    const active =
+                      selectedSlot?.staffId === slot.staffId &&
+                      selectedSlot?.startAt === slot.startAt;
+
+                    return (
+                      <button
+                        key={`${slot.staffId}:${slot.startAt}`}
+                        type="button"
+                        onClick={() =>
+                          onSelectSlot({
+                            staffId: slot.staffId,
+                            staffName: slot.staffName,
+                            startAt: slot.startAt,
+                            endAt: slot.endAt
+                          })
+                        }
+                        aria-pressed={active}
+                        className={`rounded-[1rem] px-4 py-3 text-sm font-medium transition ${
+                          active
+                            ? 'bg-[color:var(--foreground)] text-white'
+                            : 'bg-[color:var(--panel)] text-[color:var(--ink)] hover:bg-[color:var(--surface-strong)]'
+                        }`}
+                      >
+                        {formatTime(slot.startAt)}
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
+            ))
+          ) : (
+            <div className="rounded-[1.5rem] border border-dashed border-[color:var(--line)] bg-[color:var(--panel)] px-5 py-6 text-sm text-[color:var(--muted)]">
+              На выбранную дату свободного времени пока нет.
+            </div>
+          )}
+        </div>
+      ) : null}
     </div>
   );
 }

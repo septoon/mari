@@ -7,15 +7,14 @@ import { YandexMetrikaPageTracker } from '@/components/analytics/yandex-metrika-
 import { COOKIE_CONSENT_EVENT, readCookieConsent } from '@/lib/cookie-consent';
 
 export function YandexMetrika({ metrikaId }: { metrikaId?: number }) {
-  const [consent, setConsent] = useState<'accepted' | 'necessary' | null>(() =>
-    typeof window === 'undefined' ? null : readCookieConsent()
-  );
+  const [consent, setConsent] = useState<'accepted' | 'necessary' | null>(null);
 
   useEffect(() => {
     const handleConsentChanged = () => {
       setConsent(readCookieConsent());
     };
 
+    handleConsentChanged();
     window.addEventListener(COOKIE_CONSENT_EVENT, handleConsentChanged);
     return () => window.removeEventListener(COOKIE_CONSENT_EVENT, handleConsentChanged);
   }, []);

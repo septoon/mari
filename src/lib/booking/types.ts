@@ -1,6 +1,7 @@
 import type { CreatedAppointment, Service, SlotDaysResult, SlotsResult, SpecialistCard } from '@/lib/api/contracts';
 
 export type BookingStep =
+  | 'overview'
   | 'category'
   | 'service'
   | 'staff'

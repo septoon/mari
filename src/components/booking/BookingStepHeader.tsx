@@ -22,7 +22,7 @@ export function BookingStepHeader({
   onReset
 }: BookingStepHeaderProps) {
   return (
-    <div className="sticky top-0 z-20 border-b border-[color:var(--line)] bg-[color:var(--background)]/96 px-4 pb-3 pt-4 backdrop-blur sm:px-6">
+    <div className="sticky top-0 z-20 border-b border-[color:var(--line)] bg-[color:var(--background)] px-4 pb-3 pt-4 sm:px-6">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           {showBack ? (

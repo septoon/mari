@@ -7,12 +7,13 @@ import { z } from 'zod';
 import { useClientSession } from '@/components/client-session-provider';
 import { ButtonLink } from '@/components/ui/button';
 import { LoadingLabel } from '@/components/ui/loading-indicator';
-import { readApiOk } from '@/lib/api/browser';
+import { ClientApiError, readApiOk } from '@/lib/api/browser';
 import {
   cancelAppointmentResultSchema,
   clientAppointmentsSchema,
   clientProfileSchema,
 } from '@/lib/api/contracts';
+import { CANCELLABLE_APPOINTMENT_STATUSES, formatAppointmentStatus } from '@/lib/appointment-labels';
 import { formatBookingDateTime, formatCurrency, formatDuration } from '@/lib/format';
 
 const clientResponseSchema = z.object({
@@ -82,6 +83,7 @@ export function AccountPanel() {
   const [appointments, setAppointments] = useState<
     z.infer<typeof clientAppointmentsSchema>['items']
   >([]);
+  const [currentTimestamp, setCurrentTimestamp] = useState<number | null>(null);
   const [loadingAppointments, setLoadingAppointments] = useState(false);
   const [logoutSubmitting, setLogoutSubmitting] = useState(false);
   const [cancellingAppointmentId, setCancellingAppointmentId] = useState<string | null>(null);
@@ -127,6 +129,33 @@ export function AccountPanel() {
     }
   }, [loadAppointments, session.authenticated]);
 
+  useEffect(() => {
+    setCurrentTimestamp(Date.now());
+
+    const intervalId = window.setInterval(() => {
+      setCurrentTimestamp(Date.now());
+    }, 60_000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, []);
+
+  const canCancelAppointment = useCallback(
+    (appointment: z.infer<typeof clientAppointmentsSchema>['items'][number]) => {
+      if (!CANCELLABLE_APPOINTMENT_STATUSES.has(appointment.status)) {
+        return false;
+      }
+
+      if (currentTimestamp === null) {
+        return false;
+      }
+
+      return new Date(appointment.startAt).getTime() > currentTimestamp;
+    },
+    [currentTimestamp],
+  );
+
   const submitLogout = async () => {
     setLogoutSubmitting(true);
     setFeedback(null);
@@ -158,10 +187,6 @@ export function AccountPanel() {
     try {
       const response = await fetch(`/api/client/appointments/${id}/cancel`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({}),
       });
       await readApiOk(response, cancelAppointmentResultSchema);
 
@@ -171,10 +196,17 @@ export function AccountPanel() {
       });
       await loadAppointments();
     } catch (error) {
+      const apiError = error as ClientApiError;
       setFeedback({
         type: 'error',
-        text: error instanceof Error ? error.message : 'Не удалось отменить запись',
+        text:
+          apiError?.status === 422
+            ? 'Эту запись уже нельзя отменить онлайн. Свяжитесь с салоном, если нужна помощь.'
+            : error instanceof Error
+              ? error.message
+              : 'Не удалось отменить запись',
       });
+      await loadAppointments();
     } finally {
       setCancellingAppointmentId(null);
     }
@@ -454,7 +486,9 @@ export function AccountPanel() {
                     className="rounded-[1.35rem] border border-[color:var(--line)] bg-[color:var(--panel)] p-5">
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                       <div>
-                        <p className="">{appointment.status}</p>
+                        <p className="text-sm font-medium text-[color:var(--ink-muted)]">
+                          {formatAppointmentStatus(appointment.status)}
+                        </p>
                         <h4 className="mt-2 text-xl font-semibold text-[color:var(--ink)]">
                           {appointment.staff.name} · {formatBookingDateTime(appointment.startAt)}
                         </h4>
@@ -472,7 +506,7 @@ export function AccountPanel() {
                         <span className="rounded-full border border-[color:var(--line)] bg-white px-4 py-2 text-sm text-[color:var(--ink)]">
                           {formatCurrency(appointment.prices.finalTotal)}
                         </span>
-                        {['PENDING', 'CONFIRMED'].includes(appointment.status) ? (
+                        {canCancelAppointment(appointment) ? (
                           <button
                             type="button"
                             onClick={() => cancelAppointment(appointment.id)}

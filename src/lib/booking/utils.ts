@@ -9,7 +9,7 @@ import type {
 
 import { fromPhoneE164 } from '@/lib/booking/phone';
 
-const STEP_ORDER: BookingStep[] = ['category', 'service', 'staff', 'date', 'time', 'client', 'success'];
+const STEP_ORDER: BookingStep[] = ['overview', 'category', 'service', 'staff', 'date', 'time', 'client', 'success'];
 
 export const getLocalDate = (offsetDays = 0) => {
   const value = new Date();
@@ -17,6 +17,9 @@ export const getLocalDate = (offsetDays = 0) => {
   value.setMinutes(value.getMinutes() - value.getTimezoneOffset());
   return value.toISOString().slice(0, 10);
 };
+
+export const isFutureBookingSlot = (iso: string, nowTimestamp = Date.now()) =>
+  new Date(iso).getTime() > nowTimestamp;
 
 export const parseCalendarDate = (value: string) => new Date(`${value}T00:00:00`);
 
@@ -46,12 +49,84 @@ export const getBookingCategories = (services: Service[]) =>
 
 export const getAvailableSpecialists = (specialists: SpecialistCard[], serviceId: string | null) => {
   if (!serviceId) {
-    return [];
+    return specialists
+      .filter((specialist) => specialist.isVisible && specialist.isActive && !specialist.firedAt)
+      .sort((left, right) => left.sortOrder - right.sortOrder || left.name.localeCompare(right.name, 'ru'));
   }
 
-  return specialists.filter((specialist) =>
-    specialist.services.some((service) => service.id === serviceId)
-  );
+  return specialists
+    .filter(
+      (specialist) =>
+        specialist.isVisible &&
+        specialist.isActive &&
+        !specialist.firedAt &&
+        specialist.services.some((service) => service.id === serviceId)
+    )
+    .sort((left, right) => left.sortOrder - right.sortOrder || left.name.localeCompare(right.name, 'ru'));
+};
+
+const getVisibleActiveSpecialists = (specialists: SpecialistCard[]) =>
+  specialists
+    .filter((specialist) => specialist.isVisible && specialist.isActive && !specialist.firedAt)
+    .sort((left, right) => left.sortOrder - right.sortOrder || left.name.localeCompare(right.name, 'ru'));
+
+export const getPreviewServiceIdForSpecialist = (specialist: SpecialistCard | null) =>
+  specialist?.services
+    .slice()
+    .sort(
+      (left, right) =>
+        left.durationSec - right.durationSec ||
+        left.priceMin - right.priceMin ||
+        left.name.localeCompare(right.name, 'ru')
+    )[0]?.id ?? null;
+
+export const getSchedulePreviewContext = ({
+  selectedServiceId,
+  selectedStaffId,
+  specialists
+}: {
+  selectedServiceId: string | null;
+  selectedStaffId: BookingStaffChoice | null;
+  specialists: SpecialistCard[];
+}) => {
+  if (selectedServiceId && selectedStaffId) {
+    return {
+      serviceId: selectedServiceId,
+      staffId: selectedStaffId
+    };
+  }
+
+  if (selectedServiceId) {
+    return {
+      serviceId: selectedServiceId,
+      staffId: 'any' as const
+    };
+  }
+
+  const visibleSpecialists = getVisibleActiveSpecialists(specialists);
+
+  if (selectedStaffId && selectedStaffId !== 'any') {
+    const specialist = visibleSpecialists.find((item) => item.staffId === selectedStaffId) ?? null;
+    const serviceId = getPreviewServiceIdForSpecialist(specialist);
+
+    return serviceId
+      ? {
+          serviceId,
+          staffId: selectedStaffId
+        }
+      : null;
+  }
+
+  const fallbackServiceId = visibleSpecialists
+    .map((specialist) => getPreviewServiceIdForSpecialist(specialist))
+    .find(Boolean);
+
+  return fallbackServiceId
+    ? {
+        serviceId: fallbackServiceId,
+        staffId: 'any' as const
+      }
+    : null;
 };
 
 export const getInitialCategoryId = (services: Service[], initialSelection?: BookingInitialSelection) => {
@@ -80,15 +155,17 @@ export const getInitialStep = (services: Service[], initialSelection?: BookingIn
 export const createInitialBookingState = ({
   services,
   initialSelection,
+  startStep,
   sessionName,
   sessionPhone
 }: {
   services: Service[];
   initialSelection?: BookingInitialSelection;
+  startStep?: BookingStep;
   sessionName?: string | null;
   sessionPhone?: string | null;
 }): BookingFlowState => {
-  const initialStep = getInitialStep(services, initialSelection);
+  const initialStep = startStep ?? getInitialStep(services, initialSelection);
   const selectedService = initialSelection?.serviceId
     ? services.find((service) => service.id === initialSelection.serviceId) ?? null
     : null;
@@ -143,11 +220,17 @@ export const getPreviousStep = ({
     return null;
   }
 
-  if (currentStep === 'service' && !hasCategoryStep) {
-    return null;
+  if (currentStep === 'service' && initialStep === 'overview') {
+    return 'overview';
   }
 
-  return currentStep === 'service' ? 'category' : STEP_ORDER[currentIndex - 1];
+  const previousStep = STEP_ORDER[currentIndex - 1] ?? null;
+
+  if (previousStep === 'category' && !hasCategoryStep) {
+    return STEP_ORDER[currentIndex - 2] ?? null;
+  }
+
+  return previousStep;
 };
 
 export const getFirstAvailableDate = (slotDays: SlotDaysResult | null) =>
@@ -229,14 +312,48 @@ export const getSlotDaysKey = ({
   return [serviceId, staffId, from].join(':');
 };
 
-export const getTimeOfDayLabel = (iso: string) => {
-  const hour = new Date(iso).getHours();
+export const filterSlotDaysResult = (slotDays: SlotDaysResult): SlotDaysResult => {
+  const today = getLocalDate();
 
-  if (hour < 12) {
+  return {
+    ...slotDays,
+    items: slotDays.items.map((item) => {
+      if (item.date >= today) {
+        return item;
+      }
+
+      return {
+        ...item,
+        hasSlots: false,
+        totalSlots: 0,
+        firstSlotAt: null
+      };
+    })
+  };
+};
+
+export const filterSlotsResult = (
+  slots: SlotsResult,
+  nowTimestamp = Date.now()
+): SlotsResult => ({
+  ...slots,
+  results: slots.results
+    .map((group) => ({
+      ...group,
+      slots: group.slots.filter((slot) => isFutureBookingSlot(slot.startAt, nowTimestamp))
+    }))
+    .filter((group) => group.slots.length > 0)
+});
+
+export const getTimeOfDayLabel = (iso: string) => {
+  const date = new Date(iso);
+  const minutesFromMidnight = date.getHours() * 60 + date.getMinutes();
+
+  if (minutesFromMidnight < 12 * 60) {
     return 'Утро';
   }
 
-  if (hour < 18) {
+  if (minutesFromMidnight < 18 * 60) {
     return 'День';
   }
 
@@ -252,9 +369,31 @@ export const groupSlotsByTimeOfDay = (slots: SlotsResult | null) => {
     }))
   ) ?? [];
 
+  const normalized = source
+    .filter((slot) => {
+      const date = new Date(slot.startAt);
+      const minutesFromMidnight = date.getHours() * 60 + date.getMinutes();
+      const minutes = date.getMinutes();
+
+      return (
+        isFutureBookingSlot(slot.startAt) &&
+        minutesFromMidnight >= 10 * 60 &&
+        (minutes === 0 || minutes === 30)
+      );
+    })
+    .sort((left, right) => {
+      const timestampDiff = new Date(left.startAt).getTime() - new Date(right.startAt).getTime();
+
+      if (timestampDiff !== 0) {
+        return timestampDiff;
+      }
+
+      return left.staffName.localeCompare(right.staffName, 'ru');
+    });
+
   const groups = new Map<string, typeof source>();
 
-  for (const slot of source) {
+  for (const slot of normalized) {
     const key = getTimeOfDayLabel(slot.startAt);
     const current = groups.get(key) ?? [];
     current.push(slot);

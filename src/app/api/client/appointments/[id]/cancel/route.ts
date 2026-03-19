@@ -15,7 +15,10 @@ type RouteContext = {
 
 export async function POST(request: NextRequest, context: RouteContext) {
   try {
-    const body = cancelAppointmentInputSchema.parse(await request.json());
+    const rawBody = await request.text();
+    const body = rawBody
+      ? cancelAppointmentInputSchema.parse(JSON.parse(rawBody))
+      : cancelAppointmentInputSchema.parse({});
     const { id } = await context.params;
 
     const result = await withClientAccess(request, (accessToken) =>
@@ -23,7 +26,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
         authToken: accessToken,
         init: {
           method: 'POST',
-          body: JSON.stringify(body)
+          ...(body.reason ? { body: JSON.stringify(body) } : {})
         }
       })
     );
