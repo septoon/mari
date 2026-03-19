@@ -11,23 +11,21 @@ type ServiceStepProps = {
   selectedCategoryId: string | null;
   selectedServiceId: string | null;
   onSelect: (serviceId: string) => void;
-  variant: 'page' | 'sheet';
 };
 
 export function ServiceStep({
   services,
   selectedCategoryId,
   selectedServiceId,
-  onSelect,
-  variant
+  onSelect
 }: ServiceStepProps) {
   const [query, setQuery] = useState('');
   const deferredQuery = useDeferredValue(query.trim().toLowerCase());
   const rootRef = useRef<HTMLDivElement>(null);
-  const stickyRef = useRef<HTMLDivElement>(null);
-  const scrollRootRef = useRef<HTMLElement | null>(null);
+  const categoryRailRef = useRef<HTMLDivElement>(null);
+  const listScrollRef = useRef<HTMLDivElement>(null);
   const sectionRefs = useRef(new Map<string, HTMLElement>());
-  const [stickyHeight, setStickyHeight] = useState(0);
+  const categoryChipRefs = useRef(new Map<string, HTMLButtonElement>());
   const groupedServices = useMemo(() => {
     const visibleServices = services.filter((service) => {
       if (!deferredQuery) {
@@ -97,87 +95,119 @@ export function ServiceStep({
     sectionRefs.current.delete(categoryId);
   }, []);
 
-  const syncActiveCategory = useCallback(() => {
-    if (!groupedServices.length) {
+  const setCategoryChipRef = useCallback((categoryId: string, node: HTMLButtonElement | null) => {
+    if (node) {
+      categoryChipRefs.current.set(categoryId, node);
       return;
     }
 
-    const offset = stickyHeight + 24;
-    let nextCategoryId = groupedServices[0].id;
+    categoryChipRefs.current.delete(categoryId);
+  }, []);
 
-    for (const group of groupedServices) {
-      const section = sectionRefs.current.get(group.id);
-      if (!section) {
-        continue;
-      }
+  const getSectionScrollTop = useCallback((section: HTMLElement, scrollContainer: HTMLDivElement) => {
+    return (
+      section.getBoundingClientRect().top -
+      scrollContainer.getBoundingClientRect().top +
+      scrollContainer.scrollTop
+    );
+  }, []);
 
-      if (section.getBoundingClientRect().top - offset <= 0) {
-        nextCategoryId = group.id;
-        continue;
-      }
+  const syncActiveCategory = useCallback(() => {
+    const scrollContainer = listScrollRef.current;
 
-      break;
+    if (!groupedServices.length || !scrollContainer) {
+      return;
     }
+
+    const marker = scrollContainer.scrollTop + 24;
+    const metrics = groupedServices
+      .map((group) => {
+        const section = sectionRefs.current.get(group.id);
+        if (!section) {
+          return null;
+        }
+
+        const top = getSectionScrollTop(section, scrollContainer);
+        return {
+          id: group.id,
+          top,
+          bottom: top + section.offsetHeight
+        };
+      })
+      .filter(Boolean) as Array<{ id: string; top: number; bottom: number }>;
+
+    if (!metrics.length) {
+      return;
+    }
+
+    const currentSection =
+      metrics.find((section) => section.top <= marker && section.bottom > marker) ??
+      metrics.find((section) => section.top > marker) ??
+      metrics[metrics.length - 1];
+
+    const nextCategoryId = currentSection?.id ?? groupedServices[0].id;
 
     setActiveCategoryId((current) => (current === nextCategoryId ? current : nextCategoryId));
-  }, [groupedServices, stickyHeight]);
+  }, [getSectionScrollTop, groupedServices]);
 
   useEffect(() => {
-    scrollRootRef.current = rootRef.current?.closest('.react-modal-sheet-content-scroller') as HTMLElement | null;
-  }, []);
-
-  useEffect(() => {
-    const updateStickyHeight = () => {
-      setStickyHeight(stickyRef.current?.offsetHeight ?? 0);
-    };
-
-    updateStickyHeight();
-
-    if (!stickyRef.current || typeof ResizeObserver === 'undefined') {
-      return;
-    }
-
-    const observer = new ResizeObserver(updateStickyHeight);
-    observer.observe(stickyRef.current);
-
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const target = scrollRootRef.current ?? window;
-    const handlePositionChanged = () => {
-      syncActiveCategory();
-    };
-
-    handlePositionChanged();
-    target.addEventListener('scroll', handlePositionChanged, { passive: true });
-    window.addEventListener('resize', handlePositionChanged);
+    const frameId = window.requestAnimationFrame(syncActiveCategory);
+    window.addEventListener('resize', syncActiveCategory);
 
     return () => {
-      target.removeEventListener('scroll', handlePositionChanged);
-      window.removeEventListener('resize', handlePositionChanged);
+      window.cancelAnimationFrame(frameId);
+      window.removeEventListener('resize', syncActiveCategory);
     };
   }, [syncActiveCategory]);
 
+  useEffect(() => {
+    if (!resolvedActiveCategoryId) {
+      return;
+    }
+
+    const rail = categoryRailRef.current;
+    const chip = categoryChipRefs.current.get(resolvedActiveCategoryId);
+
+    if (!rail || !chip) {
+      return;
+    }
+
+    const railLeft = rail.scrollLeft;
+    const railRight = railLeft + rail.clientWidth;
+    const chipLeft = chip.offsetLeft;
+    const chipRight = chipLeft + chip.offsetWidth;
+
+    if (chipLeft >= railLeft && chipRight <= railRight) {
+      return;
+    }
+
+    const nextLeft = Math.max(0, chipLeft - (rail.clientWidth - chip.offsetWidth) / 2);
+    rail.scrollTo({
+      left: nextLeft,
+      behavior: 'smooth'
+    });
+  }, [resolvedActiveCategoryId]);
+
   const scrollToCategory = useCallback((categoryId: string) => {
     const section = sectionRefs.current.get(categoryId);
-    if (!section) {
+    const scrollContainer = listScrollRef.current;
+    if (!section || !scrollContainer) {
       return;
     }
 
     setActiveCategoryId(categoryId);
-    section.scrollIntoView({
-      block: 'start',
+    scrollContainer.scrollTo({
+      top: Math.max(0, getSectionScrollTop(section, scrollContainer) - 12),
       behavior: 'smooth'
     });
-  }, []);
+  }, [getSectionScrollTop]);
 
   return (
-    <div ref={rootRef} className="space-y-4">
-      <div
-        ref={stickyRef}
-        className={`z-10 space-y-3 bg-[color:var(--background)] pb-4 ${variant === 'sheet' ? 'sticky top-0 -mx-4 px-4 sm:-mx-6 sm:px-6' : 'sticky top-0'}`}
-      >
+    <div
+      ref={rootRef}
+      className="flex h-full min-h-0 max-w-full flex-1 flex-col space-y-4 overflow-x-hidden"
+    >
+      <div className="z-10 max-w-full shrink-0 space-y-3 overflow-x-hidden bg-[color:var(--background)] pb-4">
         <label className="relative block">
           <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[color:var(--muted-strong)]" />
           <input
@@ -189,14 +219,18 @@ export function ServiceStep({
         </label>
 
         {groupedServices.length > 1 ? (
-          <div className="overflow-x-auto pb-1">
-            <div className="flex w-max gap-2 pr-4">
+          <div
+            ref={categoryRailRef}
+            className="max-w-full overflow-x-auto overscroll-x-contain pb-1 touch-pan-x"
+          >
+            <div className="flex min-w-max gap-2 pr-4">
               {groupedServices.map((group) => {
                 const active = group.id === resolvedActiveCategoryId;
 
                 return (
                   <button
                     key={group.id}
+                    ref={(node) => setCategoryChipRef(group.id, node)}
                     type="button"
                     onClick={() => scrollToCategory(group.id)}
                     aria-pressed={active}
@@ -216,54 +250,59 @@ export function ServiceStep({
       </div>
 
       {groupedServices.length ? (
-        <div className="space-y-6">
-          {groupedServices.map((group) => (
-            <section
-              key={group.id}
-              ref={(node) => setSectionRef(group.id, node)}
-              style={{ scrollMarginTop: stickyHeight + 24 }}
-              className="space-y-3"
-            >
-              {groupedServices.length > 1 ? (
-                <h3 className="text-2xl font-semibold text-[color:var(--ink)]">{group.name}</h3>
-              ) : null}
+        <div
+          ref={listScrollRef}
+          onScroll={syncActiveCategory}
+          className="min-h-0 max-w-full flex-1 overflow-y-auto overflow-x-hidden overscroll-x-none pb-2 touch-pan-y"
+        >
+          <div className="min-w-0 max-w-full space-y-6 overflow-x-hidden">
+            {groupedServices.map((group) => (
+              <section
+                key={group.id}
+                ref={(node) => setSectionRef(group.id, node)}
+                className="space-y-3"
+              >
+                {groupedServices.length > 1 ? (
+                  <h3 className="text-2xl font-semibold text-[color:var(--ink)]">{group.name}</h3>
+                ) : null}
 
-              <div className="grid gap-3">
-                {group.items.map((service) => {
-                  const active = service.id === selectedServiceId;
+                <div className="grid gap-3">
+                  {group.items.map((service) => {
+                    const active = service.id === selectedServiceId;
 
-                  return (
-                    <button
-                      key={service.id}
-                      type="button"
-                      onClick={() => onSelect(service.id)}
-                      aria-pressed={active}
-                      className={`rounded-[1.6rem] border px-5 py-4 text-left transition ${
-                        active
-                          ? 'border-[color:var(--foreground)] bg-[color:var(--foreground)] text-white shadow-[0_18px_48px_rgba(8,36,40,0.14)]'
-                          : 'border-[color:var(--line)] bg-white text-[color:var(--ink)] hover:border-[color:var(--accent-strong)] hover:bg-[color:var(--panel)]'
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="min-w-0">
-                          <p className="text-lg font-semibold">{service.nameOnline ?? service.name}</p>
-                          <p className={`mt-2 text-sm leading-6 ${active ? 'text-white/80' : 'text-[color:var(--muted)]'}`}>
-                            {service.description?.trim() || 'Онлайн-запись доступна для этой услуги.'}
-                          </p>
+                    return (
+                      <button
+                        key={service.id}
+                        type="button"
+                        onClick={() => onSelect(service.id)}
+                        aria-pressed={active}
+                        className={`rounded-[1.6rem] border px-5 py-4 text-left transition ${
+                          active
+                            ? 'border-[color:var(--foreground)] bg-[color:var(--foreground)] text-white shadow-[0_18px_48px_rgba(8,36,40,0.14)]'
+                            : 'border-[color:var(--line)] bg-white text-[color:var(--ink)] hover:border-[color:var(--accent-strong)] hover:bg-[color:var(--panel)]'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="min-w-0">
+                            <p className="text-lg font-semibold">{service.nameOnline ?? service.name}</p>
+                            <p className={`mt-2 text-sm leading-6 ${active ? 'text-white/80' : 'text-[color:var(--muted)]'}`}>
+                              {service.description?.trim() || 'Онлайн-запись доступна для этой услуги.'}
+                            </p>
+                          </div>
+                          <div className={`shrink-0 text-right text-sm ${active ? 'text-white/80' : 'text-[color:var(--muted-strong)]'}`}>
+                            <p>{formatDuration(service.durationSec)}</p>
+                            <p className={`mt-1 text-base font-semibold ${active ? 'text-white' : 'text-[color:var(--ink)]'}`}>
+                              {formatPriceRange(service.priceMin, service.priceMax)}
+                            </p>
+                          </div>
                         </div>
-                        <div className={`shrink-0 text-right text-sm ${active ? 'text-white/80' : 'text-[color:var(--muted-strong)]'}`}>
-                          <p>{formatDuration(service.durationSec)}</p>
-                          <p className={`mt-1 text-base font-semibold ${active ? 'text-white' : 'text-[color:var(--ink)]'}`}>
-                            {formatPriceRange(service.priceMin, service.priceMax)}
-                          </p>
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </section>
-          ))}
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
+            ))}
+          </div>
         </div>
       ) : (
         <div className="rounded-[1.5rem] border border-dashed border-[color:var(--line)] bg-[color:var(--panel)] px-5 py-6 text-sm text-[color:var(--muted)]">

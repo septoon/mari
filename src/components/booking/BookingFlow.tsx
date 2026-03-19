@@ -250,6 +250,7 @@ export function BookingFlow({
     (flow.state.step === 'client' && (maintenanceMode || flow.state.loading.submit));
 
   const showFooter = services.length > 0 && flow.state.step !== 'overview';
+  const usesInnerStepScroll = flow.state.step === 'service';
   const progressLabel =
     flow.state.step === 'overview'
       ? 'Онлайн-запись'
@@ -284,8 +285,22 @@ export function BookingFlow({
           variant === 'sheet' ? 'overflow-hidden' : ''
         }`}
       >
-        <div className={`min-h-0 flex-1 ${variant === 'sheet' ? 'overflow-y-auto' : ''}`}>
-          <div className={`${variant === 'sheet' ? 'flex min-h-full flex-col pt-5' : 'pt-5'}`}>
+        <div
+          className={`min-h-0 flex-1 ${
+            variant === 'sheet'
+              ? usesInnerStepScroll
+                ? 'overflow-hidden'
+                : 'overflow-y-auto'
+              : ''
+          }`}
+        >
+          <div
+            className={`${
+              variant === 'sheet'
+                ? 'flex h-full min-h-0 flex-1 flex-col pt-5'
+                : 'pt-5'
+            }`}
+          >
             {showSummary ? (
               <div className="mb-4 flex flex-wrap gap-2">
                 {summaryItems.map((item) => (
@@ -321,7 +336,15 @@ export function BookingFlow({
               </div>
             ) : null}
 
-            <div className={`flex min-h-0 flex-1 flex-col ${variant === 'sheet' ? 'pb-6' : ''}`}>
+            <div
+              className={`flex min-h-0 flex-1 flex-col ${
+                variant === 'sheet'
+                  ? usesInnerStepScroll
+                    ? 'overflow-hidden pb-6'
+                    : 'pb-6'
+                  : ''
+              }`}
+            >
               {services.length === 0 ? (
                 <div className="rounded-[1.5rem] border border-dashed border-[color:var(--line)] bg-[color:var(--panel)] px-5 py-6 text-sm text-[color:var(--muted)]">
                   Каталог услуг временно недоступен. Попробуйте обновить страницу или свяжитесь с салоном напрямую.
@@ -353,7 +376,6 @@ export function BookingFlow({
                   selectedCategoryId={flow.state.selectedCategoryId}
                   selectedServiceId={flow.state.selectedServiceId}
                   onSelect={flow.selectService}
-                  variant={variant}
                 />
               ) : null}
 

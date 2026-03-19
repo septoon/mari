@@ -71,17 +71,33 @@ export function BookingSheet({
   }, [flow, open]);
 
   useEffect(() => {
-    if (!isClient || !isDesktop || !open) {
+    if (!isClient || !open) {
       return;
     }
 
-    const previousOverflow = document.body.style.overflow;
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousBodyOverflowX = document.body.style.overflowX;
+    const previousBodyOverscrollBehaviorX = document.body.style.overscrollBehaviorX;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
+    const previousHtmlOverflowX = document.documentElement.style.overflowX;
+    const previousHtmlOverscrollBehaviorX = document.documentElement.style.overscrollBehaviorX;
+
     document.body.style.overflow = 'hidden';
+    document.body.style.overflowX = 'hidden';
+    document.body.style.overscrollBehaviorX = 'none';
+    document.documentElement.style.overflow = 'hidden';
+    document.documentElement.style.overflowX = 'hidden';
+    document.documentElement.style.overscrollBehaviorX = 'none';
 
     return () => {
-      document.body.style.overflow = previousOverflow;
+      document.body.style.overflow = previousBodyOverflow;
+      document.body.style.overflowX = previousBodyOverflowX;
+      document.body.style.overscrollBehaviorX = previousBodyOverscrollBehaviorX;
+      document.documentElement.style.overflow = previousHtmlOverflow;
+      document.documentElement.style.overflowX = previousHtmlOverflowX;
+      document.documentElement.style.overscrollBehaviorX = previousHtmlOverscrollBehaviorX;
     };
-  }, [isClient, isDesktop, open]);
+  }, [isClient, open]);
 
   useEffect(() => {
     if (!open) {
