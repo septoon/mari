@@ -321,7 +321,7 @@ export function BookingFlow({
               </div>
             ) : null}
 
-            {meta ? (
+            {meta && flow.state.step !== 'service' ? (
               <div className="mb-5">
                 <h2
                   ref={headingRef}
@@ -375,6 +375,8 @@ export function BookingFlow({
                   services={flow.availableServices}
                   selectedCategoryId={flow.state.selectedCategoryId}
                   selectedServiceId={flow.state.selectedServiceId}
+                  title={meta?.title ?? STEP_META.service.title}
+                  description={meta?.description ?? STEP_META.service.description}
                   onSelect={flow.selectService}
                 />
               ) : null}

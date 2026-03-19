@@ -10,6 +10,8 @@ type ServiceStepProps = {
   services: Service[];
   selectedCategoryId: string | null;
   selectedServiceId: string | null;
+  title: string;
+  description: string;
   onSelect: (serviceId: string) => void;
 };
 
@@ -17,6 +19,8 @@ export function ServiceStep({
   services,
   selectedCategoryId,
   selectedServiceId,
+  title,
+  description,
   onSelect
 }: ServiceStepProps) {
   const [query, setQuery] = useState('');
@@ -256,6 +260,13 @@ export function ServiceStep({
           className="min-h-0 max-w-full flex-1 overflow-y-auto overflow-x-hidden overscroll-x-none pb-2 touch-pan-y"
         >
           <div className="min-w-0 max-w-full space-y-6 overflow-x-hidden">
+            <div className="space-y-2 pb-2">
+              <h2 className="font-serif text-3xl leading-tight text-[color:var(--ink)] sm:text-4xl">
+                {title}
+              </h2>
+              <p className="text-sm leading-6 text-[color:var(--muted)]">{description}</p>
+            </div>
+
             {groupedServices.map((group) => (
               <section
                 key={group.id}
