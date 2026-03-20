@@ -26,11 +26,11 @@ const resetResponseSchema = z.object({
 });
 
 const inputClassName =
-  'w-full rounded-[1.3rem] border border-[color:var(--line)] bg-[color:var(--panel)] px-4 py-3.5 text-sm text-[color:var(--foreground)] outline-none transition placeholder:text-[color:var(--muted-strong)] focus:border-[color:var(--accent-strong)]';
-const phoneInputClassName = `${inputClassName} pl-14`;
+  'w-full rounded-[1.3rem] border border-(--line) bg-(--panel) px-4 py-3.5 text-sm text-(--foreground) outline-none transition placeholder:text-(--muted-strong) focus:border-(--accent-strong)';
+const phoneInputClassName = `${inputClassName} pl-8`;
 
 const submitClassName =
-  'inline-flex w-full items-center justify-center rounded-full bg-[color:var(--button-bg)] px-5 py-3.5 text-sm font-medium text-white transition hover:bg-[color:var(--button-bg-hover)] hover:text-white disabled:cursor-not-allowed disabled:opacity-60';
+  'inline-flex w-full items-center justify-center rounded-full bg-(--button-bg) px-5 py-3.5 text-sm font-medium text-white transition hover:bg-(--button-bg-hover) hover:text-white disabled:cursor-not-allowed disabled:opacity-60';
 
 type Feedback = {
   type: 'error' | 'success';
@@ -51,7 +51,7 @@ function PhoneInput({
 
   return (
     <div className="relative">
-      <span className="pointer-events-none absolute inset-y-0 left-4 inline-flex items-center text-sm font-medium text-[color:var(--foreground)]">
+      <span className="pointer-events-none absolute inset-y-0 left-4 inline-flex items-center text-sm font-medium text-(--foreground)">
         +7
       </span>
       <input
@@ -92,12 +92,12 @@ function AuthLinks({
   items: Array<{ href: string; label: string }>;
 }) {
   return (
-    <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-[color:var(--muted)]">
+    <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-(--muted)">
       {items.map((item) => (
         <Link
           key={item.href}
           href={item.href}
-          className="underline decoration-[color:var(--line-strong)] underline-offset-4 transition hover:text-[color:var(--foreground)]"
+          className="underline decoration-(--line-strong) underline-offset-4 transition hover:text-(--foreground)"
         >
           {item.label}
         </Link>
@@ -108,11 +108,11 @@ function AuthLinks({
 
 function StateMessage({ text }: { text: string }) {
   return (
-    <div className="rounded-[1.6rem] border border-[color:var(--line)] bg-[color:var(--panel)] px-5 py-6 text-sm text-[color:var(--muted)]">
+    <div className="rounded-[1.6rem] border border-(--line) bg-(--panel) px-5 py-6 text-sm text-(--muted)">
       <LoadingLabel
         label={text}
-        className="text-[color:var(--muted)]"
-        spinnerClassName="text-[color:var(--muted-strong)]"
+        className="text-(--muted)"
+        spinnerClassName="text-(--muted-strong)"
       />
     </div>
   );
@@ -173,7 +173,7 @@ export function AccountLoginForm() {
   return (
     <form onSubmit={handleSubmit} className="grid gap-5">
       <label className="space-y-2">
-        <span className="text-xs uppercase tracking-[0.24em] text-[color:var(--muted-strong)]">Телефон</span>
+        <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Телефон</span>
         <PhoneInput
           value={form.phone}
           onChange={(phone) => setForm((current) => ({ ...current, phone }))}
@@ -181,7 +181,7 @@ export function AccountLoginForm() {
       </label>
 
       <label className="space-y-2">
-        <span className="text-xs uppercase tracking-[0.24em] text-[color:var(--muted-strong)]">Пароль</span>
+        <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Пароль</span>
         <input
           type="password"
           value={form.password}
@@ -283,7 +283,7 @@ export function AccountRegisterForm({ consentLabel }: { consentLabel: string }) 
   return (
     <form onSubmit={handleSubmit} className="grid gap-5">
       <label className="space-y-2">
-        <span className="text-xs uppercase tracking-[0.24em] text-[color:var(--muted-strong)]">Имя</span>
+        <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Имя</span>
         <input
           value={form.name}
           onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
@@ -294,7 +294,7 @@ export function AccountRegisterForm({ consentLabel }: { consentLabel: string }) 
       </label>
 
       <label className="space-y-2">
-        <span className="text-xs uppercase tracking-[0.24em] text-[color:var(--muted-strong)]">Email</span>
+        <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Email</span>
         <input
           type="email"
           value={form.email}
@@ -306,7 +306,7 @@ export function AccountRegisterForm({ consentLabel }: { consentLabel: string }) 
       </label>
 
       <label className="space-y-2">
-        <span className="text-xs uppercase tracking-[0.24em] text-[color:var(--muted-strong)]">Телефон</span>
+        <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Телефон</span>
         <PhoneInput
           value={form.phone}
           onChange={(phone) => setForm((current) => ({ ...current, phone }))}
@@ -314,7 +314,7 @@ export function AccountRegisterForm({ consentLabel }: { consentLabel: string }) 
       </label>
 
       <label className="space-y-2">
-        <span className="text-xs uppercase tracking-[0.24em] text-[color:var(--muted-strong)]">Пароль</span>
+        <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Пароль</span>
         <input
           type="password"
           value={form.password}
@@ -423,7 +423,7 @@ export function AccountRecoverForm({ consentLabel }: { consentLabel: string }) {
   return (
     <form onSubmit={handleSubmit} className="grid gap-5">
       <label className="space-y-2">
-        <span className="text-xs uppercase tracking-[0.24em] text-[color:var(--muted-strong)]">Email</span>
+        <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Email</span>
         <input
           type="email"
           value={form.email}
@@ -435,7 +435,7 @@ export function AccountRecoverForm({ consentLabel }: { consentLabel: string }) {
       </label>
 
       <label className="space-y-2">
-        <span className="text-xs uppercase tracking-[0.24em] text-[color:var(--muted-strong)]">Телефон</span>
+        <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Телефон</span>
         <PhoneInput
           value={form.phone}
           onChange={(phone) => setForm((current) => ({ ...current, phone }))}
@@ -466,7 +466,7 @@ export function AccountRecoverForm({ consentLabel }: { consentLabel: string }) {
       {resetLink ? (
         <Link
           href={resetLink}
-          className="text-sm text-[color:var(--foreground)] underline decoration-[color:var(--line-strong)] underline-offset-4"
+          className="text-sm text-(--foreground) underline decoration-(--line-strong) underline-offset-4"
         >
           Перейти к смене пароля
         </Link>

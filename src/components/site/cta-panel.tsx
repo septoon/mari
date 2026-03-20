@@ -19,7 +19,7 @@ export function CtaPanel({
   return (
     <section className={cn('py-10 md:py-14', className)}>
       <Container>
-        <div className="rounded-[2rem] border border-[color:var(--line)] bg-[#1d5055] px-6 py-8 text-white shadow-[0_35px_100px_rgba(20,15,12,0.16)] md:px-10 md:py-10">
+        <div className="rounded-[2rem] border border-(--line) bg-[#1d5055] px-6 py-8 text-white shadow-[0_35px_100px_rgba(20,15,12,0.16)] md:px-10 md:py-10">
           <p className="text-xs uppercase tracking-[0.28em] text-white/62">{eyebrow}</p>
           <div className="mt-5 grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
             <div className="max-w-2xl">

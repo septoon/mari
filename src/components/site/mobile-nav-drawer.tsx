@@ -128,14 +128,14 @@ export function MobileNavDrawer({
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex h-full flex-col px-5 pb-6 pt-5">
-          <div className="flex items-center justify-between gap-4 border-b border-[color:var(--line)] pb-4">
+          <div className="flex items-center justify-between gap-4 border-b border-(--line) pb-4">
             <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">Навигация</p>
-              <p className="mt-2 text-sm text-[color:var(--muted)]">MARI Beauty Salon</p>
+              <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">Навигация</p>
+              <p className="mt-2 text-sm text-(--muted)">MARI Beauty Salon</p>
             </div>
             <button
               type="button"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[color:var(--line)] bg-white/92"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-(--line) bg-white/92"
               onClick={onClose}
               aria-label="Закрыть меню"
             >
@@ -155,8 +155,8 @@ export function MobileNavDrawer({
                   className={cn(
                     'rounded-2xl px-4 py-3 text-sm transition',
                     active
-                      ? 'bg-white text-[color:var(--foreground)] shadow-[0_12px_28px_rgba(48,36,28,0.06)]'
-                      : 'text-[color:var(--muted-strong)] hover:bg-white/72'
+                      ? 'bg-white text-(--foreground) shadow-[0_12px_28px_rgba(48,36,28,0.06)]'
+                      : 'text-(--muted-strong) hover:bg-white/72'
                   )}
                 >
                   {item.label}
@@ -165,8 +165,8 @@ export function MobileNavDrawer({
             })}
           </nav>
 
-          <div className="mt-auto flex flex-col gap-3 border-t border-[color:var(--line)] pt-5">
-            <a href={salon.phoneHref} className="px-4 text-sm text-[color:var(--muted-strong)]">
+          <div className="mt-auto flex flex-col gap-3 border-t border-(--line) pt-5">
+            <a href={salon.phoneHref} className="px-4 text-sm text-(--muted-strong)">
               {salon.phone}
             </a>
 
@@ -176,12 +176,12 @@ export function MobileNavDrawer({
                 onClick={onClose}
                 className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-[0_14px_34px_rgba(48,36,28,0.06)]"
               >
-                <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[color:var(--line)] bg-white text-[color:var(--foreground)]">
+                <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-(--line) bg-white text-(--foreground)">
                   {accountAvatar}
                 </span>
                 <span className="min-w-0">
-                  <span className="block truncate text-sm font-medium text-[color:var(--foreground)]">{accountLabel}</span>
-                  <span className="block text-xs text-[color:var(--muted-strong)]">Личный кабинет</span>
+                  <span className="block truncate text-sm font-medium text-(--foreground)">{accountLabel}</span>
+                  <span className="block text-xs text-(--muted-strong)">Личный кабинет</span>
                 </span>
               </Link>
             ) : null}

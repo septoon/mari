@@ -35,7 +35,7 @@ export function AccountAuthShell({
         <Breadcrumbs items={breadcrumbs} className="mb-6" />
 
         <section className="grid gap-6 lg:grid-cols-[1.02fr_0.98fr]">
-          <aside className="relative overflow-hidden rounded-[2.2rem] border border-[color:var(--line)] bg-[linear-gradient(180deg,rgba(242,236,230,0.98),rgba(231,239,236,0.94))] px-6 py-8 md:px-8 md:py-10">
+          <aside className="relative overflow-hidden rounded-[2.2rem] border border-(--line) bg-[linear-gradient(180deg,rgba(242,236,230,0.98),rgba(231,239,236,0.94))] px-6 py-8 md:px-8 md:py-10">
             <div
               className="pointer-events-none absolute inset-0 opacity-60"
               aria-hidden="true"
@@ -46,32 +46,31 @@ export function AccountAuthShell({
             />
 
             <div className="relative z-10 flex h-full flex-col justify-between gap-8">
-              <div className="max-w-[34rem]">
-                <p className="inline-flex rounded-full border border-white/70 bg-white/66 px-4 py-2 text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">
+              <div className="max-w-136">
+                <p className="inline-flex rounded-full border border-white/70 bg-white/66 px-4 py-2 text-xs uppercase tracking-[0.28em] text-(--muted-strong)">
                   {heroKicker}
                 </p>
-                <h2 className="mt-8 font-serif text-4xl leading-[1.02] text-[color:var(--ink)] md:text-6xl">
+                <h2 className="mt-8 font-serif text-4xl leading-[1.02] text-(--ink) md:text-6xl">
                   {heroTitle}
                 </h2>
-                <p className="mt-6 max-w-[32rem] text-base leading-8 text-[color:var(--muted)]">
+                <p className="mt-6 max-w-128 text-base leading-8 text-(--muted)">
                   {heroDescription}
                 </p>
               </div>
 
               <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
-
-                <div className="rounded-[1.7rem] border border-white/70 bg-white/66 p-5 text-sm leading-7 text-[color:var(--muted)] shadow-[0_20px_55px_rgba(12,77,85,0.08)]">
+                <div className="rounded-[1.7rem] border border-white/70 bg-white/66 p-5 text-sm leading-7 text-(--muted) shadow-[0_20px_55px_rgba(12,77,85,0.08)]">
                   {heroNote}
                 </div>
               </div>
             </div>
           </aside>
 
-          <section className="rounded-[2.2rem] border border-[color:var(--line)] bg-white/82 px-6 py-8 shadow-[0_24px_70px_rgba(12,77,85,0.08)] md:px-8 md:py-10">
-            <div className="max-w-[33rem]">
+          <section className="rounded-[2.2rem] border border-(--line) bg-white/82 px-6 py-8 shadow-[0_24px_70px_rgba(12,77,85,0.08)] md:px-8 md:py-10">
+            <div className="max-w-132">
               <p className="section-kicker">Личный кабинет</p>
               <h1 className="section-title">{title}</h1>
-              <p className="mt-5 text-base leading-8 text-[color:var(--muted)]">
+              <p className="mt-5 text-base leading-8 text-(--muted)">
                 {description}
               </p>
             </div>

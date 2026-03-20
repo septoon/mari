@@ -34,19 +34,19 @@ export default async function CareersPage() {
             <article key={job.slug} className="surface-card p-6 md:p-8">
               <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">
+                  <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">
                     {job.location} · {job.schedule}
                   </p>
-                  <h2 className="mt-4 font-serif text-4xl text-[color:var(--ink)]">{job.title}</h2>
+                  <h2 className="mt-4 font-serif text-4xl text-(--ink)">{job.title}</h2>
                 </div>
                 <ButtonLink href="mailto:hr@maribeauty.ru" variant="secondary" size="sm">
                   Отправить резюме
                 </ButtonLink>
               </div>
-              <p className="mt-5 max-w-3xl text-sm leading-7 text-[color:var(--muted)]">{job.description}</p>
+              <p className="mt-5 max-w-3xl text-sm leading-7 text-(--muted)">{job.description}</p>
               <ul className="mt-6 grid gap-3 md:grid-cols-3">
                 {job.requirements.map((item) => (
-                  <li key={item} className="rounded-[1.5rem] border border-[color:var(--line)] bg-white/72 p-4 text-sm leading-7 text-[color:var(--muted)]">
+                  <li key={item} className="rounded-[1.5rem] border border-(--line) bg-white/72 p-4 text-sm leading-7 text-(--muted)">
                     {item}
                   </li>
                 ))}

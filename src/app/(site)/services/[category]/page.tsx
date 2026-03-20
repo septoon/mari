@@ -89,9 +89,9 @@ export default async function ServiceCategoryPage({
 
         <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
           <article className="surface-card p-6">
-            <p className="text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">Что важно</p>
-            <h2 className="mt-4 font-serif text-4xl text-[color:var(--ink)]">Услуги собраны по реальным задачам и комфорту.</h2>
-            <p className="mt-4 text-sm leading-7 text-[color:var(--muted)]">
+            <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">Что важно</p>
+            <h2 className="mt-4 font-serif text-4xl text-(--ink)">Услуги собраны по реальным задачам и комфорту.</h2>
+            <p className="mt-4 text-sm leading-7 text-(--muted)">
               Внутри категории легко сравнить процедуры, выбрать подходящий формат визита и перейти к записи без лишних шагов.
             </p>
           </article>
@@ -99,8 +99,8 @@ export default async function ServiceCategoryPage({
           <div className="grid gap-4 sm:grid-cols-2">
             {item.services.slice(0, 4).map((service) => (
               <div key={service.id} className="surface-card p-5">
-                <h3 className="font-serif text-3xl text-[color:var(--ink)]">{service.displayName}</h3>
-                <p className="mt-3 text-sm leading-7 text-[color:var(--muted)]">{service.teaser}</p>
+                <h3 className="font-serif text-3xl text-(--ink)">{service.displayName}</h3>
+                <p className="mt-3 text-sm leading-7 text-(--muted)">{service.teaser}</p>
               </div>
             ))}
           </div>

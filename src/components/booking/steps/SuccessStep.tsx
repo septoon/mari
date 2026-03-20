@@ -23,35 +23,35 @@ export function SuccessStep({
         </p>
       </div>
 
-      <div className="rounded-[1.5rem] border border-[color:var(--line)] bg-[color:var(--panel)] px-5 py-4">
-        <div className="grid gap-3 text-sm text-[color:var(--muted)]">
+      <div className="rounded-[1.5rem] border border-(--line) bg-(--panel) px-5 py-4">
+        <div className="grid gap-3 text-sm text-(--muted)">
           <div className="flex items-start justify-between gap-3">
             <span>Услуга</span>
-            <span className="text-right font-medium text-[color:var(--ink)]">
+            <span className="text-right font-medium text-(--ink)">
               {draft.service?.nameOnline ?? draft.service?.name}
             </span>
           </div>
           <div className="flex items-start justify-between gap-3">
             <span>Специалист</span>
-            <span className="text-right font-medium text-[color:var(--ink)]">{appointment.staff.name}</span>
+            <span className="text-right font-medium text-(--ink)">{appointment.staff.name}</span>
           </div>
           <div className="flex items-start justify-between gap-3">
             <span>Дата и время</span>
-            <span className="text-right font-medium text-[color:var(--ink)]">{formatBookingDateTime(appointment.startAt)}</span>
+            <span className="text-right font-medium text-(--ink)">{formatBookingDateTime(appointment.startAt)}</span>
           </div>
           <div className="flex items-start justify-between gap-3">
             <span>Клиент</span>
-            <span className="text-right font-medium text-[color:var(--ink)]">
+            <span className="text-right font-medium text-(--ink)">
               {draft.client.name || appointment.client.name || 'Клиент'}
             </span>
           </div>
           <div className="flex items-start justify-between gap-3">
             <span>Телефон</span>
-            <span className="text-right font-medium text-[color:var(--ink)]">+7 {draft.client.phone}</span>
+            <span className="text-right font-medium text-(--ink)">+7 {draft.client.phone}</span>
           </div>
           <div className="flex items-start justify-between gap-3">
             <span>Итого</span>
-            <span className="text-right font-medium text-[color:var(--ink)]">{formatCurrency(appointment.prices.finalTotal)}</span>
+            <span className="text-right font-medium text-(--ink)">{formatCurrency(appointment.prices.finalTotal)}</span>
           </div>
         </div>
       </div>

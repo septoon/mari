@@ -38,16 +38,16 @@ export default async function PrivacyPolicyPage() {
 
         <section className="grid gap-6 lg:grid-cols-[0.72fr_1.28fr]">
           <aside className="surface-card p-6 md:p-8">
-            <p className="text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">{content.summaryEyebrow}</p>
-            <h2 className="mt-4 font-serif text-4xl text-[color:var(--ink)]">{content.summaryTitle}</h2>
-            <div className="mt-6 space-y-4 text-sm leading-7 text-[color:var(--muted)]">
+            <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">{content.summaryEyebrow}</p>
+            <h2 className="mt-4 font-serif text-4xl text-(--ink)">{content.summaryTitle}</h2>
+            <div className="mt-6 space-y-4 text-sm leading-7 text-(--muted)">
               <p>
-                {content.operatorLabel}: <span className="font-semibold text-[color:var(--foreground)]">{operatorName}</span>
+                {content.operatorLabel}: <span className="font-semibold text-(--foreground)">{operatorName}</span>
               </p>
               <p>
                 {content.contactLabel}:
                 {' '}
-                <a href={`mailto:${catalog.salon.email}`} className="font-semibold text-[color:var(--foreground)] transition hover:text-[color:var(--accent-strong)]">
+                <a href={`mailto:${catalog.salon.email}`} className="font-semibold text-(--foreground) transition hover:text-(--accent-strong)">
                   {catalog.salon.email}
                 </a>
               </p>
@@ -59,8 +59,8 @@ export default async function PrivacyPolicyPage() {
           <div className="space-y-5">
             {content.sections.map((section) => (
               <article key={section.id} className="surface-card p-6 md:p-8">
-                <h2 className="font-serif text-3xl text-[color:var(--ink)]">{section.title}</h2>
-                <div className="prose-copy mt-5 text-sm leading-7 text-[color:var(--muted)]">
+                <h2 className="font-serif text-3xl text-(--ink)">{section.title}</h2>
+                <div className="prose-copy mt-5 text-sm leading-7 text-(--muted)">
                   {section.paragraphs.map((paragraph) => (
                     <p key={paragraph}>{paragraph}</p>
                   ))}

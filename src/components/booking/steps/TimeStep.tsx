@@ -25,12 +25,12 @@ export function TimeStep({
       <div className="space-y-4">
         {Array.from({ length: 3 }, (_, index) => (
           <div key={index} className="space-y-3">
-            <div className="h-5 w-28 animate-pulse rounded-full bg-[color:var(--panel)]" />
+            <div className="h-5 w-28 animate-pulse rounded-full bg-(--panel)" />
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
               {Array.from({ length: 6 }, (__unused, slotIndex) => (
                 <div
                   key={slotIndex}
-                  className="h-12 animate-pulse rounded-[1rem] bg-[color:var(--panel)]"
+                  className="h-12 animate-pulse rounded-[1rem] bg-(--panel)"
                 />
               ))}
             </div>
@@ -52,7 +52,7 @@ export function TimeStep({
 
   if (!groupedSlots.length) {
     return (
-      <div className="rounded-[1.5rem] border border-dashed border-[color:var(--line)] bg-[color:var(--panel)] px-5 py-6 text-sm text-[color:var(--muted)]">
+      <div className="rounded-[1.5rem] border border-dashed border-(--line) bg-(--panel) px-5 py-6 text-sm text-(--muted)">
         На выбранную дату свободного времени пока нет. Вернитесь к дате или специалисту.
       </div>
     );
@@ -63,8 +63,8 @@ export function TimeStep({
       {groupedSlots.map((group) => (
         <section key={group.label} className="space-y-3">
           <div className="flex items-center justify-between gap-3">
-            <h3 className="text-base font-semibold text-[color:var(--ink)]">{group.label}</h3>
-            <span className="text-xs text-[color:var(--muted-strong)]">{group.items.length} слотов</span>
+            <h3 className="text-base font-semibold text-(--ink)">{group.label}</h3>
+            <span className="text-xs text-(--muted-strong)">{group.items.length} слотов</span>
           </div>
 
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -88,8 +88,8 @@ export function TimeStep({
                   aria-pressed={active}
                   className={`rounded-[1rem] border px-4 py-3 text-sm font-medium transition ${
                     active
-                      ? 'border-[color:var(--foreground)] bg-[color:var(--foreground)] text-white'
-                      : 'border-[color:var(--line)] bg-white text-[color:var(--ink)] hover:border-[color:var(--accent-strong)] hover:bg-[color:var(--panel)]'
+                      ? 'border-(--foreground) bg-(--foreground) text-white'
+                      : 'border-(--line) bg-white text-(--ink) hover:border-(--accent-strong) hover:bg-(--panel)'
                   }`}
                 >
                   {formatTime(slot.startAt)}

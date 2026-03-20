@@ -27,13 +27,13 @@ export function MastersBrowser({
 
   return (
     <div className="space-y-8">
-      <div className="rounded-[1.75rem] border border-[color:var(--line)] bg-white/72 p-4 sm:max-w-sm">
+      <div className="rounded-[1.75rem] border border-(--line) bg-white/72 p-4 sm:max-w-sm">
         <label className="space-y-2">
-          <span className="text-xs uppercase tracking-[0.24em] text-[color:var(--muted-strong)]">Специализация</span>
+          <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Специализация</span>
           <select
             value={specialty}
             onChange={(event) => setSpecialty(event.target.value)}
-            className="w-full rounded-2xl border border-[color:var(--line)] bg-white px-4 py-3 text-sm text-[color:var(--foreground)] outline-none"
+            className="w-full rounded-2xl border border-(--line) bg-white px-4 py-3 text-sm text-(--foreground) outline-none"
           >
             <option value="all">Все направления</option>
             {specialties

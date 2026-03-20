@@ -211,14 +211,14 @@ export function ServiceStep({
       ref={rootRef}
       className="flex h-full min-h-0 max-w-full flex-1 flex-col space-y-4 overflow-x-hidden"
     >
-      <div className="z-10 max-w-full shrink-0 space-y-3 overflow-x-hidden bg-[color:var(--background)] pb-4">
+      <div className="z-10 max-w-full shrink-0 space-y-3 overflow-x-hidden bg-(--background) pb-4">
         <label className="relative block">
-          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[color:var(--muted-strong)]" />
+          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--muted-strong)" />
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Найти услугу"
-            className="w-full rounded-full border border-[color:var(--line)] bg-[color:var(--panel)] py-3 pl-11 pr-4 text-sm outline-none transition focus:border-[color:var(--accent-strong)]"
+            className="w-full rounded-full border border-(--line) bg-(--panel) py-3 pl-11 pr-4 text-sm outline-none transition focus:border-(--accent-strong)"
           />
         </label>
 
@@ -240,8 +240,8 @@ export function ServiceStep({
                     aria-pressed={active}
                     className={`rounded-full border px-4 py-2 text-sm transition ${
                       active
-                        ? 'border-[color:var(--foreground)] bg-[color:var(--foreground)] text-white'
-                        : 'border-[color:var(--line)] bg-white text-[color:var(--ink)] hover:border-[color:var(--accent-strong)] hover:bg-[color:var(--panel)]'
+                        ? 'border-(--foreground) bg-(--foreground) text-white'
+                        : 'border-(--line) bg-white text-(--ink) hover:border-(--accent-strong) hover:bg-(--panel)'
                     }`}
                   >
                     {group.name}
@@ -261,10 +261,10 @@ export function ServiceStep({
         >
           <div className="min-w-0 max-w-full space-y-6 overflow-x-hidden">
             <div className="space-y-2 pb-2">
-              <h2 className="font-serif text-3xl leading-tight text-[color:var(--ink)] sm:text-4xl">
+              <h2 className="font-serif text-3xl leading-tight text-(--ink) sm:text-4xl">
                 {title}
               </h2>
-              <p className="text-sm leading-6 text-[color:var(--muted)]">{description}</p>
+              <p className="text-sm leading-6 text-(--muted)">{description}</p>
             </div>
 
             {groupedServices.map((group) => (
@@ -274,7 +274,7 @@ export function ServiceStep({
                 className="space-y-3"
               >
                 {groupedServices.length > 1 ? (
-                  <h3 className="text-2xl font-semibold text-[color:var(--ink)]">{group.name}</h3>
+                  <h3 className="text-2xl font-semibold text-(--ink)">{group.name}</h3>
                 ) : null}
 
                 <div className="grid gap-3">
@@ -289,20 +289,20 @@ export function ServiceStep({
                         aria-pressed={active}
                         className={`rounded-[1.6rem] border px-5 py-4 text-left transition ${
                           active
-                            ? 'border-[color:var(--foreground)] bg-[color:var(--foreground)] text-white shadow-[0_18px_48px_rgba(8,36,40,0.14)]'
-                            : 'border-[color:var(--line)] bg-white text-[color:var(--ink)] hover:border-[color:var(--accent-strong)] hover:bg-[color:var(--panel)]'
+                            ? 'border-(--foreground) bg-(--foreground) text-white shadow-[0_18px_48px_rgba(8,36,40,0.14)]'
+                            : 'border-(--line) bg-white text-(--ink) hover:border-(--accent-strong) hover:bg-(--panel)'
                         }`}
                       >
                         <div className="flex items-start justify-between gap-4">
                           <div className="min-w-0">
                             <p className="text-lg font-semibold">{service.nameOnline ?? service.name}</p>
-                            <p className={`mt-2 text-sm leading-6 ${active ? 'text-white/80' : 'text-[color:var(--muted)]'}`}>
+                            <p className={`mt-2 text-sm leading-6 ${active ? 'text-white/80' : 'text-(--muted)'}`}>
                               {service.description?.trim() || 'Онлайн-запись доступна для этой услуги.'}
                             </p>
                           </div>
-                          <div className={`shrink-0 text-right text-sm ${active ? 'text-white/80' : 'text-[color:var(--muted-strong)]'}`}>
+                          <div className={`shrink-0 text-right text-sm ${active ? 'text-white/80' : 'text-(--muted-strong)'}`}>
                             <p>{formatDuration(service.durationSec)}</p>
-                            <p className={`mt-1 text-base font-semibold ${active ? 'text-white' : 'text-[color:var(--ink)]'}`}>
+                            <p className={`mt-1 text-base font-semibold ${active ? 'text-white' : 'text-(--ink)'}`}>
                               {formatPriceRange(service.priceMin, service.priceMax)}
                             </p>
                           </div>
@@ -316,7 +316,7 @@ export function ServiceStep({
           </div>
         </div>
       ) : (
-        <div className="rounded-[1.5rem] border border-dashed border-[color:var(--line)] bg-[color:var(--panel)] px-5 py-6 text-sm text-[color:var(--muted)]">
+        <div className="rounded-[1.5rem] border border-dashed border-(--line) bg-(--panel) px-5 py-6 text-sm text-(--muted)">
           По текущему фильтру услуги не найдены.
         </div>
       )}

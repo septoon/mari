@@ -71,7 +71,7 @@ export function ResetPasswordForm() {
     <main className="mx-auto flex min-h-screen max-w-6xl items-center px-4 py-10 sm:px-6 lg:px-8">
       <div className="grid w-full gap-6 lg:grid-cols-[0.9fr_1.1fr]">
 
-        <section className="rounded-[2rem] border border-[color:var(--line)] bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(238,243,241,0.82))] p-8 shadow-[0_25px_70px_rgba(12,77,85,0.08)]">
+        <section className="rounded-[2rem] border border-(--line) bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(238,243,241,0.82))] p-8 shadow-[0_25px_70px_rgba(12,77,85,0.08)]">
           <p className="section-kicker">Смена пароля</p>
           <h1 className="section-title">Обновить доступ к кабинету.</h1>
           <p className="section-copy">
@@ -80,22 +80,22 @@ export function ResetPasswordForm() {
 
           <form onSubmit={handleSubmit} className="mt-8 grid gap-4">
             <label className="space-y-2">
-              <span className="text-xs uppercase tracking-[0.24em] text-[color:var(--ink-muted)]">Новый пароль</span>
+              <span className="text-xs uppercase tracking-[0.24em] text-(--ink-muted)">Новый пароль</span>
               <input
                 type="password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                className="w-full rounded-2xl border border-[color:var(--line)] bg-white px-4 py-3 text-sm outline-none transition focus:border-[color:var(--ink)]"
+                className="w-full rounded-2xl border border-(--line) bg-white px-4 py-3 text-sm outline-none transition focus:border-(--ink)"
               />
             </label>
 
             <label className="space-y-2">
-              <span className="text-xs uppercase tracking-[0.24em] text-[color:var(--ink-muted)]">Повторите пароль</span>
+              <span className="text-xs uppercase tracking-[0.24em] text-(--ink-muted)">Повторите пароль</span>
               <input
                 type="password"
                 value={confirm}
                 onChange={(event) => setConfirm(event.target.value)}
-                className="w-full rounded-2xl border border-[color:var(--line)] bg-white px-4 py-3 text-sm outline-none transition focus:border-[color:var(--ink)]"
+                className="w-full rounded-2xl border border-(--line) bg-white px-4 py-3 text-sm outline-none transition focus:border-(--ink)"
               />
             </label>
 
@@ -115,13 +115,13 @@ export function ResetPasswordForm() {
               type="submit"
               disabled={submitting}
               aria-busy={submitting}
-              className="mt-2 rounded-full bg-[color:var(--button-bg)] px-5 py-3 text-sm font-medium text-white transition hover:bg-[color:var(--button-bg-hover)] disabled:opacity-60"
+              className="mt-2 rounded-full bg-(--button-bg) px-5 py-3 text-sm font-medium text-white transition hover:bg-(--button-bg-hover) disabled:opacity-60"
             >
               {submitting ? <LoadingLabel label="Обновляю пароль..." /> : 'Сохранить новый пароль'}
             </button>
           </form>
 
-          <div className="mt-6 text-sm text-[color:var(--ink-muted)]">
+          <div className="mt-6 text-sm text-(--ink-muted)">
             <Link href="/account/login" className="underline underline-offset-4">
               Вернуться ко входу
             </Link>

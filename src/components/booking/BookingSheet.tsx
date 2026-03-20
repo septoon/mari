@@ -152,7 +152,7 @@ export function BookingSheet({
           role="dialog"
           aria-modal="true"
           aria-label="Онлайн-запись"
-          className={`absolute inset-y-0 left-0 z-[111] flex w-[min(48rem,calc(100vw-4rem))] max-w-full flex-col overflow-hidden rounded-r-[2rem] border-r border-[color:var(--line)] bg-[color:var(--background)] shadow-[24px_0_80px_rgba(19,29,31,0.18)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          className={`absolute inset-y-0 left-0 z-[111] flex w-[min(48rem,calc(100vw-4rem))] max-w-full flex-col overflow-hidden rounded-r-[2rem] border-r border-(--line) bg-(--background) shadow-[24px_0_80px_rgba(19,29,31,0.18)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
             open ? 'translate-x-0' : '-translate-x-full'
           }`}
           onClick={(event) => event.stopPropagation()}
@@ -176,15 +176,15 @@ export function BookingSheet({
       disableScrollLocking
       tweenConfig={{ ease: 'easeOut', duration: 0.24 }}
     >
-      <Sheet.Container className="!mx-auto !w-full !max-w-[52rem] !overflow-hidden !bg-[color:var(--background)] !shadow-[0_-24px_80px_rgba(19,29,31,0.16)] md:!mb-6 md:!rounded-[2rem]">
-        <Sheet.Header className="!bg-[color:var(--background)]">
-          <div className="flex h-6 items-center justify-center bg-[color:var(--background)]">
-            <span className="h-1 w-11 rounded-full bg-[color:var(--line-strong)]" />
+      <Sheet.Container className="!mx-auto !w-full !max-w-208 !overflow-hidden !bg-(--background) !shadow-[0_-24px_80px_rgba(19,29,31,0.16)] md:!mb-6 md:!rounded-[2rem]">
+        <Sheet.Header className="!bg-(--background)">
+          <div className="flex h-6 items-center justify-center bg-(--background)">
+            <span className="h-1 w-11 rounded-full bg-(--line-strong)" />
           </div>
         </Sheet.Header>
         <Sheet.Content
-          className="!flex !min-h-0 !flex-1 !bg-[color:var(--background)]"
-          scrollClassName="!flex !min-h-full !flex-col !overflow-hidden !bg-[color:var(--background)]"
+          className="!flex !min-h-0 !flex-1 !bg-(--background)"
+          scrollClassName="!flex !min-h-full !flex-col !overflow-hidden !bg-(--background)"
         >
           {flowContent}
         </Sheet.Content>

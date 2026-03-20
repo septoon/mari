@@ -45,24 +45,24 @@ export function SiteHeader({ salon }: SiteHeaderProps) {
       onClick={() => setOpen(false)}
       aria-label={session.authenticated ? 'Открыть личный кабинет' : 'Перейти в личный кабинет'}
       className={cn(
-        'relative inline-flex h-11 w-11 items-center justify-center rounded-full border bg-white/82 text-[color:var(--foreground)] transition',
+        'relative inline-flex h-11 w-11 items-center justify-center rounded-full border bg-white/82 text-(--foreground) transition',
         accountActive
-          ? 'border-[color:var(--accent-strong)] shadow-[0_12px_30px_rgba(138,105,73,0.16)]'
-          : 'border-[color:var(--line)] hover:border-[color:var(--accent-strong)]'
+          ? 'border-(--accent-strong) shadow-[0_12px_30px_rgba(138,105,73,0.16)]'
+          : 'border-(--line) hover:border-(--accent-strong)'
       )}
     >
       <span className="inline-flex h-full w-full items-center justify-center overflow-hidden rounded-full">
         {accountAvatar}
       </span>
       {session.authenticated ? (
-        <span className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full bg-[color:var(--accent-strong)]" />
+        <span className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full bg-(--accent-strong)" />
       ) : null}
     </Link>
   );
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-[color:var(--line)] bg-[color:var(--background)]/86 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-(--line) bg-(--background)/86 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <Link href="/" className="inline-flex items-center gap-4" onClick={() => setOpen(false)}>
             <Image
@@ -71,13 +71,13 @@ export function SiteHeader({ salon }: SiteHeaderProps) {
               width={44}
               height={44}
               priority
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-[color:var(--line)] tracking-[0.12em] object-cover"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-(--line) tracking-[0.12em] object-cover"
             />
             <span>
-              <span className="block font-serif text-[1.85rem] leading-none tracking-[0.22em] text-[color:var(--ink)]">
+              <span className="block font-serif text-[1.85rem] leading-none tracking-[0.22em] text-(--ink)">
                 MARI
               </span>
-              <span className="block text-[0.68rem] uppercase tracking-[0.38em] text-[color:var(--muted-strong)]">
+              <span className="block text-[0.68rem] uppercase tracking-[0.38em] text-(--muted-strong)">
                 Beauty Salon
               </span>
             </span>
@@ -92,8 +92,8 @@ export function SiteHeader({ salon }: SiteHeaderProps) {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    'text-sm transition hover:text-[color:var(--foreground)]',
-                    active ? 'text-[color:var(--foreground)]' : 'text-[color:var(--muted-strong)]'
+                    'text-sm transition hover:text-(--foreground)',
+                    active ? 'text-(--foreground)' : 'text-(--muted-strong)'
                   )}
                 >
                   {item.label}
@@ -109,19 +109,19 @@ export function SiteHeader({ salon }: SiteHeaderProps) {
                 className={cn(
                   'inline-flex items-center gap-3 rounded-full border bg-white/82 px-2.5 py-2 pr-4 text-sm transition',
                   accountActive
-                    ? 'border-[color:var(--accent-strong)] shadow-[0_12px_30px_rgba(138,105,73,0.16)]'
-                    : 'border-[color:var(--line)] hover:border-[color:var(--accent-strong)]'
+                    ? 'border-(--accent-strong) shadow-[0_12px_30px_rgba(138,105,73,0.16)]'
+                    : 'border-(--line) hover:border-(--accent-strong)'
                 )}
               >
-                <span className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[color:var(--line)] bg-white text-[color:var(--foreground)]">
+                <span className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-(--line) bg-white text-(--foreground)">
                   {accountAvatar}
-                  <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-[color:var(--accent-strong)]" />
+                  <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-(--accent-strong)" />
                 </span>
-                <span className="max-w-[12rem] truncate text-[color:var(--foreground)]">{accountLabel}</span>
+                <span className="max-w-48 truncate text-(--foreground)">{accountLabel}</span>
               </Link>
             ) : (
               <>
-                <a href={salon.phoneHref} className="text-sm text-[color:var(--muted-strong)] transition hover:text-[color:var(--foreground)]">
+                <a href={salon.phoneHref} className="text-sm text-(--muted-strong) transition hover:text-(--foreground)">
                   {salon.phone}
                 </a>
                 {accountIconLink}
@@ -133,7 +133,7 @@ export function SiteHeader({ salon }: SiteHeaderProps) {
             {accountIconLink}
             <button
               type="button"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[color:var(--line)] bg-white/80"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-(--line) bg-white/80"
               onClick={() => setOpen((value) => !value)}
               aria-label={open ? 'Закрыть меню' : 'Открыть меню'}
             >

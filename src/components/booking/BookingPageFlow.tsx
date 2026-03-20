@@ -21,7 +21,7 @@ export function BookingPageFlow({
   return (
     <section
       id="booking"
-      className="overflow-hidden rounded-[2rem] border border-[color:var(--line)] bg-white shadow-[0_30px_90px_rgba(12,77,85,0.1)]"
+      className="overflow-hidden rounded-[2rem] border border-(--line) bg-white shadow-[0_30px_90px_rgba(12,77,85,0.1)]"
     >
       <BookingFlow
         flow={flow}

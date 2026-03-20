@@ -55,8 +55,8 @@ const SelectionIndicator = ({ active }: { active: boolean }) => (
   <span
     className={`mt-1 inline-flex h-7 w-7 shrink-0 rounded-full border transition ${
       active
-        ? 'border-[color:var(--foreground)] bg-[color:var(--foreground)] shadow-[inset_0_0_0_6px_white]'
-        : 'border-[color:var(--line-strong)] bg-white'
+        ? 'border-(--foreground) bg-(--foreground) shadow-[inset_0_0_0_6px_white]'
+        : 'border-(--line-strong) bg-white'
     }`}
   />
 );
@@ -251,7 +251,7 @@ export function StaffStep({
 
   if (!specialists.length) {
     return (
-      <div className="rounded-[1.5rem] border border-dashed border-[color:var(--line)] bg-[color:var(--panel)] px-5 py-6 text-sm text-[color:var(--muted)]">
+      <div className="rounded-[1.5rem] border border-dashed border-(--line) bg-(--panel) px-5 py-6 text-sm text-(--muted)">
         Для выбранной услуги сейчас нет специалистов с онлайн-записью.
       </div>
     );
@@ -261,10 +261,10 @@ export function StaffStep({
     if (preview.loading) {
       return (
         <div className="mt-4 ml-[4.5rem] space-y-3">
-          <div className="h-4 w-56 animate-pulse rounded-full bg-[color:var(--panel)]" />
+          <div className="h-4 w-56 animate-pulse rounded-full bg-(--panel)" />
           <div className="flex flex-wrap gap-2">
             {Array.from({ length: 5 }, (_, index) => (
-              <div key={index} className="h-10 w-20 animate-pulse rounded-[0.95rem] bg-[color:var(--panel)]" />
+              <div key={index} className="h-10 w-20 animate-pulse rounded-[0.95rem] bg-(--panel)" />
             ))}
           </div>
         </div>
@@ -273,7 +273,7 @@ export function StaffStep({
 
     if (!preview.date || !preview.slots.length) {
       return (
-        <p className="mt-4 ml-[4.5rem] text-sm leading-6 text-[color:var(--muted)]">
+        <p className="mt-4 ml-[4.5rem] text-sm leading-6 text-(--muted)">
           На ближайшие дни свободных окон по этой услуге пока нет.
         </p>
       );
@@ -281,7 +281,7 @@ export function StaffStep({
 
     return (
       <div className="mt-4 ml-[4.5rem] space-y-3">
-        <p className="text-sm font-medium text-[color:var(--muted-strong)]">
+        <p className="text-sm font-medium text-(--muted-strong)">
           Ближайшее время для записи {formatPreviewDate(preview.date)}:
         </p>
 
@@ -291,7 +291,7 @@ export function StaffStep({
               key={`${slot.staffId}:${slot.startAt}`}
               type="button"
               onClick={() => onSelectPreviewSlot(slot)}
-              className="rounded-[0.95rem] bg-[color:var(--panel)] px-4 py-2 text-sm font-medium text-[color:var(--ink)] transition hover:bg-[color:var(--surface-strong)]"
+              className="rounded-[0.95rem] bg-(--panel) px-4 py-2 text-sm font-medium text-(--ink) transition hover:bg-(--surface-strong)"
             >
               {formatTime(slot.startAt)}
             </button>
@@ -300,7 +300,7 @@ export function StaffStep({
           <button
             type="button"
             onClick={() => onOpenCalendar({ staffId, date: preview.date })}
-            className="rounded-[0.95rem] bg-[color:var(--panel)] px-4 py-2 text-sm font-medium text-[color:var(--ink)] transition hover:bg-[color:var(--surface-strong)]"
+            className="rounded-[0.95rem] bg-(--panel) px-4 py-2 text-sm font-medium text-(--ink) transition hover:bg-(--surface-strong)"
           >
             Другое время
           </button>
@@ -311,22 +311,22 @@ export function StaffStep({
 
   return (
     <div className="pb-6">
-      <div className="overflow-hidden rounded-[1.9rem] border border-[color:var(--line)] bg-white">
+      <div className="overflow-hidden rounded-[1.9rem] border border-(--line) bg-white">
         {canChooseAnyStaff ? (
           <article
-            className={`px-5 py-5 transition ${selectedStaffId === 'any' ? 'bg-[color:var(--panel)]' : 'bg-white'} ${
-              specialists.length > 0 ? 'border-b border-[color:var(--line)]' : ''
+            className={`px-5 py-5 transition ${selectedStaffId === 'any' ? 'bg-(--panel)' : 'bg-white'} ${
+              specialists.length > 0 ? 'border-b border-(--line)' : ''
             }`}
           >
             <button type="button" onClick={() => onSelect('any')} className="flex w-full items-start gap-4 text-left">
-              <span className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[color:var(--panel)] text-[color:var(--foreground)]">
+              <span className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-(--panel) text-(--foreground)">
                 <Avatar />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block text-[1.6rem] font-semibold leading-none text-[color:var(--ink)]">
+                <span className="block text-[1.6rem] font-semibold leading-none text-(--ink)">
                   Любой специалист
                 </span>
-                <span className="mt-2 block text-sm leading-6 text-[color:var(--muted)]">
+                <span className="mt-2 block text-sm leading-6 text-(--muted)">
                   {selectedServiceId
                     ? 'Подберём ближайшее свободное окно у подходящего мастера.'
                     : 'Покажем всех специалистов, а затем сузим список услуг и времени.'}
@@ -347,8 +347,8 @@ export function StaffStep({
           return (
             <article
               key={specialist.staffId}
-              className={`px-5 py-5 transition ${active ? 'bg-[color:var(--panel)]' : 'bg-white'} ${
-                showDivider ? 'border-b border-[color:var(--line)]' : ''
+              className={`px-5 py-5 transition ${active ? 'bg-(--panel)' : 'bg-white'} ${
+                showDivider ? 'border-b border-(--line)' : ''
               }`}
             >
               <button
@@ -356,19 +356,19 @@ export function StaffStep({
                 onClick={() => onSelect(specialist.staffId)}
                 className="flex w-full items-start gap-4 text-left"
               >
-                <span className="inline-flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[color:var(--panel)] text-base font-semibold text-[color:var(--foreground)]">
+                <span className="inline-flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-(--panel) text-base font-semibold text-(--foreground)">
                   <Avatar specialist={specialist} />
                 </span>
 
                 <span className="min-w-0 flex-1">
-                  <span className="block text-[1.6rem] font-semibold leading-none text-[color:var(--ink)]">
+                  <span className="block text-[1.6rem] font-semibold leading-none text-(--ink)">
                     {specialist.name}
                   </span>
-                  <span className="mt-2 block text-base leading-6 text-[color:var(--muted)]">
+                  <span className="mt-2 block text-base leading-6 text-(--muted)">
                     {specialist.specialty?.trim() || 'Специалист салона'}
                   </span>
                   {specialist.info?.trim() ? (
-                    <span className="mt-1 block text-sm leading-6 text-[color:var(--muted)]">
+                    <span className="mt-1 block text-sm leading-6 text-(--muted)">
                       {specialist.info.trim()}
                     </span>
                   ) : null}
@@ -380,7 +380,7 @@ export function StaffStep({
               {preview.loading || preview.date || preview.slots.length ? (
                 renderPreview(preview, specialist.staffId)
               ) : (
-                <p className="mt-4 ml-[4.5rem] text-sm leading-6 text-[color:var(--muted)]">
+                <p className="mt-4 ml-[4.5rem] text-sm leading-6 text-(--muted)">
                   После выбора мастера покажем только его услуги и ближайшее свободное время.
                 </p>
               )}

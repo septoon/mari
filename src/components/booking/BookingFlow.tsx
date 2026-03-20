@@ -260,7 +260,7 @@ export function BookingFlow({
 
   return (
     <div
-      className={`flex min-h-full flex-col bg-[color:var(--background)] text-[color:var(--ink)] ${
+      className={`flex min-h-full flex-col bg-(--background) text-(--ink) ${
         variant === 'sheet' ? 'h-full min-h-0 overflow-hidden' : ''
       }`}
     >
@@ -308,13 +308,13 @@ export function BookingFlow({
                     key={item.key}
                     type="button"
                     onClick={() => flow.requestStep(item.step)}
-                    className="rounded-full border border-[color:var(--line)] bg-[color:var(--panel)] px-3 py-1.5 text-sm text-[color:var(--foreground)] transition hover:border-[color:var(--accent-strong)]"
+                    className="rounded-full border border-(--line) bg-(--panel) px-3 py-1.5 text-sm text-(--foreground) transition hover:border-(--accent-strong)"
                   >
                     {item.label}: {item.value}
                   </button>
                 ))}
                 {summaryPrice ? (
-                  <span className="rounded-full border border-[color:var(--line)] bg-white px-3 py-1.5 text-sm font-medium text-[color:var(--foreground)]">
+                  <span className="rounded-full border border-(--line) bg-white px-3 py-1.5 text-sm font-medium text-(--foreground)">
                     {summaryPrice}
                   </span>
                 ) : null}
@@ -326,12 +326,12 @@ export function BookingFlow({
                 <h2
                   ref={headingRef}
                   tabIndex={-1}
-                  className="outline-none font-serif text-3xl leading-tight text-[color:var(--ink)] sm:text-4xl"
+                  className="outline-none font-serif text-3xl leading-tight text-(--ink) sm:text-4xl"
                 >
                   {meta.title}
                 </h2>
                 {meta.description ? (
-                  <p className="mt-2 text-sm leading-6 text-[color:var(--muted)]">{meta.description}</p>
+                  <p className="mt-2 text-sm leading-6 text-(--muted)">{meta.description}</p>
                 ) : null}
               </div>
             ) : null}
@@ -346,7 +346,7 @@ export function BookingFlow({
               }`}
             >
               {services.length === 0 ? (
-                <div className="rounded-[1.5rem] border border-dashed border-[color:var(--line)] bg-[color:var(--panel)] px-5 py-6 text-sm text-[color:var(--muted)]">
+                <div className="rounded-[1.5rem] border border-dashed border-(--line) bg-(--panel) px-5 py-6 text-sm text-(--muted)">
                   Каталог услуг временно недоступен. Попробуйте обновить страницу или свяжитесь с салоном напрямую.
                 </div>
               ) : null}
@@ -443,7 +443,7 @@ export function BookingFlow({
 
         {showFooter ? (
           <div
-            className={`z-20 mt-auto shrink-0 border-t border-[color:var(--line)] bg-[color:var(--background)] ${
+            className={`z-20 mt-auto shrink-0 border-t border-(--line) bg-(--background) ${
               variant === 'sheet'
                 ? 'pb-4 pt-4 shadow-[0_-18px_40px_rgba(19,29,31,0.06)]'
                 : 'sticky bottom-0 pb-4 pt-4'

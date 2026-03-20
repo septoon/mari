@@ -18,19 +18,19 @@ export async function SiteFooter({ salon: providedSalon }: SiteFooterProps) {
   const salon = providedSalon ?? (await getLiveCatalog()).salon;
 
   return (
-    <footer className="border-t border-[color:var(--line)] bg-white/58">
+    <footer className="border-t border-(--line) bg-white/58">
       <Container className="py-12">
         <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
           <div className="max-w-md">
-            <p className="font-serif text-4xl tracking-[0.18em] text-[color:var(--ink)]">MARI</p>
-            <p className="mt-3 text-sm leading-7 text-[color:var(--muted)]">
+            <p className="font-serif text-4xl tracking-[0.18em] text-(--ink)">MARI</p>
+            <p className="mt-3 text-sm leading-7 text-(--muted)">
               Салон красоты с тёплой атмосферой, сильными специалистами и удобной записью на любимые процедуры.
             </p>
-            <div className="mt-6 space-y-2 text-sm text-[color:var(--muted-strong)]">
-              <a href={salon.phoneHref} className="block transition hover:text-[color:var(--foreground)]">
+            <div className="mt-6 space-y-2 text-sm text-(--muted-strong)">
+              <a href={salon.phoneHref} className="block transition hover:text-(--foreground)">
                 {salon.phone}
               </a>
-              <a href={`mailto:${salon.email}`} className="block transition hover:text-[color:var(--foreground)]">
+              <a href={`mailto:${salon.email}`} className="block transition hover:text-(--foreground)">
                 {salon.email}
               </a>
               <p>{salon.address}</p>
@@ -39,11 +39,11 @@ export async function SiteFooter({ salon: providedSalon }: SiteFooterProps) {
 
           {siteConfig.footerNav.map((group) => (
             <div key={group.title}>
-              <p className="text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">{group.title}</p>
-              <ul className="mt-5 space-y-3 text-sm text-[color:var(--foreground)]">
+              <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">{group.title}</p>
+              <ul className="mt-5 space-y-3 text-sm text-(--foreground)">
                 {group.items.map((item) => (
                   <li key={item.href}>
-                    <Link href={item.href} className="transition hover:text-[color:var(--accent-strong)]">
+                    <Link href={item.href} className="transition hover:text-(--accent-strong)">
                       {item.label}
                     </Link>
                   </li>
@@ -53,24 +53,24 @@ export async function SiteFooter({ salon: providedSalon }: SiteFooterProps) {
           ))}
         </div>
 
-        <div className="mt-10 flex flex-col gap-2 border-t border-[color:var(--line)] pt-6 text-sm text-[color:var(--muted)] sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-10 flex flex-col gap-2 border-t border-(--line) pt-6 text-sm text-(--muted) sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap gap-4">
-            <Link href="/news" className="transition hover:text-[color:var(--foreground)]">
+            <Link href="/news" className="transition hover:text-(--foreground)">
               Новости
             </Link>
-            <Link href="/careers" className="transition hover:text-[color:var(--foreground)]">
+            <Link href="/careers" className="transition hover:text-(--foreground)">
               Вакансии
             </Link>
-            <Link href="/gift-cards" className="transition hover:text-[color:var(--foreground)]">
+            <Link href="/gift-cards" className="transition hover:text-(--foreground)">
               Сертификаты
             </Link>
-            <Link href="/privacy-policy" className="transition hover:text-[color:var(--foreground)]">
+            <Link href="/privacy-policy" className="transition hover:text-(--foreground)">
               Политика конфиденциальности
             </Link>
           </div>
         </div>
 
-        <div className="mt-4 text-center border-t border-[color:var(--line)] pt-4 text-sm text-[color:var(--muted)]">
+        <div className="mt-4 text-center border-t border-(--line) pt-4 text-sm text-(--muted)">
            <p>© 2026 Mari Beauty Salon</p>
           <p>
             Раработано студией{' '}
@@ -78,7 +78,7 @@ export async function SiteFooter({ salon: providedSalon }: SiteFooterProps) {
               href="https://lumastack.ru"
               target="_blank"
               rel="noreferrer"
-              className="font-semibold text-[color:var(--foreground)] transition hover:text-[color:var(--accent-strong)]"
+              className="font-semibold text-(--foreground) transition hover:text-(--accent-strong)"
             >
               LumaStack
             </a>

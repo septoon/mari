@@ -14,7 +14,7 @@ export function ServiceCategoryNav({
         <Link
           key={category.slug}
           href={`#${category.slug}`}
-          className="shrink-0 rounded-full border border-[color:var(--line)] bg-white/76 px-4 py-2.5 text-sm text-[color:var(--foreground)] transition hover:border-[color:var(--accent-strong)] hover:bg-white"
+          className="shrink-0 rounded-full border border-(--line) bg-white/76 px-4 py-2.5 text-sm text-(--foreground) transition hover:border-(--accent-strong) hover:bg-white"
         >
           {category.name}
         </Link>

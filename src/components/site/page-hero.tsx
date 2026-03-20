@@ -33,7 +33,7 @@ export function PageHero({
         <div className="max-w-3xl">
           {eyebrow ? <p className="section-kicker">{eyebrow}</p> : null}
           <h1 className={cn('headline-xl', titleClassName)}>{title}</h1>
-          <p className="mt-6 max-w-2xl text-base leading-8 text-[color:var(--muted)]">{description}</p>
+          <p className="mt-6 max-w-2xl text-base leading-8 text-(--muted)">{description}</p>
           {actions ? <div className="mt-8 flex flex-wrap gap-3">{actions}</div> : null}
         </div>
       </div>

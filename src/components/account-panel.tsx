@@ -274,7 +274,7 @@ export function AccountPanel() {
   return (
     <section
       id="account"
-      className="rounded-[2rem] border border-[color:var(--line)] bg-white/74 px-6 py-8 shadow-[0_25px_70px_rgba(12,77,85,0.06)] md:px-8">
+      className="rounded-[2rem] border border-(--line) bg-white/74 px-6 py-8 shadow-[0_25px_70px_rgba(12,77,85,0.06)] md:px-8">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-2xl">
           <p className="section-kicker">Личный кабинет</p>
@@ -298,9 +298,9 @@ export function AccountPanel() {
               onClick={submitLogout}
               disabled={logoutSubmitting || Boolean(cancellingAppointmentId)}
               aria-busy={logoutSubmitting}
-              className="inline-flex items-center gap-2 rounded-full border border-[color:var(--line)] px-5 py-3 text-sm font-medium text-[color:var(--ink)] disabled:opacity-60">
+              className="inline-flex items-center gap-2 rounded-full border border-(--line) px-5 py-3 text-sm font-medium text-(--ink) disabled:opacity-60">
               {logoutSubmitting ? (
-                <LoadingLabel label="Выхожу..." size="sm" spinnerClassName="text-[color:var(--ink)]" />
+                <LoadingLabel label="Выхожу..." size="sm" spinnerClassName="text-(--ink)" />
               ) : (
                 <>
                   <LogOut className="h-4 w-4" />
@@ -333,22 +333,22 @@ export function AccountPanel() {
       ) : null}
 
       {status === 'loading' ? (
-        <div className="mt-8 rounded-[1.5rem] border border-[color:var(--line)] bg-[color:var(--panel)] px-6 py-8 text-sm text-[color:var(--ink-muted)]">
+        <div className="mt-8 rounded-[1.5rem] border border-(--line) bg-(--panel) px-6 py-8 text-sm text-(--ink-muted)">
           <LoadingLabel
             label="Проверяю вход..."
-            className="text-[color:var(--ink-muted)]"
-            spinnerClassName="text-[color:var(--ink-muted)]"
+            className="text-(--ink-muted)"
+            spinnerClassName="text-(--ink-muted)"
           />
         </div>
       ) : !session.authenticated ? null : (
         <div className="mt-8 space-y-5">
           <div className="grid gap-5 xl:grid-cols-[0.78fr_1.22fr]">
-            <div className="rounded-[1.5rem] border border-[color:var(--line)] bg-[color:var(--panel)] p-5">
-              <p className="text-xs uppercase tracking-[0.24em] text-[color:var(--ink-muted)]">
+            <div className="rounded-[1.5rem] border border-(--line) bg-(--panel) p-5">
+              <p className="text-xs uppercase tracking-[0.24em] text-(--ink-muted)">
                 Профиль
               </p>
               <div className="mt-4 flex flex-col gap-5 sm:flex-row sm:items-start">
-                <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-[1.8rem] border border-[color:var(--line)] bg-white text-[color:var(--ink)]">
+                <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-[1.8rem] border border-(--line) bg-white text-(--ink)">
                   {session.client?.avatarUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -361,18 +361,18 @@ export function AccountPanel() {
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="font-serif text-3xl text-[color:var(--ink)]">
+                  <h3 className="font-serif text-3xl text-(--ink)">
                     {session.client?.name || 'Клиент Mari'}
                   </h3>
-                  <div className="mt-4 space-y-2 text-sm text-[color:var(--ink-muted)]">
+                  <div className="mt-4 space-y-2 text-sm text-(--ink-muted)">
                     <p>{session.client?.phoneE164}</p>
                     <p>{session.client?.email || 'Email пока не указан'}</p>
                   </div>
                   <div className="mt-4 flex flex-wrap gap-3">
                     <label
-                      className={`inline-flex cursor-pointer items-center gap-2 rounded-full border border-[color:var(--line)] bg-white px-4 py-2 text-sm font-medium text-[color:var(--ink)] ${avatarSubmitting ? 'pointer-events-none opacity-60' : ''}`}>
+                      className={`inline-flex cursor-pointer items-center gap-2 rounded-full border border-(--line) bg-white px-4 py-2 text-sm font-medium text-(--ink) ${avatarSubmitting ? 'pointer-events-none opacity-60' : ''}`}>
                       {avatarAction === 'upload' ? (
-                        <LoadingLabel label="Обновляю фото..." size="sm" spinnerClassName="text-[color:var(--ink)]" />
+                        <LoadingLabel label="Обновляю фото..." size="sm" spinnerClassName="text-(--ink)" />
                       ) : (
                         <>
                           <ImagePlus className="h-4 w-4" />
@@ -409,7 +409,7 @@ export function AccountPanel() {
                       )}
                     </button>
                   </div>
-                  <p className="mt-3 text-xs uppercase tracking-[0.18em] text-[color:var(--ink-muted)]">
+                  <p className="mt-3 text-xs uppercase tracking-[0.18em] text-(--ink-muted)">
                     Лучше всего подойдёт светлое портретное фото
                   </p>
                 </div>
@@ -417,50 +417,50 @@ export function AccountPanel() {
             </div>
 
             <div className="grid gap-5 md:grid-cols-2">
-              <div className="rounded-[1.5rem] border border-[color:var(--line)] bg-[linear-gradient(180deg,rgba(242,239,235,0.9),rgba(230,238,235,0.8))] p-5">
-                <p className="text-xs uppercase tracking-[0.24em] text-[color:var(--ink-muted)]">
+              <div className="rounded-[1.5rem] border border-(--line) bg-[linear-gradient(180deg,rgba(242,239,235,0.9),rgba(230,238,235,0.8))] p-5">
+                <p className="text-xs uppercase tracking-[0.24em] text-(--ink-muted)">
                   Состояние
                 </p>
-                <h3 className="mt-3 font-serif text-3xl text-[color:var(--ink)]">
+                <h3 className="mt-3 font-serif text-3xl text-(--ink)">
                   Кабинет активен
                 </h3>
-                <p className="mt-3 text-sm leading-6 text-[color:var(--ink-muted)]">
+                <p className="mt-3 text-sm leading-6 text-(--ink-muted)">
                   В профиле сохранены ваши данные, история визитов и все основные действия для
                   будущих записей.
                 </p>
               </div>
 
-              <div className="rounded-[1.5rem] border border-[color:var(--line)] bg-white p-5">
-                <p className="text-xs uppercase tracking-[0.24em] text-[color:var(--ink-muted)]">
+              <div className="rounded-[1.5rem] border border-(--line) bg-white p-5">
+                <p className="text-xs uppercase tracking-[0.24em] text-(--ink-muted)">
                   Сводка
                 </p>
-                <div className="mt-5 space-y-4 text-sm text-[color:var(--ink-muted)]">
+                <div className="mt-5 space-y-4 text-sm text-(--ink-muted)">
                   <div className="flex items-center justify-between gap-4">
                     <span>Записей в истории</span>
-                    <span className="font-medium text-[color:var(--ink)]">{appointmentCount}</span>
+                    <span className="font-medium text-(--ink)">{appointmentCount}</span>
                   </div>
                   <div className="flex items-center justify-between gap-4">
                     <span>Постоянная скидка</span>
-                    <span className="font-medium text-[color:var(--ink)]">
+                    <span className="font-medium text-(--ink)">
                       {permanentDiscount ? `${permanentDiscount}%` : 'Пока нет'}
                     </span>
                   </div>
                   <div className="flex items-center justify-between gap-4">
                     <span>Следующее действие</span>
-                    <span className="font-medium text-[color:var(--ink)]">Новый визит</span>
+                    <span className="font-medium text-(--ink)">Новый визит</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="rounded-[1.5rem] border border-[color:var(--line)] bg-white p-5">
+          <div className="rounded-[1.5rem] border border-(--line) bg-white p-5">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-xs uppercase tracking-[0.24em] text-[color:var(--ink-muted)]">
+                <p className="text-xs uppercase tracking-[0.24em] text-(--ink-muted)">
                   Мои записи
                 </p>
-                <h3 className="mt-2 font-serif text-3xl text-[color:var(--ink)]">
+                <h3 className="mt-2 font-serif text-3xl text-(--ink)">
                   История визитов
                 </h3>
               </div>
@@ -468,14 +468,14 @@ export function AccountPanel() {
                 <LoadingLabel
                   label="Обновляю..."
                   size="sm"
-                  className="text-sm text-[color:var(--ink-muted)]"
-                  spinnerClassName="text-[color:var(--ink-muted)]"
+                  className="text-sm text-(--ink-muted)"
+                  spinnerClassName="text-(--ink-muted)"
                 />
               ) : null}
             </div>
 
             {appointments.length === 0 ? (
-              <div className="mt-5 rounded-[1.25rem] border border-dashed border-[color:var(--line)] bg-[color:var(--panel)] px-5 py-8 text-sm text-[color:var(--ink-muted)]">
+              <div className="mt-5 rounded-[1.25rem] border border-dashed border-(--line) bg-(--panel) px-5 py-8 text-sm text-(--ink-muted)">
                 Активных записей пока нет. Запланируйте первый визит через форму онлайн-записи.
               </div>
             ) : (
@@ -483,16 +483,16 @@ export function AccountPanel() {
                 {appointments.map((appointment) => (
                   <article
                     key={appointment.id}
-                    className="rounded-[1.35rem] border border-[color:var(--line)] bg-[color:var(--panel)] p-5">
+                    className="rounded-[1.35rem] border border-(--line) bg-(--panel) p-5">
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                       <div>
-                        <p className="text-sm font-medium text-[color:var(--ink-muted)]">
+                        <p className="text-sm font-medium text-(--ink-muted)">
                           {formatAppointmentStatus(appointment.status)}
                         </p>
-                        <h4 className="mt-2 text-xl font-semibold text-[color:var(--ink)]">
+                        <h4 className="mt-2 text-xl font-semibold text-(--ink)">
                           {appointment.staff.name} · {formatBookingDateTime(appointment.startAt)}
                         </h4>
-                        <p className="mt-3 text-sm leading-6 text-[color:var(--ink-muted)]">
+                        <p className="mt-3 text-sm leading-6 text-(--ink-muted)">
                           {appointment.services
                             .map(
                               (service) =>
@@ -503,7 +503,7 @@ export function AccountPanel() {
                       </div>
 
                       <div className="flex flex-wrap items-center gap-3">
-                        <span className="rounded-full border border-[color:var(--line)] bg-white px-4 py-2 text-sm text-[color:var(--ink)]">
+                        <span className="rounded-full border border-(--line) bg-white px-4 py-2 text-sm text-(--ink)">
                           {formatCurrency(appointment.prices.finalTotal)}
                         </span>
                         {canCancelAppointment(appointment) ? (

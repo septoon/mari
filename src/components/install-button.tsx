@@ -44,7 +44,7 @@ export function InstallButton() {
         await promptEvent.userChoice;
         setPromptEvent(null);
       }}
-      className="inline-flex items-center gap-2 rounded-full border border-[color:var(--line)] bg-white/70 px-4 py-2 text-sm font-medium text-[color:var(--ink)] shadow-[0_12px_30px_rgba(12,77,85,0.08)] backdrop-blur"
+      className="inline-flex items-center gap-2 rounded-full border border-(--line) bg-white/70 px-4 py-2 text-sm font-medium text-(--ink) shadow-[0_12px_30px_rgba(12,77,85,0.08)] backdrop-blur"
     >
       <Download className="h-4 w-4" />
       Установить приложение

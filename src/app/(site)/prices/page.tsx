@@ -41,7 +41,7 @@ export default async function PricesPage() {
                 title={category.name}
                 description={category.description}
               />
-              <div className="mt-6 rounded-[1.75rem] border border-[color:var(--line)] bg-white/78 px-6">
+              <div className="mt-6 rounded-[1.75rem] border border-(--line) bg-white/78 px-6">
                 {category.services.map((service) => (
                   <PriceRow
                     key={service.id}

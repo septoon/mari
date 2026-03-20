@@ -75,11 +75,11 @@ export default async function ContactsPage({
 
         <section className="mt-12 grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
           <article className="surface-card p-6 md:p-8">
-            <p className="text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">Салон MARI</p>
-            <h2 className="mt-4 font-serif text-4xl text-[color:var(--ink)]">{catalog.salon.name}</h2>
-            <div className="mt-6 grid gap-4 text-sm leading-7 text-[color:var(--muted)]">
+            <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">Салон MARI</p>
+            <h2 className="mt-4 font-serif text-4xl text-(--ink)">{catalog.salon.name}</h2>
+            <div className="mt-6 grid gap-4 text-sm leading-7 text-(--muted)">
               <p className="inline-flex items-start gap-3">
-                <MapPin className="mt-1 h-4 w-4 shrink-0 text-[color:var(--accent-strong)]" />
+                <MapPin className="mt-1 h-4 w-4 shrink-0 text-(--accent-strong)" />
                 <span>{catalog.salon.address}</span>
               </p>
               <p>{catalog.salon.phone}</p>
@@ -97,15 +97,15 @@ export default async function ContactsPage({
           </article>
 
           <article className="surface-card p-6 md:p-8">
-            <p className="text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">Что можно сделать здесь</p>
+            <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">Что можно сделать здесь</p>
             <div className="mt-6 grid gap-4">
-              <div className="rounded-[1.5rem] border border-[color:var(--line)] bg-white/72 p-4 text-sm leading-7 text-[color:var(--muted)]">
+              <div className="rounded-[1.5rem] border border-(--line) bg-white/72 p-4 text-sm leading-7 text-(--muted)">
                 Перейти на страницу записи и выбрать услугу, специалиста и удобное время.
               </div>
-              <div className="rounded-[1.5rem] border border-[color:var(--line)] bg-white/72 p-4 text-sm leading-7 text-[color:var(--muted)]">
+              <div className="rounded-[1.5rem] border border-(--line) bg-white/72 p-4 text-sm leading-7 text-(--muted)">
                 Позвонить в салон, уточнить детали и быстро построить маршрут.
               </div>
-              <div className="rounded-[1.5rem] border border-[color:var(--line)] bg-white/72 p-4 text-sm leading-7 text-[color:var(--muted)]">
+              <div className="rounded-[1.5rem] border border-(--line) bg-white/72 p-4 text-sm leading-7 text-(--muted)">
                 Войти в личный кабинет и посмотреть свои записи.
               </div>
             </div>

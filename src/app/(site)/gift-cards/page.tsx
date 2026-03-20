@@ -58,15 +58,15 @@ export default async function GiftCardsPage() {
             label="Gift cards"
             title="Подарок, который легко выбрать и приятно дарить."
             subtitle="Сертификат подойдёт для первого знакомства с салоном, любимой процедуры или полноценного beauty-дня."
-            className="min-h-[25rem]"
+            className="min-h-100"
           />
 
           <div className="grid gap-6">
             {packages.map((item) => (
               <article key={item.title} className="surface-card p-6">
-                <p className="text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">{item.note}</p>
-                <h2 className="mt-4 font-serif text-4xl text-[color:var(--ink)]">{item.title}</h2>
-                <p className="mt-4 text-sm leading-7 text-[color:var(--muted)]">{item.text}</p>
+                <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">{item.note}</p>
+                <h2 className="mt-4 font-serif text-4xl text-(--ink)">{item.title}</h2>
+                <p className="mt-4 text-sm leading-7 text-(--muted)">{item.text}</p>
               </article>
             ))}
           </div>

@@ -43,12 +43,12 @@ export default async function AboutPage() {
 
         <section className="grid gap-6 lg:grid-cols-[1fr_1fr]">
           <article className="surface-card p-8">
-            <p className="text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">История бренда</p>
-            <h2 className="mt-4 font-serif text-4xl text-[color:var(--ink)]">Место для ухода, отдыха и точной работы с образом.</h2>
-            <p className="mt-5 text-sm leading-7 text-[color:var(--muted)]">
+            <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">История бренда</p>
+            <h2 className="mt-4 font-serif text-4xl text-(--ink)">Место для ухода, отдыха и точной работы с образом.</h2>
+            <p className="mt-5 text-sm leading-7 text-(--muted)">
               В MARI приходят за красивым результатом, спокойной атмосферой и сервисом, в котором ничего не отвлекает от главного.
             </p>
-            <p className="mt-4 text-sm leading-7 text-[color:var(--muted)]">
+            <p className="mt-4 text-sm leading-7 text-(--muted)">
               Мы хотим, чтобы и на сайте, и в салоне вы чувствовали одно и то же: аккуратность, комфорт и уважение к вашему времени.
             </p>
           </article>
@@ -56,8 +56,8 @@ export default async function AboutPage() {
           <div className="grid gap-6">
             {principles.map((item) => (
               <article key={item.title} className="surface-card p-6">
-                <h3 className="font-serif text-3xl text-[color:var(--ink)]">{item.title}</h3>
-                <p className="mt-4 text-sm leading-7 text-[color:var(--muted)]">{item.text}</p>
+                <h3 className="font-serif text-3xl text-(--ink)">{item.title}</h3>
+                <p className="mt-4 text-sm leading-7 text-(--muted)">{item.text}</p>
               </article>
             ))}
           </div>
@@ -66,7 +66,7 @@ export default async function AboutPage() {
 
       <section className="py-10 md:py-14">
         <Container>
-          <div className="rounded-[2rem] border border-[color:var(--line)] bg-[#1d5055] px-6 py-8 text-white shadow-[0_35px_100px_rgba(20,15,12,0.16)] md:px-10 md:py-10">
+          <div className="rounded-[2rem] border border-(--line) bg-[#1d5055] px-6 py-8 text-white shadow-[0_35px_100px_rgba(20,15,12,0.16)] md:px-10 md:py-10">
             <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
               <div className="max-w-xl">
                 <p className="text-xs uppercase tracking-[0.28em] text-white/60">Отзывы гостей</p>

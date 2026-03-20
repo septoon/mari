@@ -108,25 +108,25 @@ export default async function ServiceDetailPage({
 
         <section className="grid gap-6 lg:grid-cols-[0.88fr_1.12fr]">
           <article className="surface-card p-6">
-            <p className="text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">Кратко</p>
-            <div className="mt-5 grid gap-4 text-sm text-[color:var(--muted)]">
-              <div className="rounded-[1.5rem] border border-[color:var(--line)] bg-white/72 p-4">
-                <p className="inline-flex items-center gap-2 font-medium text-[color:var(--foreground)]">
-                  <Receipt className="h-4 w-4 text-[color:var(--accent-strong)]" />
+            <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">Кратко</p>
+            <div className="mt-5 grid gap-4 text-sm text-(--muted)">
+              <div className="rounded-[1.5rem] border border-(--line) bg-white/72 p-4">
+                <p className="inline-flex items-center gap-2 font-medium text-(--foreground)">
+                  <Receipt className="h-4 w-4 text-(--accent-strong)" />
                   Услуга
                 </p>
                 <p className="mt-3">{service.name}</p>
               </div>
-              <div className="rounded-[1.5rem] border border-[color:var(--line)] bg-white/72 p-4">
-                <p className="inline-flex items-center gap-2 font-medium text-[color:var(--foreground)]">
-                  <Clock3 className="h-4 w-4 text-[color:var(--accent-strong)]" />
+              <div className="rounded-[1.5rem] border border-(--line) bg-white/72 p-4">
+                <p className="inline-flex items-center gap-2 font-medium text-(--foreground)">
+                  <Clock3 className="h-4 w-4 text-(--accent-strong)" />
                   Длительность
                 </p>
                 <p className="mt-3">{Math.round(service.durationSec / 60)} мин</p>
               </div>
-              <div className="rounded-[1.5rem] border border-[color:var(--line)] bg-white/72 p-4">
-                <p className="inline-flex items-center gap-2 font-medium text-[color:var(--foreground)]">
-                  <UserRound className="h-4 w-4 text-[color:var(--accent-strong)]" />
+              <div className="rounded-[1.5rem] border border-(--line) bg-white/72 p-4">
+                <p className="inline-flex items-center gap-2 font-medium text-(--foreground)">
+                  <UserRound className="h-4 w-4 text-(--accent-strong)" />
                   Специалисты
                 </p>
                 <p className="mt-3">{masters.length} специалистов выполняют эту услугу</p>
@@ -135,12 +135,12 @@ export default async function ServiceDetailPage({
           </article>
 
           <article className="surface-card p-6">
-            <p className="text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">О процедуре</p>
-            <h2 className="mt-4 font-serif text-4xl text-[color:var(--ink)]">Всё важное о процедуре в одном месте.</h2>
-            <p className="mt-4 text-sm leading-7 text-[color:var(--muted)]">
+            <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">О процедуре</p>
+            <h2 className="mt-4 font-serif text-4xl text-(--ink)">Всё важное о процедуре в одном месте.</h2>
+            <p className="mt-4 text-sm leading-7 text-(--muted)">
               Здесь собраны описание, ориентир по стоимости, длительность и список специалистов, чтобы вы могли быстро принять решение о визите.
             </p>
-            <div className="mt-6 rounded-[1.5rem] border border-[color:var(--line)] bg-white/72 p-5 text-sm leading-7 text-[color:var(--muted)]">
+            <div className="mt-6 rounded-[1.5rem] border border-(--line) bg-white/72 p-5 text-sm leading-7 text-(--muted)">
               {service.description?.trim() || 'Подробности по процедуре подскажет мастер перед началом визита. Ниже можно выбрать специалиста и перейти к записи.'}
             </div>
           </article>

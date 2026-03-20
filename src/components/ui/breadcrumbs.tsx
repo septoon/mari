@@ -17,16 +17,16 @@ export function Breadcrumbs({
 }) {
   return (
     <nav aria-label="Хлебные крошки" className={className}>
-      <ol className={cn('flex flex-wrap items-center gap-2 text-sm text-[color:var(--muted-strong)]', className)}>
+      <ol className={cn('flex flex-wrap items-center gap-2 text-sm text-(--muted-strong)', className)}>
         {items.map((item, index) => (
           <li key={`${item.label}-${index}`} className="inline-flex items-center gap-2">
             {index > 0 ? <ChevronRight className="h-4 w-4 opacity-45" /> : null}
             {item.href ? (
-              <Link href={item.href} className="transition hover:text-[color:var(--foreground)]">
+              <Link href={item.href} className="transition hover:text-(--foreground)">
                 {item.label}
               </Link>
             ) : (
-              <span className="text-[color:var(--foreground)]">{item.label}</span>
+              <span className="text-(--foreground)">{item.label}</span>
             )}
           </li>
         ))}

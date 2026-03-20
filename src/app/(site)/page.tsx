@@ -28,12 +28,12 @@ export default async function HomePage() {
     <main className="pb-14">
       <Container className="pb-12 pt-8 md:pb-16 md:pt-12">
         <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
-          <div className="rounded-[2rem] border border-[color:var(--line)] bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(247,241,234,0.88)_52%,rgba(232,224,215,0.8)_100%)] px-6 py-8 shadow-[0_35px_110px_rgba(41,30,18,0.08)] md:px-8 md:py-10">
+          <div className="rounded-[2rem] border border-(--line) bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(247,241,234,0.88)_52%,rgba(232,224,215,0.8)_100%)] px-6 py-8 shadow-[0_35px_110px_rgba(41,30,18,0.08)] md:px-8 md:py-10">
             <p className="section-kicker">{homePageContent.hero.eyebrow}</p>
             <h1 className="headline-xl max-w-4xl whitespace-pre-line">
               {homePageContent.hero.title}
             </h1>
-            <p className="mt-6 max-w-2xl text-base leading-8 text-[color:var(--muted)]">
+            <p className="mt-6 max-w-2xl text-base leading-8 text-(--muted)">
               {homePageContent.hero.description}
             </p>
 
@@ -90,8 +90,8 @@ export default async function HomePage() {
           <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
             {homePageContent.valuePillars.items.map((item) => (
               <article key={item.title} className="surface-card p-6">
-                <h3 className="font-serif text-3xl text-[color:var(--ink)]">{item.title}</h3>
-                <p className="mt-4 text-sm leading-7 text-[color:var(--muted)]">{item.text}</p>
+                <h3 className="font-serif text-3xl text-(--ink)">{item.title}</h3>
+                <p className="mt-4 text-sm leading-7 text-(--muted)">{item.text}</p>
               </article>
             ))}
           </div>
@@ -163,7 +163,7 @@ export default async function HomePage() {
               <p className="section-copy">
                 {homePageContent.contacts.description}
               </p>
-              <div className="mt-8 grid gap-3 text-sm text-[color:var(--muted)]">
+              <div className="mt-8 grid gap-3 text-sm text-(--muted)">
                 <div className="surface-card p-4">{catalog.salon.address}</div>
                 <div className="surface-card p-4">{catalog.salon.phone}</div>
                 <div className="surface-card p-4">{catalog.salon.workingHours}</div>
@@ -183,11 +183,11 @@ export default async function HomePage() {
 
                 return (
                   <div key={item.title} className="surface-card p-6">
-                    <p className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.28em] text-[color:var(--muted-strong)]">
+                    <p className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.28em] text-(--muted-strong)">
                       <Icon className="h-4 w-4" />
                       {item.title}
                     </p>
-                    <p className="mt-4 text-sm leading-7 text-[color:var(--muted)]">
+                    <p className="mt-4 text-sm leading-7 text-(--muted)">
                       {item.description}
                     </p>
                   </div>

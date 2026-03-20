@@ -38,7 +38,7 @@ export function DateStep({
         {Array.from({ length: 21 }, (_, index) => (
           <div
             key={index}
-            className="h-16 animate-pulse rounded-[1rem] bg-[color:var(--panel)]"
+            className="h-16 animate-pulse rounded-[1rem] bg-(--panel)"
           />
         ))}
       </div>
@@ -55,7 +55,7 @@ export function DateStep({
 
   if (!slotDays?.items.length) {
     return (
-      <div className="rounded-[1.5rem] border border-dashed border-[color:var(--line)] bg-[color:var(--panel)] px-5 py-6 text-sm text-[color:var(--muted)]">
+      <div className="rounded-[1.5rem] border border-dashed border-(--line) bg-(--panel) px-5 py-6 text-sm text-(--muted)">
         Пока не удалось построить календарь. Выберите специалиста или услугу и попробуйте снова.
       </div>
     );
@@ -66,7 +66,7 @@ export function DateStep({
 
   return (
     <div className="space-y-5">
-      <div className="grid grid-cols-7 gap-2 text-center text-xs uppercase tracking-[0.18em] text-[color:var(--muted-strong)]">
+      <div className="grid grid-cols-7 gap-2 text-center text-xs uppercase tracking-[0.18em] text-(--muted-strong)">
         {weekdayFormatter.map((label) => (
           <span key={label}>{label}</span>
         ))}
@@ -85,16 +85,16 @@ export function DateStep({
               aria-pressed={active}
               className={`rounded-[1rem] border px-2 py-3 text-center transition ${
                 active
-                  ? 'border-[color:var(--foreground)] bg-[color:var(--foreground)] text-white'
+                  ? 'border-(--foreground) bg-(--foreground) text-white'
                   : item.hasSlots
-                    ? 'border-[color:var(--line)] bg-white text-[color:var(--ink)] hover:border-[color:var(--accent-strong)] hover:bg-[color:var(--panel)]'
-                    : 'cursor-not-allowed border-[color:var(--line)] bg-[color:var(--panel)] text-[color:var(--muted-strong)] opacity-60'
+                    ? 'border-(--line) bg-white text-(--ink) hover:border-(--accent-strong) hover:bg-(--panel)'
+                    : 'cursor-not-allowed border-(--line) bg-(--panel) text-(--muted-strong) opacity-60'
               }`}
             >
               <span className="block text-base font-semibold">
                 {new Date(`${item.date}T00:00:00`).getDate()}
               </span>
-              <span className={`mt-1 block text-[11px] ${active ? 'text-white/75' : 'text-[color:var(--muted-strong)]'}`}>
+              <span className={`mt-1 block text-[11px] ${active ? 'text-white/75' : 'text-(--muted-strong)'}`}>
                 {item.totalSlots > 0 ? item.totalSlots : 'нет'}
               </span>
             </button>
@@ -103,23 +103,23 @@ export function DateStep({
       </div>
 
       {selectedDate ? (
-        <div className="rounded-[1.5rem] border border-[color:var(--line)] bg-[color:var(--panel)] px-5 py-4 text-sm text-[color:var(--muted)]">
-          <p className="font-medium text-[color:var(--ink)]">{formatBookingDate(selectedDate)}</p>
+        <div className="rounded-[1.5rem] border border-(--line) bg-(--panel) px-5 py-4 text-sm text-(--muted)">
+          <p className="font-medium text-(--ink)">{formatBookingDate(selectedDate)}</p>
           <p className="mt-1">{weekdayLabel(selectedDate)}</p>
         </div>
       ) : firstAvailable ? (
-        <div className="rounded-[1.5rem] border border-[color:var(--line)] bg-[color:var(--panel)] px-5 py-4 text-sm text-[color:var(--muted)]">
+        <div className="rounded-[1.5rem] border border-(--line) bg-(--panel) px-5 py-4 text-sm text-(--muted)">
           <p>Ближайшая доступная дата:</p>
           <button
             type="button"
             onClick={() => onSelect(firstAvailable)}
-            className="mt-3 inline-flex rounded-full bg-[color:var(--button-bg)] px-4 py-2 text-sm font-medium text-white transition hover:bg-[color:var(--button-bg-hover)]"
+            className="mt-3 inline-flex rounded-full bg-(--button-bg) px-4 py-2 text-sm font-medium text-white transition hover:bg-(--button-bg-hover)"
           >
             {formatBookingDate(firstAvailable)}
           </button>
         </div>
       ) : (
-        <div className="rounded-[1.5rem] border border-dashed border-[color:var(--line)] bg-[color:var(--panel)] px-5 py-6 text-sm text-[color:var(--muted)]">
+        <div className="rounded-[1.5rem] border border-dashed border-(--line) bg-(--panel) px-5 py-6 text-sm text-(--muted)">
           Свободных дат в ближайшие недели пока нет.
         </div>
       )}
@@ -130,12 +130,12 @@ export function DateStep({
             <>
               {Array.from({ length: 3 }, (_, index) => (
                 <div key={index} className="space-y-3">
-                  <div className="h-5 w-24 animate-pulse rounded-full bg-[color:var(--panel)]" />
+                  <div className="h-5 w-24 animate-pulse rounded-full bg-(--panel)" />
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                     {Array.from({ length: 6 }, (__unused, slotIndex) => (
                       <div
                         key={slotIndex}
-                        className="h-12 animate-pulse rounded-[1rem] bg-[color:var(--panel)]"
+                        className="h-12 animate-pulse rounded-[1rem] bg-(--panel)"
                       />
                     ))}
                   </div>
@@ -150,8 +150,8 @@ export function DateStep({
             groupedSlots.map((group) => (
               <section key={group.label} className="space-y-3">
                 <div className="flex items-center justify-between gap-3">
-                  <h3 className="text-[1.65rem] font-semibold text-[color:var(--ink)]">{group.label}</h3>
-                  <span className="text-xs text-[color:var(--muted-strong)]">{group.items.length} слотов</span>
+                  <h3 className="text-[1.65rem] font-semibold text-(--ink)">{group.label}</h3>
+                  <span className="text-xs text-(--muted-strong)">{group.items.length} слотов</span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -175,8 +175,8 @@ export function DateStep({
                         aria-pressed={active}
                         className={`rounded-[1rem] px-4 py-3 text-sm font-medium transition ${
                           active
-                            ? 'bg-[color:var(--foreground)] text-white'
-                            : 'bg-[color:var(--panel)] text-[color:var(--ink)] hover:bg-[color:var(--surface-strong)]'
+                            ? 'bg-(--foreground) text-white'
+                            : 'bg-(--panel) text-(--ink) hover:bg-(--surface-strong)'
                         }`}
                       >
                         {formatTime(slot.startAt)}
@@ -187,7 +187,7 @@ export function DateStep({
               </section>
             ))
           ) : (
-            <div className="rounded-[1.5rem] border border-dashed border-[color:var(--line)] bg-[color:var(--panel)] px-5 py-6 text-sm text-[color:var(--muted)]">
+            <div className="rounded-[1.5rem] border border-dashed border-(--line) bg-(--panel) px-5 py-6 text-sm text-(--muted)">
               На выбранную дату свободного времени пока нет.
             </div>
           )}
