@@ -11,8 +11,8 @@ import { resolveSitePageHero } from '@/lib/site-page-heroes';
 
 export const metadata = createPageMetadata({
   title: 'Запись',
-  description: 'Онлайн-запись в салон MARI.',
-  path: '/booking'
+  description: 'Онлайн-запись в салон МАРИ.',
+  path: '/booking',
 });
 
 export default async function BookingPage({

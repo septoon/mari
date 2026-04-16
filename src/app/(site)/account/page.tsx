@@ -4,8 +4,9 @@ import { createPageMetadata } from '@/lib/site';
 
 export const metadata = createPageMetadata({
   title: 'Личный кабинет',
-  description: 'Личный кабинет MARI: профиль, история визитов, отмена записи и восстановление доступа.',
-  path: '/account'
+  description:
+    'Личный кабинет МАРИ: профиль, история визитов, отмена записи и восстановление доступа.',
+  path: '/account',
 });
 
 export default function AccountPage() {

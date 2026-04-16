@@ -11,12 +11,15 @@ type SpecialistsGridProps = {
 
 export function SpecialistsGrid({ specialists }: SpecialistsGridProps) {
   return (
-    <section id="specialists" className="rounded-[2rem] border border-(--line) bg-(--panel-strong) px-6 py-8 md:px-8">
+    <section
+      id="specialists"
+      className="rounded-[2rem] border border-(--line) bg-(--panel-strong) px-6 py-8 md:px-8">
       <div className="max-w-2xl">
         <p className="section-kicker">Специалисты</p>
         <h2 className="section-title">Люди, к которым хочется возвращаться.</h2>
         <p className="section-copy">
-          Познакомьтесь со специалистами MARI, их направлением работы и процедурами, которые можно выбрать для визита.
+          Познакомьтесь со специалистами МАРИ, их направлением работы и процедурами, которые можно
+          выбрать для визита.
         </p>
       </div>
 
@@ -29,8 +32,7 @@ export function SpecialistsGrid({ specialists }: SpecialistsGridProps) {
           {specialists.map((specialist) => (
             <article
               key={specialist.staffId}
-              className="overflow-hidden rounded-[1.7rem] border border-(--line) bg-white shadow-[0_18px_46px_rgba(12,77,85,0.06)]"
-            >
+              className="overflow-hidden rounded-[1.7rem] border border-(--line) bg-white shadow-[0_18px_46px_rgba(12,77,85,0.06)]">
               <div className="aspect-[4/4.6] bg-[linear-gradient(180deg,rgba(204,213,210,0.9),rgba(233,239,237,0.7))]">
                 {specialist.photo?.preferredUrl ? (
                   <img
@@ -49,7 +51,7 @@ export function SpecialistsGrid({ specialists }: SpecialistsGridProps) {
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-xs uppercase tracking-[0.24em] text-(--ink-muted)">
-                      {specialist.specialty || 'Специалист Mari'}
+                      {specialist.specialty || 'Специалист МАРИ'}
                     </p>
                     <h3 className="mt-2 font-serif text-3xl text-(--ink)">{specialist.name}</h3>
                   </div>
@@ -59,15 +61,20 @@ export function SpecialistsGrid({ specialists }: SpecialistsGridProps) {
                 </div>
 
                 <p className="text-sm leading-6 text-(--ink-muted)">
-                  {specialist.info || 'Точный сервис, аккуратная техника и спокойная атмосфера без спешки.'}
+                  {specialist.info ||
+                    'Точный сервис, аккуратная техника и спокойная атмосфера без спешки.'}
                 </p>
 
                 <div className="space-y-2 rounded-[1.25rem] bg-(--panel) p-4">
                   {specialist.services.slice(0, 3).map((service) => (
-                    <div key={service.id} className="flex items-start justify-between gap-4 text-sm">
+                    <div
+                      key={service.id}
+                      className="flex items-start justify-between gap-4 text-sm">
                       <div>
                         <p className="font-medium text-(--ink)">{service.name}</p>
-                        <p className="mt-1 text-(--ink-muted)">{formatDuration(service.durationSec)}</p>
+                        <p className="mt-1 text-(--ink-muted)">
+                          {formatDuration(service.durationSec)}
+                        </p>
                       </div>
                       <p className="whitespace-nowrap text-(--ink)">
                         {formatPriceRange(service.priceMin, service.priceMax)}

@@ -10,8 +10,8 @@ import { createPageMetadata } from '@/lib/site';
 
 export const metadata = createPageMetadata({
   title: 'Акции',
-  description: 'Акции и специальные предложения Mari.',
-  path: '/offers'
+  description: 'Акции и специальные предложения МАРИ.',
+  path: '/offers',
 });
 
 export default async function OffersPage() {

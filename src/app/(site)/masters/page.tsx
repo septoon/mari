@@ -13,16 +13,12 @@ import {
 
 export const metadata = createPageMetadata({
   title: 'Специалисты',
-  description:
-    'Специалисты MARI: направления работы и запись на услуги.',
-  path: '/masters'
+  description: 'Специалисты МАРИ: направления работы и запись на услуги.',
+  path: '/masters',
 });
 
 export default async function MastersPage() {
-  const [catalog, pageContent] = await Promise.all([
-    getLiveCatalog(),
-    getSpecialistsPageContent(),
-  ]);
+  const [catalog, pageContent] = await Promise.all([getLiveCatalog(), getSpecialistsPageContent()]);
   const hero = resolveSitePageHero('masters', catalog.bootstrap.config.extra);
 
   return (
@@ -33,7 +29,9 @@ export default async function MastersPage() {
           title={hero.title}
           description={hero.description}
           breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Специалисты' }]}
-          actions={<ButtonLink href="/booking">{pageContent.listPage.heroPrimaryCtaLabel}</ButtonLink>}
+          actions={
+            <ButtonLink href="/booking">{pageContent.listPage.heroPrimaryCtaLabel}</ButtonLink>
+          }
           details={[
             applySpecialistsPageTemplate(pageContent.listPage.detailsCountTemplate, {
               count: catalog.specialists.length,

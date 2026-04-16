@@ -15,6 +15,7 @@ type SiteHeaderProps = {
   salon: {
     phone: string;
     phoneHref: string;
+    address: string;
   };
 };
 
@@ -63,82 +64,88 @@ export function SiteHeader({ salon }: SiteHeaderProps) {
   return (
     <>
       <header className="sticky top-0 z-50 border-b border-(--line) bg-(--background)/86 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <Link href="/" className="inline-flex items-center gap-4" onClick={() => setOpen(false)}>
-            <Image
-              src="/logo.webp"
-              alt="MARI app icon"
-              width={44}
-              height={44}
-              priority
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-(--line) tracking-[0.12em] object-cover"
-            />
-            <span>
-              <span className="block font-serif text-[1.85rem] leading-none tracking-[0.22em] text-(--ink)">
-                MARI
+        <div className="mx-auto max-w-7xl">
+          <div className="flex items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+            <Link href="/" className="inline-flex items-center gap-4" onClick={() => setOpen(false)}>
+              <Image
+                src="/logo.webp"
+                alt="MARI app icon"
+                width={44}
+                height={44}
+                priority
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-(--line) tracking-[0.12em] object-cover"
+              />
+              <span>
+                <span className="block font-serif text-[1.85rem] leading-none tracking-[0.22em] text-(--ink)">
+                  MARI
+                </span>
+                <span className="block text-[0.68rem] uppercase tracking-[0.38em] text-(--muted-strong)">
+                  Beauty Salon
+                </span>
               </span>
-              <span className="block text-[0.68rem] uppercase tracking-[0.38em] text-(--muted-strong)">
-                Beauty Salon
-              </span>
-            </span>
-          </Link>
+            </Link>
 
-          <nav className="hidden items-center gap-7 lg:flex">
-            {siteConfig.nav.map((item) => {
-              const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+            <nav className="hidden items-center gap-7 lg:flex">
+              {siteConfig.nav.map((item) => {
+                const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
 
-              return (
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      'text-sm transition hover:text-(--foreground)',
+                      active ? 'text-(--foreground)' : 'text-(--muted-strong)'
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            <div className="hidden items-center gap-3 lg:flex">
+              {session.authenticated ? (
                 <Link
-                  key={item.href}
-                  href={item.href}
+                  href="/account"
                   className={cn(
-                    'text-sm transition hover:text-(--foreground)',
-                    active ? 'text-(--foreground)' : 'text-(--muted-strong)'
+                    'inline-flex items-center gap-3 rounded-full border bg-white/82 px-2.5 py-2 pr-4 text-sm transition',
+                    accountActive
+                      ? 'border-(--accent-strong) shadow-[0_12px_30px_rgba(138,105,73,0.16)]'
+                      : 'border-(--line) hover:border-(--accent-strong)'
                   )}
                 >
-                  {item.label}
+                  <span className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-(--line) bg-white text-(--foreground)">
+                    {accountAvatar}
+                    <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-(--accent-strong)" />
+                  </span>
+                  <span className="max-w-48 truncate text-(--foreground)">{accountLabel}</span>
                 </Link>
-              );
-            })}
-          </nav>
+              ) : (
+                <>
+                  <a href={salon.phoneHref} className="text-sm text-(--muted-strong) transition hover:text-(--foreground)">
+                    {salon.phone}
+                  </a>
+                  {accountIconLink}
+                </>
+              )}
+            </div>
 
-          <div className="hidden items-center gap-3 lg:flex">
-            {session.authenticated ? (
-              <Link
-                href="/account"
-                className={cn(
-                  'inline-flex items-center gap-3 rounded-full border bg-white/82 px-2.5 py-2 pr-4 text-sm transition',
-                  accountActive
-                    ? 'border-(--accent-strong) shadow-[0_12px_30px_rgba(138,105,73,0.16)]'
-                    : 'border-(--line) hover:border-(--accent-strong)'
-                )}
+            <div className="flex items-center gap-2 lg:hidden">
+              {accountIconLink}
+              <button
+                type="button"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-(--line) bg-white/80"
+                onClick={() => setOpen((value) => !value)}
+                aria-label={open ? 'Закрыть меню' : 'Открыть меню'}
               >
-                <span className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-(--line) bg-white text-(--foreground)">
-                  {accountAvatar}
-                  <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-(--accent-strong)" />
-                </span>
-                <span className="max-w-48 truncate text-(--foreground)">{accountLabel}</span>
-              </Link>
-            ) : (
-              <>
-                <a href={salon.phoneHref} className="text-sm text-(--muted-strong) transition hover:text-(--foreground)">
-                  {salon.phone}
-                </a>
-                {accountIconLink}
-              </>
-            )}
+                {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </button>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2 lg:hidden">
-            {accountIconLink}
-            <button
-              type="button"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-(--line) bg-white/80"
-              onClick={() => setOpen((value) => !value)}
-              aria-label={open ? 'Закрыть меню' : 'Открыть меню'}
-            >
-              {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
+          <div className="border-t border-(--line) px-4 py-2 text-sm text-(--muted-strong) lg:hidden sm:px-6">
+            {salon.address}
           </div>
         </div>
       </header>

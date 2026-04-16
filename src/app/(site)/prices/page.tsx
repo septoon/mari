@@ -10,8 +10,8 @@ import { resolveSitePageHero } from '@/lib/site-page-heroes';
 
 export const metadata = createPageMetadata({
   title: 'Цены',
-  description: 'Цены на услуги MARI: процедуры, длительность и переход к записи.',
-  path: '/prices'
+  description: 'Цены на услуги МАРИ: процедуры, длительность и переход к записи.',
+  path: '/prices',
 });
 
 export default async function PricesPage() {
@@ -29,7 +29,7 @@ export default async function PricesPage() {
           actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
           details={[
             `${catalog.services.length} услуг в прайсе.`,
-            'Из прайса можно сразу перейти в карточку процедуры.'
+            'Из прайса можно сразу перейти в карточку процедуры.',
           ]}
         />
 

@@ -5,9 +5,9 @@ const backgroundColor = '#f4f0eb';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'MARI Beauty Salon',
-    short_name: 'MARI',
-    description: 'Салон красоты MARI: услуги, специалисты, запись и личный кабинет.',
+    name: 'МАРИ Салон Красоты',
+    short_name: 'МАРИ',
+    description: 'Салон красоты МАРИ: услуги, специалисты, запись и личный кабинет.',
     start_url: '/',
     display: 'standalone',
     background_color: backgroundColor,
@@ -18,20 +18,20 @@ export default function manifest(): MetadataRoute.Manifest {
         src: '/favicon.ico',
         sizes: 'any',
         type: 'image/x-icon',
-        purpose: 'any'
+        purpose: 'any',
       },
       {
         src: '/app-icon.svg',
         sizes: 'any',
         type: 'image/svg+xml',
-        purpose: 'any'
+        purpose: 'any',
       },
       {
         src: '/app-icon.svg',
         sizes: 'any',
         type: 'image/svg+xml',
-        purpose: 'maskable'
-      }
-    ]
+        purpose: 'maskable',
+      },
+    ],
   };
 }

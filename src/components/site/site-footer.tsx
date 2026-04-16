@@ -22,15 +22,18 @@ export async function SiteFooter({ salon: providedSalon }: SiteFooterProps) {
       <Container className="py-12">
         <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
           <div className="max-w-md">
-            <p className="font-serif text-4xl tracking-[0.18em] text-(--ink)">MARI</p>
+            <p className="font-serif text-4xl tracking-[0.18em] text-(--ink)">МАРИ</p>
             <p className="mt-3 text-sm leading-7 text-(--muted)">
-              Салон красоты с тёплой атмосферой, сильными специалистами и удобной записью на любимые процедуры.
+              Салон красоты с тёплой атмосферой, сильными специалистами и удобной записью на любимые
+              процедуры.
             </p>
             <div className="mt-6 space-y-2 text-sm text-(--muted-strong)">
               <a href={salon.phoneHref} className="block transition hover:text-(--foreground)">
                 {salon.phone}
               </a>
-              <a href={`mailto:${salon.email}`} className="block transition hover:text-(--foreground)">
+              <a
+                href={`mailto:${salon.email}`}
+                className="block transition hover:text-(--foreground)">
                 {salon.email}
               </a>
               <p>{salon.address}</p>
@@ -39,7 +42,9 @@ export async function SiteFooter({ salon: providedSalon }: SiteFooterProps) {
 
           {siteConfig.footerNav.map((group) => (
             <div key={group.title}>
-              <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">{group.title}</p>
+              <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">
+                {group.title}
+              </p>
               <ul className="mt-5 space-y-3 text-sm text-(--foreground)">
                 {group.items.map((item) => (
                   <li key={item.href}>
@@ -71,21 +76,18 @@ export async function SiteFooter({ salon: providedSalon }: SiteFooterProps) {
         </div>
 
         <div className="mt-4 text-center border-t border-(--line) pt-4 text-sm text-(--muted)">
-           <p>© 2026 Mari Beauty Salon</p>
+          <p>© 2026 МАРИ Салон Красоты</p>
           <p>
             Раработано студией{' '}
             <a
               href="https://lumastack.ru"
               target="_blank"
               rel="noreferrer"
-              className="font-semibold text-(--foreground) transition hover:text-(--accent-strong)"
-            >
+              className="font-semibold text-(--foreground) transition hover:text-(--accent-strong)">
               LumaStack
             </a>
           </p>
-          
         </div>
-        
       </Container>
     </footer>
   );

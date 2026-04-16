@@ -7,23 +7,23 @@ import { createPageMetadata } from '@/lib/site';
 
 export const metadata = createPageMetadata({
   title: 'О салоне',
-  description: 'О салоне MARI: атмосфера, подход к сервису и философия ухода.',
-  path: '/about'
+  description: 'О салоне МАРИ: атмосфера, подход к сервису и философия ухода.',
+  path: '/about',
 });
 
 const principles = [
   {
     title: 'Спокойная эстетика',
-    text: 'В MARI важны чистые линии, тёплая атмосфера и внимание к деталям без визуального шума.'
+    text: 'В МАРИ важны чистые линии, тёплая атмосфера и внимание к деталям без визуального шума.',
   },
   {
     title: 'Уважение к времени',
-    text: 'Мы ценим точность и комфорт, поэтому путь от выбора услуги до записи остаётся простым и понятным.'
+    text: 'Мы ценим точность и комфорт, поэтому путь от выбора услуги до записи остаётся простым и понятным.',
   },
   {
     title: 'Профессиональный подход',
-    text: 'Каждая процедура подбирается с учётом задачи, состояния волос или кожи и желаемого результата.'
-  }
+    text: 'Каждая процедура подбирается с учётом задачи, состояния волос или кожи и желаемого результата.',
+  },
 ];
 
 export default async function AboutPage() {
@@ -43,13 +43,19 @@ export default async function AboutPage() {
 
         <section className="grid gap-6 lg:grid-cols-[1fr_1fr]">
           <article className="surface-card p-8">
-            <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">История бренда</p>
-            <h2 className="mt-4 font-serif text-4xl text-(--ink)">Место для ухода, отдыха и точной работы с образом.</h2>
+            <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">
+              История бренда
+            </p>
+            <h2 className="mt-4 font-serif text-4xl text-(--ink)">
+              Место для ухода, отдыха и точной работы с образом.
+            </h2>
             <p className="mt-5 text-sm leading-7 text-(--muted)">
-              В MARI приходят за красивым результатом, спокойной атмосферой и сервисом, в котором ничего не отвлекает от главного.
+              В МАРИ приходят за красивым результатом, спокойной атмосферой и сервисом, в котором
+              ничего не отвлекает от главного.
             </p>
             <p className="mt-4 text-sm leading-7 text-(--muted)">
-              Мы хотим, чтобы и на сайте, и в салоне вы чувствовали одно и то же: аккуратность, комфорт и уважение к вашему времени.
+              Мы хотим, чтобы и на сайте, и в салоне вы чувствовали одно и то же: аккуратность,
+              комфорт и уважение к вашему времени.
             </p>
           </article>
 
@@ -74,33 +80,34 @@ export default async function AboutPage() {
                   Нас выбирают за атмосферу, сервис и результат.
                 </h2>
                 <p className="mt-5 text-sm leading-7 text-white/72 md:text-base md:leading-8">
-                  Для нас важно, чтобы каждый визит оставлял ощущение лёгкости, заботы и точного попадания в запрос. Поэтому
-                  живые отзывы гостей говорят о MARI лучше любых обещаний.
+                  Для нас важно, чтобы каждый визит оставлял ощущение лёгкости, заботы и точного
+                  попадания в запрос. Поэтому живые отзывы гостей говорят о МАРИ лучше любых
+                  обещаний.
                 </p>
                 <p className="mt-6 text-sm leading-7 text-white/60">
-                  Если хотите составить впечатление заранее, почитайте отзывы и затем выберите удобное время для визита.
+                  Если хотите составить впечатление заранее, почитайте отзывы и затем выберите
+                  удобное время для визита.
                 </p>
               </div>
 
               <div
                 className="relative mx-auto h-[720px] w-full max-w-[560px] overflow-hidden"
                 style={{
-                  position: 'relative'
-                }}
-              >
+                  position: 'relative',
+                }}>
                 <iframe
-                  title="Отзывы о MARI на Яндекс Картах"
+                  title="Отзывы о МАРИ на Яндекс Картах"
                   src="https://yandex.ru/maps-reviews-widget/36627385481?comments"
                   style={{
                     width: '100%',
                     height: '100%',
                     border: '1px solid #e6e6e6',
                     borderRadius: '8px',
-                    boxSizing: 'border-box'
+                    boxSizing: 'border-box',
                   }}
                 />
                 <a
-                  href="https://yandex.com/maps/org/mari/36627385481/"
+                  href="https://yandex.com/maps/org/МАРИ/36627385481/"
                   target="_blank"
                   rel="noreferrer"
                   style={{
@@ -119,10 +126,9 @@ export default async function AboutPage() {
                     display: 'block',
                     maxHeight: '14px',
                     whiteSpace: 'nowrap',
-                    padding: '0 16px'
-                  }}
-                >
-                  MARi на карте Республики Крым — Яндекс Карты
+                    padding: '0 16px',
+                  }}>
+                  МАРИ на карте Республики Крым — Яндекс Карты
                 </a>
               </div>
             </div>

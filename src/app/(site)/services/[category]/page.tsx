@@ -28,15 +28,15 @@ export async function generateMetadata({
   if (!item) {
     return createPageMetadata({
       title: 'Категория услуг',
-      description: 'Категория услуг MARI.',
-      path: '/services'
+      description: 'Категория услуг МАРИ.',
+      path: '/services',
     });
   }
 
   return createPageMetadata({
     title: item.name,
     description: item.description,
-    path: `/services/${item.slug}`
+    path: `/services/${item.slug}`,
   });
 }
 
@@ -58,7 +58,7 @@ export default async function ServiceCategoryPage({
     categoryName: item.name,
     categoryDescription: item.description,
     categoryHeroText: item.heroText,
-    servicesCount: item.services.length
+    servicesCount: item.services.length,
   });
 
   return (
@@ -71,7 +71,7 @@ export default async function ServiceCategoryPage({
           breadcrumbs={[
             { label: 'Главная', href: '/' },
             { label: 'Услуги', href: '/services' },
-            { label: item.name }
+            { label: item.name },
           ]}
           actions={
             <>
@@ -83,16 +83,19 @@ export default async function ServiceCategoryPage({
           }
           details={[
             `${item.services.length} услуг в категории.`,
-            'Выберите процедуру по задаче, времени и формату визита.'
+            'Выберите процедуру по задаче, времени и формату визита.',
           ]}
         />
 
         <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
           <article className="surface-card p-6">
             <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">Что важно</p>
-            <h2 className="mt-4 font-serif text-4xl text-(--ink)">Услуги собраны по реальным задачам и комфорту.</h2>
+            <h2 className="mt-4 font-serif text-4xl text-(--ink)">
+              Услуги собраны по реальным задачам и комфорту.
+            </h2>
             <p className="mt-4 text-sm leading-7 text-(--muted)">
-              Внутри категории легко сравнить процедуры, выбрать подходящий формат визита и перейти к записи без лишних шагов.
+              Внутри категории легко сравнить процедуры, выбрать подходящий формат визита и перейти
+              к записи без лишних шагов.
             </p>
           </article>
 

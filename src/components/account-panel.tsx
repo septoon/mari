@@ -20,7 +20,7 @@ const clientResponseSchema = z.object({
   client: clientProfileSchema,
 });
 
-const convertImageFileToWebp = async (file: File): Promise<File> => {
+const prepareAvatarFile = async (file: File): Promise<File> => {
   const imageByType = file.type.startsWith('image/');
   const imageByName = /\.(png|jpe?g|gif|bmp|webp|avif|svg|tiff?|heic|heif)$/i.test(file.name);
   if (!imageByType && !imageByName) {
@@ -30,52 +30,7 @@ const convertImageFileToWebp = async (file: File): Promise<File> => {
     throw new Error('Размер файла должен быть не больше 12 МБ');
   }
 
-  const objectUrl = URL.createObjectURL(file);
-  try {
-    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => resolve(img);
-      img.onerror = () => reject(new Error('Не удалось прочитать изображение'));
-      img.src = objectUrl;
-    });
-
-    const maxSize = 2200;
-    const scale = Math.min(1, maxSize / Math.max(image.naturalWidth, image.naturalHeight));
-    const width = Math.max(1, Math.round(image.naturalWidth * scale));
-    const height = Math.max(1, Math.round(image.naturalHeight * scale));
-
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) {
-      throw new Error('Canvas не поддерживается в браузере');
-    }
-
-    ctx.drawImage(image, 0, 0, width, height);
-
-    const blob = await new Promise<Blob>((resolve, reject) => {
-      canvas.toBlob(
-        (value) => {
-          if (!value) {
-            reject(new Error('Не удалось сконвертировать изображение в WEBP'));
-            return;
-          }
-          resolve(value);
-        },
-        'image/webp',
-        0.9,
-      );
-    });
-
-    const baseName = file.name.replace(/\.[^/.]+$/, '') || 'avatar';
-    return new File([blob], `${baseName}.webp`, {
-      type: 'image/webp',
-    });
-  } finally {
-    URL.revokeObjectURL(objectUrl);
-  }
+  return file;
 };
 
 export function AccountPanel() {
@@ -217,7 +172,7 @@ export function AccountPanel() {
     setFeedback(null);
 
     try {
-      const webpFile = await convertImageFileToWebp(file);
+      const webpFile = await prepareAvatarFile(file);
       const formData = new FormData();
       formData.set('file', webpFile);
 

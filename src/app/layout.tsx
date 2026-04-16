@@ -10,13 +10,13 @@ import './globals.css';
 const serif = Cormorant_Garamond({
   variable: '--font-display',
   subsets: ['latin', 'cyrillic'],
-  weight: ['400', '500', '600', '700']
+  weight: ['400', '500', '600', '700'],
 });
 
 const sans = Manrope({
   variable: '--font-body',
   subsets: ['latin', 'cyrillic'],
-  weight: ['400', '500', '600', '700', '800']
+  weight: ['400', '500', '600', '700', '800'],
 });
 
 const themeColor = '#245e63';
@@ -25,53 +25,51 @@ const yandexMetrikaId = Number(process.env.YANDEX_METRIKA_ID);
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'MARI Beauty Salon',
-    template: '%s | MARI Beauty Salon'
+    default: 'МАРИ Салон Красоты',
+    template: '%s | МАРИ Салон Красоты',
   },
   description: siteConfig.description,
   manifest: '/manifest.webmanifest',
-  applicationName: 'MARI Beauty Salon',
+  applicationName: 'МАРИ Салон Красоты',
   formatDetection: {
-    telephone: false
+    telephone: false,
   },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'MARI'
+    title: 'МАРИ',
   },
   openGraph: {
-    title: 'MARI Beauty Salon',
+    title: 'МАРИ Салон Красоты',
     description: siteConfig.description,
     url: siteUrl,
-    siteName: 'MARI Beauty Salon',
+    siteName: 'МАРИ Салон Красоты',
     locale: 'ru_RU',
     type: 'website',
-    images: [defaultMetaImage]
+    images: [defaultMetaImage],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'MARI Beauty Salon',
+    title: 'МАРИ Салон Красоты',
     description: siteConfig.description,
-    images: [siteImageUrl]
+    images: [siteImageUrl],
   },
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
       { url: '/app-icon.svg', type: 'image/svg+xml' },
-      { url: '/app-icon.png', sizes: '512x512', type: 'image/png' }
+      { url: '/app-icon.png', sizes: '512x512', type: 'image/png' },
     ],
     shortcut: '/favicon.ico',
-    apple: [
-      { url: '/app-icon.png', sizes: '180x180', type: 'image/png' }
-    ]
-  }
+    apple: [{ url: '/app-icon.png', sizes: '180x180', type: 'image/png' }],
+  },
 };
 
 export const viewport: Viewport = {
   themeColor,
   colorScheme: 'light',
   width: 'device-width',
-  initialScale: 1
+  initialScale: 1,
 };
 
 export default function RootLayout({
@@ -81,8 +79,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru">
-      <body suppressHydrationWarning className={`${sans.variable} ${serif.variable} font-sans antialiased`}>
-        <YandexMetrika metrikaId={Number.isFinite(yandexMetrikaId) && yandexMetrikaId > 0 ? yandexMetrikaId : undefined} />
+      <body
+        suppressHydrationWarning
+        className={`${sans.variable} ${serif.variable} font-sans antialiased`}>
+        <YandexMetrika
+          metrikaId={
+            Number.isFinite(yandexMetrikaId) && yandexMetrikaId > 0 ? yandexMetrikaId : undefined
+          }
+        />
         <PwaRegister />
         {children}
       </body>

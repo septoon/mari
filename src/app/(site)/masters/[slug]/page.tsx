@@ -32,28 +32,21 @@ export async function generateMetadata({
   if (!master) {
     return createPageMetadata({
       title: 'Специалист',
-      description: 'Профиль специалиста MARI.',
-      path: '/masters'
+      description: 'Профиль специалиста МАРИ.',
+      path: '/masters',
     });
   }
 
   return createPageMetadata({
     title: master.name,
     description: master.summary,
-    path: `/masters/${master.slug}`
+    path: `/masters/${master.slug}`,
   });
 }
 
-export default async function MasterDetailPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function MasterDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const [catalog, pageContent] = await Promise.all([
-    getLiveCatalog(),
-    getSpecialistsPageContent(),
-  ]);
+  const [catalog, pageContent] = await Promise.all([getLiveCatalog(), getSpecialistsPageContent()]);
   const master = catalog.specialists.find((item) => item.slug === slug);
 
   if (!master) {
@@ -65,7 +58,7 @@ export default async function MasterDetailPage({
     masterSpecialty: master.specialtyLabel,
     masterName: master.name,
     masterSummary: master.summary,
-    masterCategories: master.categoryNames.join(', ')
+    masterCategories: master.categoryNames.join(', '),
   });
 
   return (
@@ -78,7 +71,7 @@ export default async function MasterDetailPage({
           breadcrumbs={[
             { label: 'Главная', href: '/' },
             { label: 'Специалисты', href: '/masters' },
-            { label: master.name }
+            { label: master.name },
           ]}
           actions={
             <>

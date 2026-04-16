@@ -18,7 +18,7 @@ export async function generateStaticParams() {
   const catalog = await getLiveCatalog();
   return catalog.services.map((service) => ({
     category: service.categorySlug,
-    service: service.slug
+    service: service.slug,
   }));
 }
 
@@ -30,21 +30,21 @@ export async function generateMetadata({
   const resolved = await params;
   const catalog = await getLiveCatalog();
   const service = catalog.services.find(
-    (item) => item.categorySlug === resolved.category && item.slug === resolved.service
+    (item) => item.categorySlug === resolved.category && item.slug === resolved.service,
   );
 
   if (!service) {
     return createPageMetadata({
       title: 'Услуга',
-      description: 'Страница услуги MARI.',
-      path: '/services'
+      description: 'Страница услуги МАРИ.',
+      path: '/services',
     });
   }
 
   return createPageMetadata({
     title: service.displayName,
     description: service.teaser,
-    path: `/services/${service.categorySlug}/${service.slug}`
+    path: `/services/${service.categorySlug}/${service.slug}`,
   });
 }
 
@@ -56,7 +56,7 @@ export default async function ServiceDetailPage({
   const resolved = await params;
   const catalog = await getLiveCatalog();
   const service = catalog.services.find(
-    (item) => item.categorySlug === resolved.category && item.slug === resolved.service
+    (item) => item.categorySlug === resolved.category && item.slug === resolved.service,
   );
 
   if (!service) {
@@ -65,7 +65,7 @@ export default async function ServiceDetailPage({
 
   const category = catalog.serviceCategories.find((item) => item.slug === service.categorySlug);
   const masters = catalog.specialists.filter((specialist) =>
-    specialist.services.some((item) => item.id === service.id)
+    specialist.services.some((item) => item.id === service.id),
   );
   const relatedServices = catalog.services
     .filter((item) => item.category.id === service.category.id && item.id !== service.id)
@@ -74,7 +74,7 @@ export default async function ServiceDetailPage({
     categoryEyebrow: category?.eyebrow ?? service.category.name,
     categoryName: category?.name ?? service.category.name,
     serviceName: service.displayName,
-    serviceTeaser: service.teaser
+    serviceTeaser: service.teaser,
   });
 
   return (
@@ -87,14 +87,14 @@ export default async function ServiceDetailPage({
           breadcrumbs={[
             { label: 'Главная', href: '/' },
             { label: 'Услуги', href: '/services' },
-            category ? { label: category.name, href: `/services/${category.slug}` } : { label: service.category.name, href: '/services' },
-            { label: service.displayName }
+            category
+              ? { label: category.name, href: `/services/${category.slug}` }
+              : { label: service.category.name, href: '/services' },
+            { label: service.displayName },
           ]}
           actions={
             <>
-              <ButtonLink href={`/booking?service=${service.slug}`}>
-                Записаться
-              </ButtonLink>
+              <ButtonLink href={`/booking?service=${service.slug}`}>Записаться</ButtonLink>
               <ButtonLink href={`/services/${service.categorySlug}`} variant="secondary">
                 Все услуги категории
               </ButtonLink>
@@ -102,7 +102,7 @@ export default async function ServiceDetailPage({
           }
           details={[
             `Длительность ${Math.round(service.durationSec / 60)} мин.`,
-            `Стоимость от ${formatCurrency(service.priceMin)}.`
+            `Стоимость от ${formatCurrency(service.priceMin)}.`,
           ]}
         />
 
@@ -136,12 +136,16 @@ export default async function ServiceDetailPage({
 
           <article className="surface-card p-6">
             <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">О процедуре</p>
-            <h2 className="mt-4 font-serif text-4xl text-(--ink)">Всё важное о процедуре в одном месте.</h2>
+            <h2 className="mt-4 font-serif text-4xl text-(--ink)">
+              Всё важное о процедуре в одном месте.
+            </h2>
             <p className="mt-4 text-sm leading-7 text-(--muted)">
-              Здесь собраны описание, ориентир по стоимости, длительность и список специалистов, чтобы вы могли быстро принять решение о визите.
+              Здесь собраны описание, ориентир по стоимости, длительность и список специалистов,
+              чтобы вы могли быстро принять решение о визите.
             </p>
             <div className="mt-6 rounded-[1.5rem] border border-(--line) bg-white/72 p-5 text-sm leading-7 text-(--muted)">
-              {service.description?.trim() || 'Подробности по процедуре подскажет мастер перед началом визита. Ниже можно выбрать специалиста и перейти к записи.'}
+              {service.description?.trim() ||
+                'Подробности по процедуре подскажет мастер перед началом визита. Ниже можно выбрать специалиста и перейти к записи.'}
             </div>
           </article>
         </section>
@@ -197,9 +201,7 @@ export default async function ServiceDetailPage({
         description="Если вы уже определились с процедурой, перейдите к записи и соберите визит в несколько шагов."
         actions={
           <>
-            <ButtonLink href={`/booking?service=${service.slug}`}>
-              Записаться на услугу
-            </ButtonLink>
+            <ButtonLink href={`/booking?service=${service.slug}`}>Записаться на услугу</ButtonLink>
             <ButtonLink href="/prices" variant="secondary">
               Смотреть цены
             </ButtonLink>

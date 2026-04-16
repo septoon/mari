@@ -12,9 +12,8 @@ import { resolveSitePageHero } from '@/lib/site-page-heroes';
 
 export const metadata = createPageMetadata({
   title: 'Услуги',
-  description:
-    'Каталог услуг MARI: процедуры, цены, длительность и переход к записи.',
-  path: '/services'
+  description: 'Каталог услуг МАРИ: процедуры, цены, длительность и переход к записи.',
+  path: '/services',
 });
 
 export default async function ServicesPage() {
@@ -32,7 +31,7 @@ export default async function ServicesPage() {
           actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
           details={[
             `${catalog.serviceCategories.length} категорий и ${catalog.services.length} активных услуг.`,
-            'Из карточки услуги можно сразу перейти к подробностям и записи.'
+            'Из карточки услуги можно сразу перейти к подробностям и записи.',
           ]}
         />
 

@@ -14,8 +14,7 @@ import { getLiveCatalog } from '@/lib/live-catalog';
 
 export const metadata = createPageMetadata({
   title: 'Главная',
-  description:
-    'MARI Beauty Salon: услуги, специалисты, цены и онлайн-запись в салон красоты.'
+  description: 'МАРИ Салон Красоты: услуги, специалисты, цены и онлайн-запись в салон красоты.',
 });
 
 export default async function HomePage() {
@@ -160,9 +159,7 @@ export default async function HomePage() {
             <div className="surface-card p-8">
               <p className="section-kicker">{homePageContent.contacts.eyebrow}</p>
               <h2 className="section-title">{homePageContent.contacts.title}</h2>
-              <p className="section-copy">
-                {homePageContent.contacts.description}
-              </p>
+              <p className="section-copy">{homePageContent.contacts.description}</p>
               <div className="mt-8 grid gap-3 text-sm text-(--muted)">
                 <div className="surface-card p-4">{catalog.salon.address}</div>
                 <div className="surface-card p-4">{catalog.salon.phone}</div>
@@ -178,8 +175,7 @@ export default async function HomePage() {
 
             <div className="space-y-6">
               {homePageContent.highlights.map((item, index) => {
-                const Icon =
-                  index === 0 ? CalendarDays : index === 1 ? ShieldCheck : Sparkles;
+                const Icon = index === 0 ? CalendarDays : index === 1 ? ShieldCheck : Sparkles;
 
                 return (
                   <div key={item.title} className="surface-card p-6">
@@ -187,9 +183,7 @@ export default async function HomePage() {
                       <Icon className="h-4 w-4" />
                       {item.title}
                     </p>
-                    <p className="mt-4 text-sm leading-7 text-(--muted)">
-                      {item.description}
-                    </p>
+                    <p className="mt-4 text-sm leading-7 text-(--muted)">{item.description}</p>
                   </div>
                 );
               })}

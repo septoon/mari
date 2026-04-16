@@ -10,8 +10,8 @@ import { createPageMetadata } from '@/lib/site';
 
 export const metadata = createPageMetadata({
   title: 'Новости',
-  description: 'Новости Mari: новые пространства, услуги и сервисные обновления.',
-  path: '/news'
+  description: 'Новости МАРИ: новые пространства, услуги и сервисные обновления.',
+  path: '/news',
 });
 
 export default async function NewsPage() {

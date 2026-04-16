@@ -9,8 +9,8 @@ import { createPageMetadata } from '@/lib/site';
 
 export const metadata = createPageMetadata({
   title: 'Вакансии',
-  description: 'Вакансии Mari: мастера, косметологи и сервисная команда.',
-  path: '/careers'
+  description: 'Вакансии МАРИ: мастера, косметологи и сервисная команда.',
+  path: '/careers',
 });
 
 export default async function CareersPage() {
@@ -46,7 +46,9 @@ export default async function CareersPage() {
               <p className="mt-5 max-w-3xl text-sm leading-7 text-(--muted)">{job.description}</p>
               <ul className="mt-6 grid gap-3 md:grid-cols-3">
                 {job.requirements.map((item) => (
-                  <li key={item} className="rounded-[1.5rem] border border-(--line) bg-white/72 p-4 text-sm leading-7 text-(--muted)">
+                  <li
+                    key={item}
+                    className="rounded-[1.5rem] border border-(--line) bg-white/72 p-4 text-sm leading-7 text-(--muted)">
                     {item}
                   </li>
                 ))}
@@ -57,8 +59,8 @@ export default async function CareersPage() {
       </Container>
 
       <CtaPanel
-        eyebrow="Команда Mari"
-        title="Если вам близок подход MARI, отправляйте резюме."
+        eyebrow="Команда МАРИ"
+        title="Если вам близок подход МАРИ, отправляйте резюме."
         description="Расскажите о себе, опыте и специализации, а мы свяжемся с вами по поводу следующего шага."
         actions={
           <>

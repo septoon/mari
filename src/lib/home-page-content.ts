@@ -66,86 +66,85 @@ export type HomePageContent = {
 
 export const HOME_PAGE_DEFAULTS: HomePageContent = {
   hero: {
-    eyebrow: 'Салон красоты MARI',
+    eyebrow: 'Салон красоты МАРИ',
     title: 'Услуги, специалисты\nи запись\nв одном месте.',
     description:
       'Здесь можно выбрать услугу, познакомиться со специалистами, посмотреть цены и сразу подобрать удобное время для визита.',
     primaryCtaLabel: 'Записаться',
     secondaryCtaLabel: 'Выбрать услугу',
-    visualLabel: 'MARI',
+    visualLabel: 'МАРИ',
     visualTitle: 'Пространство для ухода, цвета и точной работы с образом.',
-    visualSubtitle:
-      'Путь от первого знакомства до записи был коротким, понятным и приятным.'
+    visualSubtitle: 'Путь от первого знакомства до записи был коротким, понятным и приятным.',
   },
   categories: {
     eyebrow: 'Популярные направления',
     title: 'Выберите направление, с которого хотите начать.',
     description:
       'Волосы, ногтевой сервис, уход за лицом, брови, ресницы и другие процедуры собраны в удобный каталог.',
-    actionLabel: 'Все услуги'
+    actionLabel: 'Все услуги',
   },
   valuePillars: {
     eyebrow: 'Почему выбирают нас',
-    title: 'В MARI важны комфорт, точность и уважение к вашему времени.',
+    title: 'В МАРИ важны комфорт, точность и уважение к вашему времени.',
     description:
       'Мы убрали всё лишнее и оставили только то, что помогает быстро принять решение и записаться без лишних шагов.',
     items: [
       {
         title: 'Понятный выбор',
-        text: 'На сайте легко сравнить услуги, посмотреть длительность и сразу перейти к записи.'
+        text: 'На сайте легко сравнить услуги, посмотреть длительность и сразу перейти к записи.',
       },
       {
         title: 'Сильные специалисты',
-        text: 'У каждого специалиста есть профиль с направлениями работы и удобным переходом к записи.'
+        text: 'У каждого специалиста есть профиль с направлениями работы и удобным переходом к записи.',
       },
       {
         title: 'Честные цены',
-        text: 'В карточках сразу видно ориентир по стоимости и длительности, без сложных условий.'
+        text: 'В карточках сразу видно ориентир по стоимости и длительности, без сложных условий.',
       },
       {
         title: 'Комфорт после записи',
-        text: 'В личном кабинете можно посмотреть визиты, обновить профиль и управлять ближайшими записями.'
-      }
-    ]
+        text: 'В личном кабинете можно посмотреть визиты, обновить профиль и управлять ближайшими записями.',
+      },
+    ],
   },
   featuredServices: {
     eyebrow: 'Услуги',
     title: 'Популярные процедуры, которые выбирают чаще всего.',
     description:
       'У каждой услуги есть краткое описание, длительность, ориентир по стоимости и переход к записи.',
-    actionLabel: 'Смотреть цены'
+    actionLabel: 'Смотреть цены',
   },
   featuredSpecialists: {
     eyebrow: 'Специалисты',
     title: 'Специалисты, которым доверяют постоянные гости.',
     description:
       'Познакомьтесь со специалистами, их направлениями и выберите того, кто подходит именно вам.',
-    actionLabel: 'Все специалисты'
+    actionLabel: 'Все специалисты',
   },
   contacts: {
-    eyebrow: 'Салон MARI',
+    eyebrow: 'Салон МАРИ',
     title: 'Контакты, запись и поддержка собраны в одном месте.',
     description:
       'Можно позвонить, посмотреть адрес, выбрать услугу и сразу перейти к записи без долгих переходов по сайту.',
     primaryCtaLabel: 'Записаться',
-    secondaryCtaLabel: 'Контакты салона'
+    secondaryCtaLabel: 'Контакты салона',
   },
   highlights: [
     {
       title: 'Онлайн-запись',
       description:
-        'Выберите услуги, специалиста и удобное время в одном аккуратном сценарии записи.'
+        'Выберите услуги, специалиста и удобное время в одном аккуратном сценарии записи.',
     },
     {
       title: 'Личный кабинет',
       description:
-        'После входа можно посмотреть историю визитов, обновить профиль и управлять записями.'
+        'После входа можно посмотреть историю визитов, обновить профиль и управлять записями.',
     },
     {
       title: 'Спокойная атмосфера',
       description:
-        'Тёплый визуальный язык сайта передаёт настроение салона и помогает сосредоточиться на выборе.'
-    }
+        'Тёплый визуальный язык сайта передаёт настроение салона и помогает сосредоточиться на выборе.',
+    },
   ],
   bottomCta: {
     eyebrow: 'Запись',
@@ -153,8 +152,8 @@ export const HOME_PAGE_DEFAULTS: HomePageContent = {
     description:
       'Основные разделы сайта собраны так, чтобы от знакомства с салоном вы могли сразу перейти к записи.',
     primaryCtaLabel: 'Записаться',
-    secondaryCtaLabel: 'Выбрать специалиста'
-  }
+    secondaryCtaLabel: 'Выбрать специалиста',
+  },
 };
 
 const asObjectRecord = (value: unknown): Record<string, unknown> => {
@@ -176,7 +175,7 @@ const readPillars = (value: unknown) => {
     const current = asObjectRecord(value[index]);
     return {
       title: readString(current.title, item.title),
-      text: readString(current.text, item.text)
+      text: readString(current.text, item.text),
     };
   });
 };
@@ -190,7 +189,7 @@ const readHighlights = (value: unknown) => {
     const current = asObjectRecord(value[index]);
     return {
       title: readString(current.title, item.title),
-      description: readString(current.description, item.description)
+      description: readString(current.description, item.description),
     };
   });
 };
@@ -213,59 +212,53 @@ export const readHomePageContent = (value: unknown): HomePageContent => {
       primaryCtaLabel: readString(hero.primaryCtaLabel, HOME_PAGE_DEFAULTS.hero.primaryCtaLabel),
       secondaryCtaLabel: readString(
         hero.secondaryCtaLabel,
-        HOME_PAGE_DEFAULTS.hero.secondaryCtaLabel
+        HOME_PAGE_DEFAULTS.hero.secondaryCtaLabel,
       ),
       visualLabel: readString(hero.visualLabel, HOME_PAGE_DEFAULTS.hero.visualLabel),
       visualTitle: readString(hero.visualTitle, HOME_PAGE_DEFAULTS.hero.visualTitle),
-      visualSubtitle: readString(hero.visualSubtitle, HOME_PAGE_DEFAULTS.hero.visualSubtitle)
+      visualSubtitle: readString(hero.visualSubtitle, HOME_PAGE_DEFAULTS.hero.visualSubtitle),
     },
     categories: {
       eyebrow: readString(categories.eyebrow, HOME_PAGE_DEFAULTS.categories.eyebrow),
       title: readString(categories.title, HOME_PAGE_DEFAULTS.categories.title),
       description: readString(categories.description, HOME_PAGE_DEFAULTS.categories.description),
-      actionLabel: readString(categories.actionLabel, HOME_PAGE_DEFAULTS.categories.actionLabel)
+      actionLabel: readString(categories.actionLabel, HOME_PAGE_DEFAULTS.categories.actionLabel),
     },
     valuePillars: {
       eyebrow: readString(valuePillars.eyebrow, HOME_PAGE_DEFAULTS.valuePillars.eyebrow),
       title: readString(valuePillars.title, HOME_PAGE_DEFAULTS.valuePillars.title),
       description: readString(
         valuePillars.description,
-        HOME_PAGE_DEFAULTS.valuePillars.description
+        HOME_PAGE_DEFAULTS.valuePillars.description,
       ),
-      items: readPillars(valuePillars.items)
+      items: readPillars(valuePillars.items),
     },
     featuredServices: {
-      eyebrow: readString(
-        featuredServices.eyebrow,
-        HOME_PAGE_DEFAULTS.featuredServices.eyebrow
-      ),
+      eyebrow: readString(featuredServices.eyebrow, HOME_PAGE_DEFAULTS.featuredServices.eyebrow),
       title: readString(featuredServices.title, HOME_PAGE_DEFAULTS.featuredServices.title),
       description: readString(
         featuredServices.description,
-        HOME_PAGE_DEFAULTS.featuredServices.description
+        HOME_PAGE_DEFAULTS.featuredServices.description,
       ),
       actionLabel: readString(
         featuredServices.actionLabel,
-        HOME_PAGE_DEFAULTS.featuredServices.actionLabel
-      )
+        HOME_PAGE_DEFAULTS.featuredServices.actionLabel,
+      ),
     },
     featuredSpecialists: {
       eyebrow: readString(
         featuredSpecialists.eyebrow,
-        HOME_PAGE_DEFAULTS.featuredSpecialists.eyebrow
+        HOME_PAGE_DEFAULTS.featuredSpecialists.eyebrow,
       ),
-      title: readString(
-        featuredSpecialists.title,
-        HOME_PAGE_DEFAULTS.featuredSpecialists.title
-      ),
+      title: readString(featuredSpecialists.title, HOME_PAGE_DEFAULTS.featuredSpecialists.title),
       description: readString(
         featuredSpecialists.description,
-        HOME_PAGE_DEFAULTS.featuredSpecialists.description
+        HOME_PAGE_DEFAULTS.featuredSpecialists.description,
       ),
       actionLabel: readString(
         featuredSpecialists.actionLabel,
-        HOME_PAGE_DEFAULTS.featuredSpecialists.actionLabel
-      )
+        HOME_PAGE_DEFAULTS.featuredSpecialists.actionLabel,
+      ),
     },
     contacts: {
       eyebrow: readString(contacts.eyebrow, HOME_PAGE_DEFAULTS.contacts.eyebrow),
@@ -273,12 +266,12 @@ export const readHomePageContent = (value: unknown): HomePageContent => {
       description: readString(contacts.description, HOME_PAGE_DEFAULTS.contacts.description),
       primaryCtaLabel: readString(
         contacts.primaryCtaLabel,
-        HOME_PAGE_DEFAULTS.contacts.primaryCtaLabel
+        HOME_PAGE_DEFAULTS.contacts.primaryCtaLabel,
       ),
       secondaryCtaLabel: readString(
         contacts.secondaryCtaLabel,
-        HOME_PAGE_DEFAULTS.contacts.secondaryCtaLabel
-      )
+        HOME_PAGE_DEFAULTS.contacts.secondaryCtaLabel,
+      ),
     },
     highlights: readHighlights(source.highlights),
     bottomCta: {
@@ -287,13 +280,13 @@ export const readHomePageContent = (value: unknown): HomePageContent => {
       description: readString(bottomCta.description, HOME_PAGE_DEFAULTS.bottomCta.description),
       primaryCtaLabel: readString(
         bottomCta.primaryCtaLabel,
-        HOME_PAGE_DEFAULTS.bottomCta.primaryCtaLabel
+        HOME_PAGE_DEFAULTS.bottomCta.primaryCtaLabel,
       ),
       secondaryCtaLabel: readString(
         bottomCta.secondaryCtaLabel,
-        HOME_PAGE_DEFAULTS.bottomCta.secondaryCtaLabel
-      )
-    }
+        HOME_PAGE_DEFAULTS.bottomCta.secondaryCtaLabel,
+      ),
+    },
   };
 };
 

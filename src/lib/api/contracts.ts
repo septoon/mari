@@ -210,7 +210,9 @@ export const serviceSchema = z.object({
   externalId: z.string().nullable().optional(),
   category: z.object({
     id: z.string().uuid(),
-    name: z.string()
+    name: z.string(),
+    imageAssetId: z.string().uuid().nullable().optional(),
+    imageUrl: z.string().nullable().optional()
   }),
   name: z.string(),
   nameOnline: z.string().nullable(),

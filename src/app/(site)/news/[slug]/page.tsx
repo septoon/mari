@@ -25,23 +25,19 @@ export async function generateMetadata({
   if (!article) {
     return createPageMetadata({
       title: 'Новость',
-      description: 'Новость Mari.',
-      path: '/news'
+      description: 'Новость МАРИ.',
+      path: '/news',
     });
   }
 
   return createPageMetadata({
     title: article.title,
     description: article.excerpt,
-    path: `/news/${article.slug}`
+    path: `/news/${article.slug}`,
   });
 }
 
-export default async function NewsDetailPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function NewsDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const article = await getSiteNewsArticle(slug);
 
@@ -54,7 +50,7 @@ export default async function NewsDetailPage({
     newsCategory: article.category,
     newsTitle: article.title,
     newsExcerpt: article.excerpt,
-    newsDate: new Date(article.publishedAt).toLocaleDateString('ru-RU')
+    newsDate: new Date(article.publishedAt).toLocaleDateString('ru-RU'),
   });
 
   return (
@@ -67,7 +63,7 @@ export default async function NewsDetailPage({
           breadcrumbs={[
             { label: 'Главная', href: '/' },
             { label: 'Новости', href: '/news' },
-            { label: article.title }
+            { label: article.title },
           ]}
           actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
           details={[new Date(article.publishedAt).toLocaleDateString('ru-RU')]}

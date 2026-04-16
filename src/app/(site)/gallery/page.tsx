@@ -10,8 +10,8 @@ import { createPageMetadata } from '@/lib/site';
 
 export const metadata = createPageMetadata({
   title: 'Галерея',
-  description: 'Галерея Mari: моменты услуг, интерьера и moodboard бренда.',
-  path: '/gallery'
+  description: 'Галерея МАРИ: моменты услуг, интерьера и moodboard бренда.',
+  path: '/gallery',
 });
 
 export default async function GalleryPage() {

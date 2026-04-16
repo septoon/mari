@@ -9,26 +9,26 @@ import { createPageMetadata } from '@/lib/site';
 
 export const metadata = createPageMetadata({
   title: 'Подарочные сертификаты',
-  description: 'Подарочные сертификаты Mari для услуг, beauty-дней и premium-ухода.',
-  path: '/gift-cards'
+  description: 'Подарочные сертификаты МАРИ для услуг, beauty-дней и premium-ухода.',
+  path: '/gift-cards',
 });
 
 const packages = [
   {
     title: 'Signature',
     note: 'Номинал 10 000 ₽',
-    text: 'Для первого знакомства с Mari и выбора нескольких ключевых сервисов.'
+    text: 'Для первого знакомства с МАРИ и выбора нескольких ключевых сервисов.',
   },
   {
     title: 'Beauty Day',
     note: 'Номинал 20 000 ₽',
-    text: 'Подходит для комбинированного визита: волосы, лицо, brows или body-care.'
+    text: 'Подходит для комбинированного визита: волосы, лицо, brows или body-care.',
   },
   {
     title: 'Club Gift',
     note: 'Свободный номинал',
-    text: 'Персональный сценарий для подарка с custom-сообщением и цифровой отправкой.'
-  }
+    text: 'Персональный сценарий для подарка с custom-сообщением и цифровой отправкой.',
+  },
 ];
 
 export default async function GiftCardsPage() {
@@ -64,7 +64,9 @@ export default async function GiftCardsPage() {
           <div className="grid gap-6">
             {packages.map((item) => (
               <article key={item.title} className="surface-card p-6">
-                <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">{item.note}</p>
+                <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">
+                  {item.note}
+                </p>
                 <h2 className="mt-4 font-serif text-4xl text-(--ink)">{item.title}</h2>
                 <p className="mt-4 text-sm leading-7 text-(--muted)">{item.text}</p>
               </article>

@@ -14,7 +14,7 @@ import {
   serviceListSchema,
   slotsResultSchema,
   type ClientBootstrap,
-  type Service
+  type Service,
 } from '@/lib/api/contracts';
 
 const backendBaseUrl = (process.env.MARI_SERVER_URL ?? 'http://localhost:3000').replace(/\/+$/, '');
@@ -46,7 +46,7 @@ const buildUrl = (path: string) => `${backendBaseUrl}${path.startsWith('/') ? pa
 export const backendRequest = async <T extends z.ZodTypeAny>(
   path: string,
   schema: T,
-  options: BackendRequestOptions = {}
+  options: BackendRequestOptions = {},
 ): Promise<z.infer<T>> => {
   const headers = new Headers(options.init?.headers);
 
@@ -65,13 +65,13 @@ export const backendRequest = async <T extends z.ZodTypeAny>(
       ...options.init,
       headers,
       cache: options.cache ?? 'no-store',
-      next: options.next
+      next: options.next,
     });
   } catch (error) {
     throw new BackendError(`Не удалось подключиться к mari-server: ${backendBaseUrl}`, {
       status: 502,
       code: 'BACKEND_UNAVAILABLE',
-      details: error instanceof Error ? error.message : error
+      details: error instanceof Error ? error.message : error,
     });
   }
 
@@ -84,13 +84,13 @@ export const backendRequest = async <T extends z.ZodTypeAny>(
       throw new BackendError(parsedError.data.error.message, {
         status: response.status,
         code: parsedError.data.error.code,
-        details: parsedError.data.error.details
+        details: parsedError.data.error.details,
       });
     }
 
     throw new BackendError(`Backend request failed with status ${response.status}`, {
       status: response.status,
-      details: payload
+      details: payload,
     });
   }
 
@@ -98,7 +98,7 @@ export const backendRequest = async <T extends z.ZodTypeAny>(
   if (!parsed.success) {
     throw new BackendError('Backend response contract mismatch', {
       status: response.status,
-      details: parsed.error.flatten()
+      details: parsed.error.flatten(),
     });
   }
 
@@ -118,8 +118,8 @@ const createDefaultBootstrap = (): ClientBootstrap => ({
   version: 0,
   publishedAt: null,
   config: {
-    brandName: 'MARI',
-    legalName: 'Mari Beauty Salon',
+    brandName: 'МАРИ',
+    legalName: 'МАРИ Салон Красоты',
     minAppVersionIos: null,
     minAppVersionAndroid: null,
     maintenanceMode: false,
@@ -127,15 +127,15 @@ const createDefaultBootstrap = (): ClientBootstrap => ({
     featureFlags: {},
     featureFlagState: {},
     contacts: [],
-    extra: {}
+    extra: {},
   },
   blocks: [],
-  specialists: []
+  specialists: [],
 });
 
 export const getClientBootstrap = cache(async (): Promise<ClientBootstrap> => {
   return backendRequest(buildBootstrapPath(), clientBootstrapSchema, {
-    cache: 'no-store'
+    cache: 'no-store',
   });
 });
 
@@ -148,11 +148,12 @@ export const getLandingData = async (): Promise<{
     getClientBootstrap(),
     backendRequest('/services/public', serviceListSchema, {
       cache: 'force-cache',
-      next: { revalidate: 60 }
-    })
+      next: { revalidate: 60 },
+    }),
   ]);
 
-  const bootstrap = bootstrapResult.status === 'fulfilled' ? bootstrapResult.value : createDefaultBootstrap();
+  const bootstrap =
+    bootstrapResult.status === 'fulfilled' ? bootstrapResult.value : createDefaultBootstrap();
   const services = servicesResult.status === 'fulfilled' ? servicesResult.value.items : [];
 
   return {
@@ -160,8 +161,8 @@ export const getLandingData = async (): Promise<{
     services,
     connectivity: {
       bootstrap: bootstrapResult.status === 'fulfilled',
-      services: servicesResult.status === 'fulfilled'
-    }
+      services: servicesResult.status === 'fulfilled',
+    },
   };
 };
 
@@ -169,33 +170,30 @@ export const refreshClientSession = async (refreshToken: string) =>
   backendRequest('/auth/client/refresh', authPayloadSchema, {
     init: {
       method: 'POST',
-      body: JSON.stringify({ refreshToken })
-    }
+      body: JSON.stringify({ refreshToken }),
+    },
   });
 
 export const fetchClientProfile = async (authToken: string) =>
   backendRequest('/auth/client/profile', z.object({ client: clientProfileSchema }), {
-    authToken
+    authToken,
   }).then((payload) => payload.client);
 
 export const requestClientPasswordReset = async (payload: { email?: string; phone?: string }) =>
   backendRequest('/auth/client/password/reset/request', passwordResetRequestResultSchema, {
     init: {
       method: 'POST',
-      body: JSON.stringify(payload)
-    }
+      body: JSON.stringify(payload),
+    },
   });
 
 export const fetchClientAppointments = async (authToken: string, page = 1, limit = 10) =>
   backendRequest(`/client/appointments?page=${page}&limit=${limit}`, clientAppointmentsSchema, {
-    authToken
+    authToken,
   });
 
-export const fetchSlots = async (
-  authToken: string | undefined,
-  path: string
-) => {
+export const fetchSlots = async (authToken: string | undefined, path: string) => {
   return backendRequest(path, slotsResultSchema, {
-    authToken
+    authToken,
   });
 };

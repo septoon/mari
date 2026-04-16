@@ -10,8 +10,8 @@ import { resolveSitePageHero } from '@/lib/site-page-heroes';
 
 export const metadata = createPageMetadata({
   title: 'Контакты',
-  description: 'Контакты салона MARI, адрес, телефон и маршрут.',
-  path: '/contacts'
+  description: 'Контакты салона МАРИ, адрес, телефон и маршрут.',
+  path: '/contacts',
 });
 
 type SearchValue = string | string[] | undefined;
@@ -75,7 +75,7 @@ export default async function ContactsPage({
 
         <section className="mt-12 grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
           <article className="surface-card p-6 md:p-8">
-            <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">Салон MARI</p>
+            <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">Салон МАРИ</p>
             <h2 className="mt-4 font-serif text-4xl text-(--ink)">{catalog.salon.name}</h2>
             <div className="mt-6 grid gap-4 text-sm leading-7 text-(--muted)">
               <p className="inline-flex items-start gap-3">
@@ -97,7 +97,9 @@ export default async function ContactsPage({
           </article>
 
           <article className="surface-card p-6 md:p-8">
-            <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">Что можно сделать здесь</p>
+            <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">
+              Что можно сделать здесь
+            </p>
             <div className="mt-6 grid gap-4">
               <div className="rounded-[1.5rem] border border-(--line) bg-white/72 p-4 text-sm leading-7 text-(--muted)">
                 Перейти на страницу записи и выбрать услугу, специалиста и удобное время.
