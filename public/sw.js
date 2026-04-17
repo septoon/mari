@@ -1,5 +1,5 @@
 const CACHE_NAME = 'mari-pwa-v1';
-const APP_SHELL = ['/', '/manifest.webmanifest', '/app-icon.svg'];
+const APP_SHELL = ['/', '/manifest.webmanifest', '/app-icon.png'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
