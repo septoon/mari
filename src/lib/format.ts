@@ -1,3 +1,5 @@
+export const SALON_TIME_ZONE = 'Europe/Moscow';
+
 const currencyFormatter = new Intl.NumberFormat('ru-RU', {
   style: 'currency',
   currency: 'RUB',
@@ -6,21 +8,48 @@ const currencyFormatter = new Intl.NumberFormat('ru-RU', {
 
 const dateFormatter = new Intl.DateTimeFormat('ru-RU', {
   day: '2-digit',
-  month: 'long'
+  month: 'long',
+  timeZone: SALON_TIME_ZONE
 });
 
 const dateTimeFormatter = new Intl.DateTimeFormat('ru-RU', {
   day: '2-digit',
   month: 'long',
   hour: '2-digit',
-  minute: '2-digit'
+  minute: '2-digit',
+  hourCycle: 'h23',
+  timeZone: SALON_TIME_ZONE
 });
 
 const weekdayFormatter = new Intl.DateTimeFormat('ru-RU', {
-  weekday: 'short'
+  weekday: 'short',
+  timeZone: SALON_TIME_ZONE
 });
 
-const parseDate = (value: string) => new Date(value.includes('T') ? value : `${value}T00:00:00`);
+const timeFormatter = new Intl.DateTimeFormat('ru-RU', {
+  hour: '2-digit',
+  minute: '2-digit',
+  hourCycle: 'h23',
+  timeZone: SALON_TIME_ZONE
+});
+
+const timePartsFormatter = new Intl.DateTimeFormat('en-GB', {
+  hour: '2-digit',
+  minute: '2-digit',
+  hourCycle: 'h23',
+  timeZone: SALON_TIME_ZONE
+});
+
+const parseDate = (value: string) =>
+  new Date(value.includes('T') ? value : `${value}T00:00:00+03:00`);
+
+export const getSalonMinutesFromMidnight = (iso: string) => {
+  const parts = timePartsFormatter.formatToParts(parseDate(iso));
+  const hour = Number(parts.find((part) => part.type === 'hour')?.value ?? '0');
+  const minute = Number(parts.find((part) => part.type === 'minute')?.value ?? '0');
+
+  return hour * 60 + minute;
+};
 
 export const formatCurrency = (value: number) => currencyFormatter.format(value);
 
@@ -41,11 +70,7 @@ export const formatBookingDate = (iso: string) => dateFormatter.format(parseDate
 
 export const formatBookingDateTime = (iso: string) => dateTimeFormatter.format(parseDate(iso));
 
-export const formatTime = (iso: string) =>
-  new Intl.DateTimeFormat('ru-RU', {
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(parseDate(iso));
+export const formatTime = (iso: string) => timeFormatter.format(parseDate(iso));
 
 export const formatInputDate = (value: Date) => value.toISOString().slice(0, 10);
 

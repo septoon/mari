@@ -7,6 +7,7 @@ import type {
   BookingStaffChoice,
 } from '@/lib/booking/types';
 
+import { getSalonMinutesFromMidnight } from '@/lib/format';
 import { fromPhoneE164 } from '@/lib/booking/phone';
 
 const STEP_ORDER: BookingStep[] = ['overview', 'category', 'service', 'staff', 'date', 'time', 'client', 'success'];
@@ -346,8 +347,7 @@ export const filterSlotsResult = (
 });
 
 export const getTimeOfDayLabel = (iso: string) => {
-  const date = new Date(iso);
-  const minutesFromMidnight = date.getHours() * 60 + date.getMinutes();
+  const minutesFromMidnight = getSalonMinutesFromMidnight(iso);
 
   if (minutesFromMidnight < 12 * 60) {
     return 'Утро';
@@ -370,17 +370,7 @@ export const groupSlotsByTimeOfDay = (slots: SlotsResult | null) => {
   ) ?? [];
 
   const normalized = source
-    .filter((slot) => {
-      const date = new Date(slot.startAt);
-      const minutesFromMidnight = date.getHours() * 60 + date.getMinutes();
-      const minutes = date.getMinutes();
-
-      return (
-        isFutureBookingSlot(slot.startAt) &&
-        minutesFromMidnight >= 10 * 60 &&
-        (minutes === 0 || minutes === 30)
-      );
-    })
+    .filter((slot) => isFutureBookingSlot(slot.startAt))
     .sort((left, right) => {
       const timestampDiff = new Date(left.startAt).getTime() - new Date(right.startAt).getTime();
 
