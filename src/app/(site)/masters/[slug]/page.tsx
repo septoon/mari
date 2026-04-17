@@ -68,6 +68,8 @@ export default async function MasterDetailPage({ params }: { params: Promise<{ s
           eyebrow={hero.eyebrow}
           title={hero.title}
           description={hero.description}
+          imageUrl={master.photo?.preferredUrl || hero.imageUrl}
+          imageAlt={master.name}
           breadcrumbs={[
             { label: 'Главная', href: '/' },
             { label: 'Специалисты', href: '/masters' },
@@ -149,6 +151,7 @@ export default async function MasterDetailPage({ params }: { params: Promise<{ s
                 excerpt={service.teaser}
                 durationMinutes={Math.round(service.durationSec / 60)}
                 priceFrom={service.priceMin}
+                imageUrl={service.imageUrl || service.category.imageUrl || null}
               />
             ))}
           </div>

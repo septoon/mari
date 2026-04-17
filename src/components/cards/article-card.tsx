@@ -1,11 +1,24 @@
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ImageIcon } from 'lucide-react';
 
 import type { NewsArticle } from '@/content/types';
 
 export function ArticleCard({ article }: { article: NewsArticle }) {
   return (
     <article className="surface-card flex h-full flex-col p-6">
+      <div className="mb-5 overflow-hidden rounded-[1.5rem] border border-(--line)">
+        {article.imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={article.imageUrl} alt={article.title} className="h-44 w-full object-cover" />
+        ) : (
+          <div className="flex h-44 w-full items-center justify-center bg-[linear-gradient(145deg,rgba(247,241,234,0.9),rgba(255,255,255,0.98))] text-(--muted)">
+            <div className="text-center">
+              <ImageIcon className="mx-auto h-8 w-8 text-(--accent-strong)" />
+              <p className="mt-3 text-sm font-medium">Место под фото новости</p>
+            </div>
+          </div>
+        )}
+      </div>
       <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">
         {article.category} · {new Date(article.publishedAt).toLocaleDateString('ru-RU')}
       </p>

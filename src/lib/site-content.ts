@@ -12,7 +12,8 @@ const offerItemSchema = z.object({
   description: z.string(),
   badge: z.string(),
   priceNote: z.string(),
-  ctaHref: z.string()
+  ctaHref: z.string(),
+  imageUrl: z.string().optional()
 });
 
 const newsArticleSchema = z.object({
@@ -21,7 +22,8 @@ const newsArticleSchema = z.object({
   category: z.string(),
   publishedAt: z.string(),
   excerpt: z.string(),
-  body: z.array(z.string())
+  body: z.array(z.string()),
+  imageUrl: z.string().optional()
 });
 
 const locationProfileSchema = z.object({
@@ -34,6 +36,7 @@ const locationProfileSchema = z.object({
   mapUrl: z.string(),
   description: z.string(),
   note: z.string(),
+  imageUrl: z.string().optional(),
   serviceSlugs: z.array(z.string()),
   masterSlugs: z.array(z.string()),
   features: z.array(z.string()),

@@ -1,4 +1,4 @@
-import { Sparkles } from 'lucide-react';
+import { ImageIcon, Sparkles } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/classnames';
@@ -7,12 +7,16 @@ export function EditorialVisual({
   label,
   title,
   subtitle,
+  imageUrl,
+  imageAlt,
   monogram = 'M',
   className
 }: {
   label: string;
   title: string;
   subtitle: string;
+  imageUrl?: string | null;
+  imageAlt?: string;
   monogram?: string;
   className?: string;
 }) {
@@ -24,7 +28,15 @@ export function EditorialVisual({
         <Sparkles className="h-6 w-6" />
       </div>
 
-      <div className="relative flex min-h-80 flex-col justify-between">
+      {imageUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={imageUrl}
+          alt={imageAlt || title}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+      ) : null}
+      <div className={cn('relative flex min-h-80 flex-col justify-between', imageUrl ? 'text-white' : '')}>
         <div className="flex justify-between gap-4">
           <Badge>{label}</Badge>
           <div className="hidden h-16 w-16 items-center justify-center rounded-full border border-(--line) bg-white/88 font-serif text-4xl text-(--ink) md:flex">
@@ -37,6 +49,12 @@ export function EditorialVisual({
             {title}
           </h3>
           <p className="max-w-md text-sm leading-7 text-(--muted)">{subtitle}</p>
+          {!imageUrl ? (
+            <div className="inline-flex items-center gap-2 rounded-full border border-(--line) bg-white/80 px-4 py-2 text-sm text-(--muted-strong)">
+              <ImageIcon className="h-4 w-4" />
+              Место под фото
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

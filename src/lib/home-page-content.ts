@@ -22,6 +22,7 @@ export type HomePageContent = {
     visualLabel: string;
     visualTitle: string;
     visualSubtitle: string;
+    visualImageUrl?: string;
   };
   categories: {
     eyebrow: string;
@@ -75,6 +76,7 @@ export const HOME_PAGE_DEFAULTS: HomePageContent = {
     visualLabel: 'МАРИ',
     visualTitle: 'Пространство для ухода, цвета и точной работы с образом.',
     visualSubtitle: 'Путь от первого знакомства до записи был коротким, понятным и приятным.',
+    visualImageUrl: '',
   },
   categories: {
     eyebrow: 'Популярные направления',
@@ -217,6 +219,7 @@ export const readHomePageContent = (value: unknown): HomePageContent => {
       visualLabel: readString(hero.visualLabel, HOME_PAGE_DEFAULTS.hero.visualLabel),
       visualTitle: readString(hero.visualTitle, HOME_PAGE_DEFAULTS.hero.visualTitle),
       visualSubtitle: readString(hero.visualSubtitle, HOME_PAGE_DEFAULTS.hero.visualSubtitle),
+      visualImageUrl: readString(hero.visualImageUrl, HOME_PAGE_DEFAULTS.hero.visualImageUrl || ''),
     },
     categories: {
       eyebrow: readString(categories.eyebrow, HOME_PAGE_DEFAULTS.categories.eyebrow),

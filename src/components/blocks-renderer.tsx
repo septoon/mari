@@ -88,6 +88,14 @@ export function BlocksRenderer({ blocks, contacts }: BlocksRendererProps) {
               key={block.id}
               className="rounded-[2rem] border border-(--line) bg-[linear-gradient(135deg,rgba(233,239,237,0.88),rgba(255,255,255,0.95))] p-6 shadow-[0_25px_70px_rgba(12,77,85,0.06)]"
             >
+              {block.payload.imageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={block.payload.imageUrl}
+                  alt={block.payload.title}
+                  className="mb-5 h-52 w-full rounded-[1.5rem] object-cover"
+                />
+              ) : null}
               <p className="inline-flex items-center gap-2 rounded-full border border-(--line) px-4 py-2 text-xs uppercase tracking-[0.28em] text-(--ink-muted)">
                 <Sparkles className="h-4 w-4" />
                 {block.payload.badge || 'Спецпредложение'}
@@ -119,6 +127,14 @@ export function BlocksRenderer({ blocks, contacts }: BlocksRendererProps) {
           <div className="mt-8 grid gap-4 lg:grid-cols-3">
             {offerBlocks.flatMap((block) => block.payload.items).map((offer) => (
               <article key={offer.id} className="rounded-[1.5rem] border border-(--line) bg-(--panel) p-5">
+                {offer.imageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={offer.imageUrl}
+                    alt={offer.title}
+                    className="mb-4 h-40 w-full rounded-[1.25rem] object-cover"
+                  />
+                ) : null}
                 <p className="text-xs uppercase tracking-[0.24em] text-(--ink-muted)">
                   {offer.subtitle || 'Offer'}
                 </p>

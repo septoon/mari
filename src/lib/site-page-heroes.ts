@@ -2,6 +2,7 @@ type SitePageHeroFields = {
   eyebrow?: string;
   title: string;
   description: string;
+  imageUrl?: string;
 };
 
 export type SitePageHeroKey =
@@ -16,6 +17,7 @@ export type SitePageHeroKey =
   | 'news'
   | 'newsArticle'
   | 'offers'
+  | 'privacyPolicy'
   | 'prices'
   | 'services'
   | 'serviceCategory'
@@ -37,6 +39,7 @@ const SITE_PAGE_HERO_KEYS: SitePageHeroKey[] = [
   'news',
   'newsArticle',
   'offers',
+  'privacyPolicy',
   'prices',
   'services',
   'serviceCategory',
@@ -107,6 +110,12 @@ const SITE_PAGE_HERO_DEFAULTS: Record<SitePageHeroKey, SitePageHeroFields> = {
     description:
       'Здесь собраны выгодные форматы визитов, бонусы и идеи для тех, кто хочет попробовать больше за один визит.',
   },
+  privacyPolicy: {
+    eyebrow: 'Политика конфиденциальности',
+    title: 'Политика конфиденциальности МАРИ.',
+    description:
+      'Условия обработки персональных данных, тексты согласия и основные правила использования сайта.',
+  },
   prices: {
     eyebrow: 'Цены',
     title: 'Цены без сложных условий.',
@@ -164,6 +173,9 @@ const readSitePageHeroOverrides = (
     if (typeof value.description === 'string') {
       next.description = value.description;
     }
+    if (typeof value.imageUrl === 'string') {
+      next.imageUrl = value.imageUrl;
+    }
 
     if (Object.keys(next).length > 0) {
       result[key] = next;
@@ -216,5 +228,6 @@ export const resolveSitePageHero = (
     ...(eyebrow ? { eyebrow } : {}),
     title,
     description,
+    ...(overrides?.imageUrl?.trim() ? { imageUrl: overrides.imageUrl.trim() } : {}),
   };
 };

@@ -42,6 +42,8 @@ export default async function GiftCardsPage() {
           eyebrow={hero.eyebrow}
           title={hero.title}
           description={hero.description}
+          imageUrl={hero.imageUrl}
+          imageAlt={hero.title}
           breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Подарочные сертификаты' }]}
           actions={
             <>
@@ -58,6 +60,8 @@ export default async function GiftCardsPage() {
             label="Gift cards"
             title="Подарок, который легко выбрать и приятно дарить."
             subtitle="Сертификат подойдёт для первого знакомства с салоном, любимой процедуры или полноценного beauty-дня."
+            imageUrl={hero.imageUrl}
+            imageAlt={hero.title}
             className="min-h-100"
           />
 

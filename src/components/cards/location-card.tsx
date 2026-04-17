@@ -1,11 +1,24 @@
 import Link from 'next/link';
-import { ArrowRight, Clock3, MapPin } from 'lucide-react';
+import { ArrowRight, Clock3, ImageIcon, MapPin } from 'lucide-react';
 
 import type { LocationProfile } from '@/content/types';
 
 export function LocationCard({ location }: { location: LocationProfile }) {
   return (
     <article className="surface-card flex h-full flex-col p-6">
+      <div className="mb-5 overflow-hidden rounded-[1.5rem] border border-(--line)">
+        {location.imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={location.imageUrl} alt={location.name} className="h-44 w-full object-cover" />
+        ) : (
+          <div className="flex h-44 w-full items-center justify-center bg-[linear-gradient(145deg,rgba(247,241,234,0.9),rgba(255,255,255,0.98))] text-(--muted)">
+            <div className="text-center">
+              <ImageIcon className="mx-auto h-8 w-8 text-(--accent-strong)" />
+              <p className="mt-3 text-sm font-medium">Место под фото филиала</p>
+            </div>
+          </div>
+        )}
+      </div>
       <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">{location.district}</p>
       <h3 className="mt-4 font-serif text-3xl text-(--ink)">{location.name}</h3>
       <p className="mt-4 text-sm leading-7 text-(--muted)">{location.description}</p>

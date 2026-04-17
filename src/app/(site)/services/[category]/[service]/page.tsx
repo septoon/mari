@@ -84,6 +84,8 @@ export default async function ServiceDetailPage({
           eyebrow={hero.eyebrow}
           title={hero.title}
           description={hero.description}
+          imageUrl={service.imageUrl || category?.imageUrl || hero.imageUrl}
+          imageAlt={service.displayName}
           breadcrumbs={[
             { label: 'Главная', href: '/' },
             { label: 'Услуги', href: '/services' },
@@ -166,6 +168,7 @@ export default async function ServiceDetailPage({
                 summary={master.summary}
                 servicesCount={master.services.length}
                 categories={master.categoryNames}
+                imageUrl={master.photo?.preferredUrl ?? null}
               />
             ))}
           </div>
@@ -188,6 +191,7 @@ export default async function ServiceDetailPage({
                   excerpt={item.teaser}
                   durationMinutes={Math.round(item.durationSec / 60)}
                   priceFrom={item.priceMin}
+                  imageUrl={item.imageUrl || item.category.imageUrl || null}
                 />
               ))}
             </div>

@@ -27,6 +27,8 @@ export default async function ServicesPage() {
           eyebrow={hero.eyebrow}
           title={hero.title}
           description={hero.description}
+          imageUrl={hero.imageUrl}
+          imageAlt={hero.title}
           breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Услуги' }]}
           actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
           details={[
@@ -77,6 +79,7 @@ export default async function ServicesPage() {
                     excerpt={service.teaser}
                     durationMinutes={Math.round(service.durationSec / 60)}
                     priceFrom={service.priceMin}
+                    imageUrl={service.imageUrl || category.imageUrl || null}
                   />
                 ))}
               </div>

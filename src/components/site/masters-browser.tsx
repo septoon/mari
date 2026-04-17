@@ -57,6 +57,7 @@ export function MastersBrowser({
             summary={master.summary}
             servicesCount={master.services.length}
             categories={master.categoryNames}
+            imageUrl={master.photo?.preferredUrl ?? null}
           />
         ))}
       </div>

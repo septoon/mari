@@ -65,6 +65,7 @@ export type LocationProfile = {
   mapUrl: string;
   description: string;
   note: string;
+  imageUrl?: string;
   serviceSlugs: string[];
   masterSlugs: string[];
   features: string[];
@@ -82,6 +83,7 @@ export type OfferItem = {
   badge: string;
   priceNote: string;
   ctaHref: string;
+  imageUrl?: string;
 };
 
 export type ReviewItem = {
@@ -97,6 +99,7 @@ export type NewsArticle = {
   publishedAt: string;
   excerpt: string;
   body: string[];
+  imageUrl?: string;
 };
 
 export type GalleryMoment = {

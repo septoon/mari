@@ -51,6 +51,8 @@ export default async function HomePage() {
             label={homePageContent.hero.visualLabel}
             title={homePageContent.hero.visualTitle}
             subtitle={homePageContent.hero.visualSubtitle}
+            imageUrl={homePageContent.hero.visualImageUrl}
+            imageAlt={homePageContent.hero.visualTitle}
           />
         </section>
       </Container>
@@ -119,6 +121,7 @@ export default async function HomePage() {
                 excerpt={service.teaser}
                 durationMinutes={Math.round(service.durationSec / 60)}
                 priceFrom={service.priceMin}
+                imageUrl={service.imageUrl || service.category.imageUrl || null}
               />
             ))}
           </div>
@@ -147,6 +150,7 @@ export default async function HomePage() {
                 summary={master.summary}
                 servicesCount={master.services.length}
                 categories={master.categoryNames}
+                imageUrl={master.photo?.preferredUrl ?? null}
               />
             ))}
           </div>

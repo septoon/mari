@@ -4,6 +4,7 @@ import { ButtonLink } from '@/components/ui/button';
 import { getLiveCatalog } from '@/lib/live-catalog';
 import { createPageMetadata } from '@/lib/site';
 import { getSitePrivacyPolicyContent } from '@/lib/site-content';
+import { resolveSitePageHero } from '@/lib/site-page-heroes';
 
 export const metadata = createPageMetadata({
   title: 'Политика конфиденциальности',
@@ -14,6 +15,7 @@ export const metadata = createPageMetadata({
 
 export default async function PrivacyPolicyPage() {
   const [catalog, content] = await Promise.all([getLiveCatalog(), getSitePrivacyPolicyContent()]);
+  const hero = resolveSitePageHero('privacyPolicy', catalog.bootstrap.config.extra);
   const operatorName =
     catalog.bootstrap.config.legalName?.trim() ||
     catalog.bootstrap.config.brandName?.trim() ||
@@ -26,6 +28,8 @@ export default async function PrivacyPolicyPage() {
           eyebrow={content.eyebrow}
           title={content.title}
           description={content.description}
+          imageUrl={hero.imageUrl}
+          imageAlt={content.title}
           breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Политика конфиденциальности' }]}
           actions={
             <>

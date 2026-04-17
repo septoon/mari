@@ -28,6 +28,8 @@ export default async function MastersPage() {
           eyebrow={hero.eyebrow}
           title={hero.title}
           description={hero.description}
+          imageUrl={hero.imageUrl}
+          imageAlt={hero.title}
           breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Специалисты' }]}
           actions={
             <ButtonLink href="/booking">{pageContent.listPage.heroPrimaryCtaLabel}</ButtonLink>

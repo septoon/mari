@@ -68,6 +68,8 @@ export default async function ServiceCategoryPage({
           eyebrow={hero.eyebrow}
           title={hero.title}
           description={hero.description}
+          imageUrl={item.imageUrl || hero.imageUrl}
+          imageAlt={item.name}
           breadcrumbs={[
             { label: 'Главная', href: '/' },
             { label: 'Услуги', href: '/services' },
@@ -125,6 +127,7 @@ export default async function ServiceCategoryPage({
                 excerpt={service.teaser}
                 durationMinutes={Math.round(service.durationSec / 60)}
                 priceFrom={service.priceMin}
+                imageUrl={service.imageUrl || item.imageUrl || null}
               />
             ))}
           </div>

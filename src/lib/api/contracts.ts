@@ -72,6 +72,7 @@ const bannerPayloadSchema = z.object({
   title: z.string(),
   subtitle: z.string().optional(),
   imageAssetId: z.string().optional(),
+  imageUrl: z.string().optional(),
   ctaText: z.string().optional(),
   ctaUrl: z.string().url().optional()
 });
@@ -107,6 +108,7 @@ const promoPayloadSchema = z.object({
   description: z.string().optional(),
   badge: z.string().optional(),
   imageAssetId: z.string().optional(),
+  imageUrl: z.string().optional(),
   ctaText: z.string().optional(),
   ctaUrl: z.string().url().optional()
 });
@@ -120,6 +122,7 @@ const offersPayloadSchema = z.object({
       subtitle: z.string().optional(),
       description: z.string().optional(),
       imageAssetId: z.string().optional(),
+      imageUrl: z.string().optional(),
       originalPrice: z.number().optional(),
       finalPrice: z.number().optional(),
       currency: z.string().default('RUB'),
@@ -208,6 +211,8 @@ const specialistPhotoSchema = z.object({
 export const serviceSchema = z.object({
   id: z.string().uuid(),
   externalId: z.string().nullable().optional(),
+  imageAssetId: z.string().uuid().nullable().optional(),
+  imageUrl: z.string().nullable().optional(),
   category: z.object({
     id: z.string().uuid(),
     name: z.string(),

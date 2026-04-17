@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, ImageIcon } from 'lucide-react';
 
 export function CategoryCard({
   category,
@@ -20,16 +20,23 @@ export function CategoryCard({
       className="group surface-card flex h-full flex-col justify-between overflow-hidden p-6 transition duration-200 hover:-translate-y-0.5 hover:border-(--accent-strong) hover:bg-white"
     >
       <div>
-        {category.imageUrl ? (
-          <div className="mb-5 overflow-hidden rounded-[1.5rem] border border-(--line)">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={category.imageUrl}
-              alt={category.name}
-              className="h-44 w-full object-cover transition duration-300 group-hover:scale-[1.03]"
-            />
-          </div>
-        ) : null}
+        <div className="mb-5 overflow-hidden rounded-[1.5rem] border border-(--line)">
+          {category.imageUrl ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={category.imageUrl}
+                alt={category.name}
+                className="h-44 w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+              />
+            </>
+          ) : (
+            <div className="flex h-44 w-full flex-col items-center justify-center gap-3 bg-[linear-gradient(145deg,rgba(247,241,234,0.9),rgba(255,255,255,0.98))] text-(--muted)">
+              <ImageIcon className="h-8 w-8 text-(--accent-strong)" />
+              <p className="text-sm font-medium">Место под фото категории</p>
+            </div>
+          )}
+        </div>
         <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">{category.eyebrow}</p>
         <h3 className="mt-4 font-serif text-3xl text-(--ink)">{category.name}</h3>
         <p className="mt-4 text-sm leading-7 text-(--muted)">{category.description}</p>

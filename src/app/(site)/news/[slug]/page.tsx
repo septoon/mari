@@ -60,6 +60,8 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
           eyebrow={hero.eyebrow}
           title={hero.title}
           description={hero.description}
+          imageUrl={article.imageUrl || hero.imageUrl}
+          imageAlt={article.title}
           breadcrumbs={[
             { label: 'Главная', href: '/' },
             { label: 'Новости', href: '/news' },

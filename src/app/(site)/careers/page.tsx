@@ -25,6 +25,8 @@ export default async function CareersPage() {
           eyebrow={hero.eyebrow}
           title={hero.title}
           description={hero.description}
+          imageUrl={hero.imageUrl}
+          imageAlt={hero.title}
           breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Вакансии' }]}
           actions={<ButtonLink href="mailto:hr@maribeauty.ru">Откликнуться</ButtonLink>}
         />

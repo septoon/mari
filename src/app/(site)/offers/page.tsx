@@ -25,6 +25,8 @@ export default async function OffersPage() {
           eyebrow={hero.eyebrow}
           title={hero.title}
           description={hero.description}
+          imageUrl={hero.imageUrl}
+          imageAlt={hero.title}
           breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Акции' }]}
           actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
         />
