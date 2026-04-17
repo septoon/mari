@@ -6,6 +6,7 @@ import { getClientBootstrap } from '@/lib/api/backend';
 import { resolveSitePageHero } from '@/lib/site-page-heroes';
 import { getJobOpenings } from '@/content/queries';
 import { createPageMetadata } from '@/lib/site';
+import { isSiteBlockVisible, SITE_BLOCK_KEYS } from '@/lib/site-visibility';
 
 export const metadata = createPageMetadata({
   title: 'Вакансии',
@@ -17,19 +18,22 @@ export default async function CareersPage() {
   const jobs = getJobOpenings();
   const bootstrap = await getClientBootstrap();
   const hero = resolveSitePageHero('careers', bootstrap.config.extra);
+  const showHero = isSiteBlockVisible(bootstrap.config.extra, SITE_BLOCK_KEYS.pageHero('careers'));
 
   return (
     <main className="pb-14">
       <Container>
-        <PageHero
-          eyebrow={hero.eyebrow}
-          title={hero.title}
-          description={hero.description}
-          imageUrl={hero.imageUrl}
-          imageAlt={hero.title}
-          breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Вакансии' }]}
-          actions={<ButtonLink href="mailto:hr@maribeauty.ru">Откликнуться</ButtonLink>}
-        />
+        {showHero ? (
+          <PageHero
+            eyebrow={hero.eyebrow}
+            title={hero.title}
+            description={hero.description}
+            imageUrl={hero.imageUrl}
+            imageAlt={hero.title}
+            breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Вакансии' }]}
+            actions={<ButtonLink href="mailto:hr@maribeauty.ru">Откликнуться</ButtonLink>}
+          />
+        ) : null}
 
         <div className="grid gap-6">
           {jobs.map((job) => (

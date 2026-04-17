@@ -7,7 +7,7 @@ import { z } from 'zod';
 
 import {
   reachYandexMetrikaGoal,
-  yandexMetrikaGoals
+  yandexMetrikaGoals,
 } from '@/components/analytics/yandex-metrika-goals';
 import { useClientSession } from '@/components/client-session-provider';
 import { ConsentCheckbox } from '@/components/legal/consent-checkbox';
@@ -17,12 +17,12 @@ import { clientProfileSchema } from '@/lib/api/contracts';
 import { normalizePhoneDigits, normalizePhonePaste, toPhoneE164 } from '@/lib/booking/phone';
 
 const clientResponseSchema = z.object({
-  client: clientProfileSchema
+  client: clientProfileSchema,
 });
 
 const resetResponseSchema = z.object({
   sent: z.boolean(),
-  resetLink: z.string().url().optional()
+  resetLink: z.string().url().optional(),
 });
 
 const inputClassName =
@@ -37,13 +37,7 @@ type Feedback = {
   text: string;
 } | null;
 
-function PhoneInput({
-  value,
-  onChange
-}: {
-  value: string;
-  onChange: (value: string) => void;
-}) {
+function PhoneInput({ value, onChange }: { value: string; onChange: (value: string) => void }) {
   const handlePaste = (event: ClipboardEvent<HTMLInputElement>) => {
     event.preventDefault();
     onChange(normalizePhonePaste(event.clipboardData.getData('text')));
@@ -61,7 +55,7 @@ function PhoneInput({
         autoComplete="tel-national"
         inputMode="numeric"
         maxLength={10}
-        placeholder="9780001818"
+        placeholder="9786778130"
         className={phoneInputClassName}
       />
     </div>
@@ -79,26 +73,20 @@ function FeedbackMessage({ feedback }: { feedback: Feedback }) {
         feedback.type === 'success'
           ? 'border border-[#86aa96]/40 bg-[#e3f0e8] text-[#21573b]'
           : 'border border-[#c4847d]/35 bg-[#f5dddb] text-[#7d3a37]'
-      }`}
-    >
+      }`}>
       {feedback.text}
     </div>
   );
 }
 
-function AuthLinks({
-  items
-}: {
-  items: Array<{ href: string; label: string }>;
-}) {
+function AuthLinks({ items }: { items: Array<{ href: string; label: string }> }) {
   return (
     <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-(--muted)">
       {items.map((item) => (
         <Link
           key={item.href}
           href={item.href}
-          className="underline decoration-(--line-strong) underline-offset-4 transition hover:text-(--foreground)"
-        >
+          className="underline decoration-(--line-strong) underline-offset-4 transition hover:text-(--foreground)">
           {item.label}
         </Link>
       ))}
@@ -140,12 +128,12 @@ export function AccountLoginForm() {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           phone: toPhoneE164(form.phone),
-          password: form.password
-        })
+          password: form.password,
+        }),
       });
       const payload = await readApiOk(response, clientResponseSchema);
 
@@ -155,7 +143,7 @@ export function AccountLoginForm() {
     } catch (error) {
       setFeedback({
         type: 'error',
-        text: error instanceof Error ? error.message : 'Не удалось войти'
+        text: error instanceof Error ? error.message : 'Не удалось войти',
       });
     } finally {
       setSubmitting(false);
@@ -194,14 +182,18 @@ export function AccountLoginForm() {
 
       <FeedbackMessage feedback={feedback} />
 
-      <button type="submit" disabled={submitting} aria-busy={submitting} className={submitClassName}>
+      <button
+        type="submit"
+        disabled={submitting}
+        aria-busy={submitting}
+        className={submitClassName}>
         {submitting ? <LoadingLabel label="Вхожу..." /> : 'Войти'}
       </button>
 
       <AuthLinks
         items={[
           { href: '/account/register', label: 'Создать кабинет' },
-          { href: '/account/recover', label: 'Восстановить доступ' }
+          { href: '/account/recover', label: 'Восстановить доступ' },
         ]}
       />
     </form>
@@ -228,7 +220,7 @@ export function AccountRegisterForm({ consentLabel }: { consentLabel: string }) 
     if (form.password.length < 8) {
       setFeedback({
         type: 'error',
-        text: 'Пароль должен быть не короче 8 символов.'
+        text: 'Пароль должен быть не короче 8 символов.',
       });
       return;
     }
@@ -236,7 +228,7 @@ export function AccountRegisterForm({ consentLabel }: { consentLabel: string }) 
     if (!consentAccepted) {
       setFeedback({
         type: 'error',
-        text: 'Подтвердите согласие на обработку персональных данных.'
+        text: 'Подтвердите согласие на обработку персональных данных.',
       });
       return;
     }
@@ -248,14 +240,14 @@ export function AccountRegisterForm({ consentLabel }: { consentLabel: string }) 
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           name: form.name.trim() || undefined,
           email: form.email.trim() || undefined,
           phone: toPhoneE164(form.phone),
-          password: form.password
-        })
+          password: form.password,
+        }),
       });
       const payload = await readApiOk(response, clientResponseSchema);
 
@@ -265,7 +257,7 @@ export function AccountRegisterForm({ consentLabel }: { consentLabel: string }) 
     } catch (error) {
       setFeedback({
         type: 'error',
-        text: error instanceof Error ? error.message : 'Не удалось создать кабинет'
+        text: error instanceof Error ? error.message : 'Не удалось создать кабинет',
       });
     } finally {
       setSubmitting(false);
@@ -333,23 +325,28 @@ export function AccountRegisterForm({ consentLabel }: { consentLabel: string }) 
           setConsentAccepted(checked);
           if (checked) {
             setFeedback((current) =>
-              current?.type === 'error' && current.text === 'Подтвердите согласие на обработку персональных данных.'
+              current?.type === 'error' &&
+              current.text === 'Подтвердите согласие на обработку персональных данных.'
                 ? null
-                : current
+                : current,
             );
           }
         }}
         label={consentLabel}
       />
 
-      <button type="submit" disabled={submitting} aria-busy={submitting} className={submitClassName}>
+      <button
+        type="submit"
+        disabled={submitting}
+        aria-busy={submitting}
+        className={submitClassName}>
         {submitting ? <LoadingLabel label="Создаю кабинет..." /> : 'Создать кабинет'}
       </button>
 
       <AuthLinks
         items={[
           { href: '/account/login', label: 'Уже есть кабинет? Войти' },
-          { href: '/account/recover', label: 'Восстановить доступ' }
+          { href: '/account/recover', label: 'Восстановить доступ' },
         ]}
       />
     </form>
@@ -369,7 +366,7 @@ export function AccountRecoverForm({ consentLabel }: { consentLabel: string }) {
     if (!form.email.trim() && !form.phone.trim()) {
       setFeedback({
         type: 'error',
-        text: 'Укажите email или телефон.'
+        text: 'Укажите email или телефон.',
       });
       return;
     }
@@ -377,7 +374,7 @@ export function AccountRecoverForm({ consentLabel }: { consentLabel: string }) {
     if (!consentAccepted) {
       setFeedback({
         type: 'error',
-        text: 'Подтвердите согласие на обработку персональных данных.'
+        text: 'Подтвердите согласие на обработку персональных данных.',
       });
       return;
     }
@@ -390,30 +387,30 @@ export function AccountRecoverForm({ consentLabel }: { consentLabel: string }) {
       const response = await fetch('/api/auth/password/reset/request', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           email: form.email.trim() || undefined,
-          phone: toPhoneE164(form.phone) || undefined
-        })
+          phone: toPhoneE164(form.phone) || undefined,
+        }),
       });
       const payload = await readApiOk(response, resetResponseSchema);
 
       reachYandexMetrikaGoal(yandexMetrikaGoals.passwordResetRequested, {
         has_email: Boolean(form.email.trim()),
-        has_phone: Boolean(form.phone.trim())
+        has_phone: Boolean(form.phone.trim()),
       });
       setFeedback({
         type: 'success',
         text: payload.sent
           ? 'Если аккаунт найден, ссылка для смены пароля уже отправлена.'
-          : 'Запрос принят.'
+          : 'Запрос принят.',
       });
       setResetLink(payload.resetLink ?? null);
     } catch (error) {
       setFeedback({
         type: 'error',
-        text: error instanceof Error ? error.message : 'Не удалось отправить ссылку'
+        text: error instanceof Error ? error.message : 'Не удалось отправить ссылку',
       });
     } finally {
       setSubmitting(false);
@@ -450,24 +447,28 @@ export function AccountRecoverForm({ consentLabel }: { consentLabel: string }) {
           setConsentAccepted(checked);
           if (checked) {
             setFeedback((current) =>
-              current?.type === 'error' && current.text === 'Подтвердите согласие на обработку персональных данных.'
+              current?.type === 'error' &&
+              current.text === 'Подтвердите согласие на обработку персональных данных.'
                 ? null
-                : current
+                : current,
             );
           }
         }}
         label={consentLabel}
       />
 
-      <button type="submit" disabled={submitting} aria-busy={submitting} className={submitClassName}>
+      <button
+        type="submit"
+        disabled={submitting}
+        aria-busy={submitting}
+        className={submitClassName}>
         {submitting ? <LoadingLabel label="Отправляю..." /> : 'Отправить ссылку'}
       </button>
 
       {resetLink ? (
         <Link
           href={resetLink}
-          className="text-sm text-(--foreground) underline decoration-(--line-strong) underline-offset-4"
-        >
+          className="text-sm text-(--foreground) underline decoration-(--line-strong) underline-offset-4">
           Перейти к смене пароля
         </Link>
       ) : null}
@@ -475,7 +476,7 @@ export function AccountRecoverForm({ consentLabel }: { consentLabel: string }) {
       <AuthLinks
         items={[
           { href: '/account/login', label: 'Вернуться ко входу' },
-          { href: '/account/register', label: 'Создать кабинет' }
+          { href: '/account/register', label: 'Создать кабинет' },
         ]}
       />
     </form>

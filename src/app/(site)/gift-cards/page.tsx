@@ -6,6 +6,7 @@ import { ButtonLink } from '@/components/ui/button';
 import { getClientBootstrap } from '@/lib/api/backend';
 import { resolveSitePageHero } from '@/lib/site-page-heroes';
 import { createPageMetadata } from '@/lib/site';
+import { isSiteBlockVisible, SITE_BLOCK_KEYS } from '@/lib/site-visibility';
 
 export const metadata = createPageMetadata({
   title: 'Подарочные сертификаты',
@@ -34,26 +35,29 @@ const packages = [
 export default async function GiftCardsPage() {
   const bootstrap = await getClientBootstrap();
   const hero = resolveSitePageHero('giftCards', bootstrap.config.extra);
+  const showHero = isSiteBlockVisible(bootstrap.config.extra, SITE_BLOCK_KEYS.pageHero('giftCards'));
 
   return (
     <main className="pb-14">
       <Container>
-        <PageHero
-          eyebrow={hero.eyebrow}
-          title={hero.title}
-          description={hero.description}
-          imageUrl={hero.imageUrl}
-          imageAlt={hero.title}
-          breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Подарочные сертификаты' }]}
-          actions={
-            <>
-              <ButtonLink href="/booking">Оформить сертификат</ButtonLink>
-              <ButtonLink href="/contacts" variant="secondary">
-                Задать вопрос
-              </ButtonLink>
-            </>
-          }
-        />
+        {showHero ? (
+          <PageHero
+            eyebrow={hero.eyebrow}
+            title={hero.title}
+            description={hero.description}
+            imageUrl={hero.imageUrl}
+            imageAlt={hero.title}
+            breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Подарочные сертификаты' }]}
+            actions={
+              <>
+                <ButtonLink href="/booking">Оформить сертификат</ButtonLink>
+                <ButtonLink href="/contacts" variant="secondary">
+                  Задать вопрос
+                </ButtonLink>
+              </>
+            }
+          />
+        ) : null}
 
         <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
           <EditorialVisual

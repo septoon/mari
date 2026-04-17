@@ -24,7 +24,8 @@ export default async function AccountRecoverPage() {
       heroKicker="Личный кабинет"
       heroTitle="Вернуть доступ без звонка в салон."
       heroDescription="Если забыли пароль, достаточно оставить телефон или email. Ссылку для смены пароля отправим автоматически."
-      heroNote="После перехода по ссылке из письма вы сможете задать новый пароль и снова войти в кабинет.">
+      heroNote="После перехода по ссылке из письма вы сможете задать новый пароль и снова войти в кабинет."
+      hideHeroOnMobile>
       <AccountRecoverForm consentLabel={privacyPolicy.accountConsentLabel} />
     </AccountAuthShell>
   );

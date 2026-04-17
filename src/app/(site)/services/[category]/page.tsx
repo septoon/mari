@@ -10,6 +10,7 @@ import { SectionHeading } from '@/components/ui/section-heading';
 import { createPageMetadata } from '@/lib/site';
 import { getLiveCatalog } from '@/lib/live-catalog';
 import { resolveSitePageHero } from '@/lib/site-page-heroes';
+import { isSiteBlockVisible, SITE_BLOCK_KEYS } from '@/lib/site-visibility';
 
 export async function generateStaticParams() {
   const catalog = await getLiveCatalog();
@@ -60,34 +61,37 @@ export default async function ServiceCategoryPage({
     categoryHeroText: item.heroText,
     servicesCount: item.services.length,
   });
+  const showHero = isSiteBlockVisible(catalog.bootstrap.config.extra, SITE_BLOCK_KEYS.pageHero('serviceCategory'));
 
   return (
     <main className="pb-14">
       <Container>
-        <PageHero
-          eyebrow={hero.eyebrow}
-          title={hero.title}
-          description={hero.description}
-          imageUrl={item.imageUrl || hero.imageUrl}
-          imageAlt={item.name}
-          breadcrumbs={[
-            { label: 'Главная', href: '/' },
-            { label: 'Услуги', href: '/services' },
-            { label: item.name },
-          ]}
-          actions={
-            <>
-              <ButtonLink href="/booking">Записаться</ButtonLink>
-              <ButtonLink href="/services" variant="secondary">
-                Все категории
-              </ButtonLink>
-            </>
-          }
-          details={[
-            `${item.services.length} услуг в категории.`,
-            'Выберите процедуру по задаче, времени и формату визита.',
-          ]}
-        />
+        {showHero ? (
+          <PageHero
+            eyebrow={hero.eyebrow}
+            title={hero.title}
+            description={hero.description}
+            imageUrl={item.imageUrl || hero.imageUrl}
+            imageAlt={item.name}
+            breadcrumbs={[
+              { label: 'Главная', href: '/' },
+              { label: 'Услуги', href: '/services' },
+              { label: item.name },
+            ]}
+            actions={
+              <>
+                <ButtonLink href="/booking">Записаться</ButtonLink>
+                <ButtonLink href="/services" variant="secondary">
+                  Все категории
+                </ButtonLink>
+              </>
+            }
+            details={[
+              `${item.services.length} услуг в категории.`,
+              'Выберите процедуру по задаче, времени и формату визита.',
+            ]}
+          />
+        ) : null}
 
         <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
           <article className="surface-card p-6">

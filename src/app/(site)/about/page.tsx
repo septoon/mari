@@ -4,6 +4,7 @@ import { ButtonLink } from '@/components/ui/button';
 import { getClientBootstrap } from '@/lib/api/backend';
 import { resolveSitePageHero } from '@/lib/site-page-heroes';
 import { createPageMetadata } from '@/lib/site';
+import { isSiteBlockVisible, SITE_BLOCK_KEYS } from '@/lib/site-visibility';
 
 export const metadata = createPageMetadata({
   title: 'О салоне',
@@ -29,19 +30,22 @@ const principles = [
 export default async function AboutPage() {
   const bootstrap = await getClientBootstrap();
   const hero = resolveSitePageHero('about', bootstrap.config.extra);
+  const showHero = isSiteBlockVisible(bootstrap.config.extra, SITE_BLOCK_KEYS.pageHero('about'));
 
   return (
     <main className="pb-14">
       <Container>
-        <PageHero
-          eyebrow={hero.eyebrow}
-          title={hero.title}
-          description={hero.description}
-          imageUrl={hero.imageUrl}
-          imageAlt={hero.title}
-          breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'О салоне' }]}
-          actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
-        />
+        {showHero ? (
+          <PageHero
+            eyebrow={hero.eyebrow}
+            title={hero.title}
+            description={hero.description}
+            imageUrl={hero.imageUrl}
+            imageAlt={hero.title}
+            breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'О салоне' }]}
+            actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
+          />
+        ) : null}
 
         <section className="grid gap-6 lg:grid-cols-[1fr_1fr]">
           <article className="surface-card p-8">

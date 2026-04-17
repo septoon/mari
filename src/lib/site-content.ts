@@ -4,6 +4,7 @@ import { z } from 'zod';
 import type { LocationProfile, NewsArticle, OfferItem } from '@/content/types';
 import { locations as defaultLocations, news as defaultNews, offers as defaultOffers } from '@/content/site-data';
 import { getClientBootstrap } from '@/lib/api/backend';
+import { isSiteBlockVisible, SITE_BLOCK_KEYS } from '@/lib/site-visibility';
 
 const offerItemSchema = z.object({
   slug: z.string(),
@@ -245,12 +246,31 @@ export const getSiteCollections = cache(async (): Promise<{
   try {
     const bootstrap = await getClientBootstrap();
     const siteContent = asObjectRecord(asObjectRecord(bootstrap.config.extra).siteContent);
+    const extra = bootstrap.config.extra;
+    const offers = readCollection(siteContent, 'offers', z.array(offerItemSchema), defaultOffers).filter(
+      (item) => isSiteBlockVisible(extra, SITE_BLOCK_KEYS.offers.item(item.slug)),
+    );
+    const news = readCollection(siteContent, 'news', z.array(newsArticleSchema), defaultNews).filter(
+      (item) => isSiteBlockVisible(extra, SITE_BLOCK_KEYS.news.item(item.slug)),
+    );
+    const locations = readCollection(
+      siteContent,
+      'locations',
+      z.array(locationProfileSchema),
+      defaultLocations,
+    ).filter((item) => isSiteBlockVisible(extra, SITE_BLOCK_KEYS.locations.item(item.slug)));
+    const policy = readPrivacyPolicyContent(siteContent.policy);
 
     return {
-      offers: readCollection(siteContent, 'offers', z.array(offerItemSchema), defaultOffers),
-      news: readCollection(siteContent, 'news', z.array(newsArticleSchema), defaultNews),
-      locations: readCollection(siteContent, 'locations', z.array(locationProfileSchema), defaultLocations),
-      policy: readPrivacyPolicyContent(siteContent.policy)
+      offers,
+      news,
+      locations,
+      policy: {
+        ...policy,
+        sections: policy.sections.filter((section) =>
+          isSiteBlockVisible(extra, SITE_BLOCK_KEYS.policy.section(section.id)),
+        ),
+      }
     };
   } catch {
     return {

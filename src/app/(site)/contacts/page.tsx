@@ -7,6 +7,7 @@ import { ButtonLink } from '@/components/ui/button';
 import { createPageMetadata } from '@/lib/site';
 import { getLiveCatalog } from '@/lib/live-catalog';
 import { resolveSitePageHero } from '@/lib/site-page-heroes';
+import { isSiteBlockVisible, SITE_BLOCK_KEYS } from '@/lib/site-visibility';
 
 export const metadata = createPageMetadata({
   title: 'Контакты',
@@ -47,33 +48,36 @@ export default async function ContactsPage({
 
   const catalog = await getLiveCatalog();
   const hero = resolveSitePageHero('contacts', catalog.bootstrap.config.extra);
+  const showHero = isSiteBlockVisible(catalog.bootstrap.config.extra, SITE_BLOCK_KEYS.pageHero('contacts'));
 
   return (
     <main className="pb-14">
       <Container>
-        <PageHero
-          eyebrow={hero.eyebrow}
-          title={hero.title}
-          description={hero.description}
-          imageUrl={hero.imageUrl}
-          imageAlt={hero.title}
-          breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Контакты' }]}
-          actions={
-            <>
-              <ButtonLink href="/booking">Записаться</ButtonLink>
-              <ButtonLink href={catalog.salon.phoneHref} variant="secondary">
-                <PhoneCall className="h-4 w-4" />
-                Позвонить
-              </ButtonLink>
-              <ButtonLink href="/account" variant="secondary">
-                Личный кабинет
-              </ButtonLink>
-              <ButtonLink href="/services" variant="secondary">
-                Смотреть услуги
-              </ButtonLink>
-            </>
-          }
-        />
+        {showHero ? (
+          <PageHero
+            eyebrow={hero.eyebrow}
+            title={hero.title}
+            description={hero.description}
+            imageUrl={hero.imageUrl}
+            imageAlt={hero.title}
+            breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Контакты' }]}
+            actions={
+              <>
+                <ButtonLink href="/booking">Записаться</ButtonLink>
+                <ButtonLink href={catalog.salon.phoneHref} variant="secondary">
+                  <PhoneCall className="h-4 w-4" />
+                  Позвонить
+                </ButtonLink>
+                <ButtonLink href="/account" variant="secondary">
+                  Личный кабинет
+                </ButtonLink>
+                <ButtonLink href="/services" variant="secondary">
+                  Смотреть услуги
+                </ButtonLink>
+              </>
+            }
+          />
+        ) : null}
 
         <section className="mt-12 grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
           <article className="surface-card p-6 md:p-8">

@@ -7,6 +7,7 @@ import { Container } from '@/components/ui/container';
 import { ButtonLink } from '@/components/ui/button';
 import { getClientBootstrap } from '@/lib/api/backend';
 import { resolveSitePageHero } from '@/lib/site-page-heroes';
+import { isSiteBlockVisible, SITE_BLOCK_KEYS } from '@/lib/site-visibility';
 import { getSiteNews, getSiteNewsArticle } from '@/lib/site-content';
 import { createPageMetadata } from '@/lib/site';
 
@@ -52,24 +53,27 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
     newsExcerpt: article.excerpt,
     newsDate: new Date(article.publishedAt).toLocaleDateString('ru-RU'),
   });
+  const showHero = isSiteBlockVisible(bootstrap.config.extra, SITE_BLOCK_KEYS.pageHero('newsArticle'));
 
   return (
     <main className="pb-14">
       <Container>
-        <PageHero
-          eyebrow={hero.eyebrow}
-          title={hero.title}
-          description={hero.description}
-          imageUrl={article.imageUrl || hero.imageUrl}
-          imageAlt={article.title}
-          breadcrumbs={[
-            { label: 'Главная', href: '/' },
-            { label: 'Новости', href: '/news' },
-            { label: article.title },
-          ]}
-          actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
-          details={[new Date(article.publishedAt).toLocaleDateString('ru-RU')]}
-        />
+        {showHero ? (
+          <PageHero
+            eyebrow={hero.eyebrow}
+            title={hero.title}
+            description={hero.description}
+            imageUrl={article.imageUrl || hero.imageUrl}
+            imageAlt={article.title}
+            breadcrumbs={[
+              { label: 'Главная', href: '/' },
+              { label: 'Новости', href: '/news' },
+              { label: article.title },
+            ]}
+            actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
+            details={[new Date(article.publishedAt).toLocaleDateString('ru-RU')]}
+          />
+        ) : null}
 
         <article className="surface-card prose-copy max-w-4xl p-8">
           {article.body.map((paragraph, index) => (

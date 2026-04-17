@@ -7,6 +7,7 @@ import { SectionHeading } from '@/components/ui/section-heading';
 import { createPageMetadata } from '@/lib/site';
 import { getLiveCatalog } from '@/lib/live-catalog';
 import { resolveSitePageHero } from '@/lib/site-page-heroes';
+import { isSiteBlockVisible, SITE_BLOCK_KEYS } from '@/lib/site-visibility';
 
 export const metadata = createPageMetadata({
   title: 'Цены',
@@ -17,23 +18,26 @@ export const metadata = createPageMetadata({
 export default async function PricesPage() {
   const catalog = await getLiveCatalog();
   const hero = resolveSitePageHero('prices', catalog.bootstrap.config.extra);
+  const showHero = isSiteBlockVisible(catalog.bootstrap.config.extra, SITE_BLOCK_KEYS.pageHero('prices'));
 
   return (
     <main className="pb-14">
       <Container>
-        <PageHero
-          eyebrow={hero.eyebrow}
-          title={hero.title}
-          description={hero.description}
-          imageUrl={hero.imageUrl}
-          imageAlt={hero.title}
-          breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Цены' }]}
-          actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
-          details={[
-            `${catalog.services.length} услуг в прайсе.`,
-            'Из прайса можно сразу перейти в карточку процедуры.',
-          ]}
-        />
+        {showHero ? (
+          <PageHero
+            eyebrow={hero.eyebrow}
+            title={hero.title}
+            description={hero.description}
+            imageUrl={hero.imageUrl}
+            imageAlt={hero.title}
+            breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Цены' }]}
+            actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
+            details={[
+              `${catalog.services.length} услуг в прайсе.`,
+              'Из прайса можно сразу перейти в карточку процедуры.',
+            ]}
+          />
+        ) : null}
 
         <div className="space-y-14">
           {catalog.serviceCategories.map((category) => (

@@ -9,6 +9,7 @@ import { SectionHeading } from '@/components/ui/section-heading';
 import { createPageMetadata } from '@/lib/site';
 import { getLiveCatalog } from '@/lib/live-catalog';
 import { resolveSitePageHero } from '@/lib/site-page-heroes';
+import { isSiteBlockVisible, SITE_BLOCK_KEYS } from '@/lib/site-visibility';
 
 export const metadata = createPageMetadata({
   title: 'Услуги',
@@ -19,23 +20,26 @@ export const metadata = createPageMetadata({
 export default async function ServicesPage() {
   const catalog = await getLiveCatalog();
   const hero = resolveSitePageHero('services', catalog.bootstrap.config.extra);
+  const showHero = isSiteBlockVisible(catalog.bootstrap.config.extra, SITE_BLOCK_KEYS.pageHero('services'));
 
   return (
     <main className="pb-14">
       <Container>
-        <PageHero
-          eyebrow={hero.eyebrow}
-          title={hero.title}
-          description={hero.description}
-          imageUrl={hero.imageUrl}
-          imageAlt={hero.title}
-          breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Услуги' }]}
-          actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
-          details={[
-            `${catalog.serviceCategories.length} категорий и ${catalog.services.length} активных услуг.`,
-            'Из карточки услуги можно сразу перейти к подробностям и записи.',
-          ]}
-        />
+        {showHero ? (
+          <PageHero
+            eyebrow={hero.eyebrow}
+            title={hero.title}
+            description={hero.description}
+            imageUrl={hero.imageUrl}
+            imageAlt={hero.title}
+            breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Услуги' }]}
+            actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
+            details={[
+              `${catalog.serviceCategories.length} категорий и ${catalog.services.length} активных услуг.`,
+              'Из карточки услуги можно сразу перейти к подробностям и записи.',
+            ]}
+          />
+        ) : null}
 
         <SectionHeading
           eyebrow="Навигация по категориям"

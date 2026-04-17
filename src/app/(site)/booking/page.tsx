@@ -8,6 +8,7 @@ import { ButtonLink } from '@/components/ui/button';
 import { getBookingPageData } from '@/lib/booking/page-data';
 import { createPageMetadata } from '@/lib/site';
 import { resolveSitePageHero } from '@/lib/site-page-heroes';
+import { isSiteBlockVisible, SITE_BLOCK_KEYS } from '@/lib/site-visibility';
 
 export const metadata = createPageMetadata({
   title: 'Запись',
@@ -22,34 +23,40 @@ export default async function BookingPage({
 }) {
   const booking = await getBookingPageData(searchParams);
   const hero = resolveSitePageHero('booking', booking.catalog.bootstrap.config.extra);
+  const extra = booking.catalog.bootstrap.config.extra;
+  const showHero = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.pageHero('booking'));
+  const showConnectivityNotice = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.bookingPage.connectivityNotice);
 
   return (
     <main className="pb-14">
       <Container>
-        <PageHero
-          eyebrow={hero.eyebrow}
-          title={hero.title}
-          description={hero.description}
-          imageUrl={hero.imageUrl}
-          imageAlt={hero.title}
-          breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Запись' }]}
-          actions={
-            <>
-              <ButtonLink href={booking.catalog.salon.phoneHref}>
-                <PhoneCall className="h-4 w-4" />
-                {booking.bookingContent.heroActions.phoneLabel}
-              </ButtonLink>
-              <ButtonLink href="/services" variant="secondary">
-                {booking.bookingContent.heroActions.servicesLabel}
-              </ButtonLink>
-              <ButtonLink href="/contacts" variant="secondary">
-                {booking.bookingContent.heroActions.contactsLabel}
-              </ButtonLink>
-            </>
-          }
-        />
+        {showHero ? (
+          <PageHero
+            eyebrow={hero.eyebrow}
+            title={hero.title}
+            description={hero.description}
+            imageUrl={hero.imageUrl}
+            imageAlt={hero.title}
+            breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Запись' }]}
+            actions={
+              <>
+                <ButtonLink href={booking.catalog.salon.phoneHref}>
+                  <PhoneCall className="h-4 w-4" />
+                  {booking.bookingContent.heroActions.phoneLabel}
+                </ButtonLink>
+                <ButtonLink href="/services" variant="secondary">
+                  {booking.bookingContent.heroActions.servicesLabel}
+                </ButtonLink>
+                <ButtonLink href="/contacts" variant="secondary">
+                  {booking.bookingContent.heroActions.contactsLabel}
+                </ButtonLink>
+              </>
+            }
+          />
+        ) : null}
 
-        {!booking.catalog.connectivity.bootstrap || !booking.catalog.connectivity.services ? (
+        {showConnectivityNotice &&
+        (!booking.catalog.connectivity.bootstrap || !booking.catalog.connectivity.services) ? (
           <div className="mb-8 rounded-[1.75rem] border border-[#d7b78d] bg-[#fff3e5] px-5 py-4 text-sm leading-7 text-[#6f5233]">
             <p className="inline-flex items-center gap-2 font-medium">
               <AlertTriangle className="h-4 w-4" />

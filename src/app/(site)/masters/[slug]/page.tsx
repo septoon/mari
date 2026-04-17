@@ -10,6 +10,7 @@ import { SectionHeading } from '@/components/ui/section-heading';
 import { createPageMetadata } from '@/lib/site';
 import { getLiveCatalog } from '@/lib/live-catalog';
 import { resolveSitePageHero } from '@/lib/site-page-heroes';
+import { isSiteBlockVisible, SITE_BLOCK_KEYS } from '@/lib/site-visibility';
 import {
   applySpecialistsPageTemplate,
   getSpecialistsPageContent,
@@ -54,125 +55,143 @@ export default async function MasterDetailPage({ params }: { params: Promise<{ s
   }
 
   const services = catalog.services.filter((service) => master.serviceIds.includes(service.id));
+  const extra = catalog.bootstrap.config.extra;
   const hero = resolveSitePageHero('masterDetails', catalog.bootstrap.config.extra, {
     masterSpecialty: master.specialtyLabel,
     masterName: master.name,
     masterSummary: master.summary,
     masterCategories: master.categoryNames.join(', '),
   });
+  const showHero = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.pageHero('masterDetails'));
+  const showAbout = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.specialistsPage.detailAbout);
+  const showApproach = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.specialistsPage.detailApproach);
+  const showServices = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.specialistsPage.detailServices);
+  const showCta = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.specialistsPage.detailCta);
 
   return (
     <main className="pb-14">
       <Container>
-        <PageHero
-          eyebrow={hero.eyebrow}
-          title={hero.title}
-          description={hero.description}
-          imageUrl={master.photo?.preferredUrl || hero.imageUrl}
-          imageAlt={master.name}
-          breadcrumbs={[
-            { label: 'Главная', href: '/' },
-            { label: 'Специалисты', href: '/masters' },
-            { label: master.name },
-          ]}
+        {showHero ? (
+          <PageHero
+            eyebrow={hero.eyebrow}
+            title={hero.title}
+            description={hero.description}
+            imageUrl={master.photo?.preferredUrl || hero.imageUrl}
+            imageAlt={master.name}
+            breadcrumbs={[
+              { label: 'Главная', href: '/' },
+              { label: 'Специалисты', href: '/masters' },
+              { label: master.name },
+            ]}
+            actions={
+              <>
+                <ButtonLink href={`/booking?master=${master.slug}`}>
+                  {pageContent.detailPage.heroPrimaryCtaLabel}
+                </ButtonLink>
+                <ButtonLink href="/masters" variant="secondary">
+                  {pageContent.detailPage.heroSecondaryCtaLabel}
+                </ButtonLink>
+              </>
+            }
+            details={[
+              applySpecialistsPageTemplate(pageContent.detailPage.detailsServicesTemplate, {
+                count: services.length,
+              }),
+              applySpecialistsPageTemplate(pageContent.detailPage.detailsCategoriesTemplate, {
+                categories: master.categoryNames.slice(0, 3).join(', '),
+              }),
+            ]}
+          />
+        ) : null}
+
+        {showAbout || showApproach ? (
+          <section className={`grid gap-6 ${showAbout && showApproach ? 'lg:grid-cols-[0.88fr_1.12fr]' : ''}`}>
+            {showAbout ? (
+              <article className="surface-card p-6">
+                <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">
+                  {pageContent.detailPage.aboutEyebrow}
+                </p>
+                <div className="mt-5 space-y-4 text-sm text-(--muted)">
+                  <div className="rounded-[1.5rem] border border-(--line) bg-white/72 p-4">
+                    <p className="font-medium text-(--foreground)">
+                      {pageContent.detailPage.aboutSpecialtyLabel}
+                    </p>
+                    <p className="mt-2">{master.specialtyLabel}</p>
+                  </div>
+                  <div className="rounded-[1.5rem] border border-(--line) bg-white/72 p-4">
+                    <p className="font-medium text-(--foreground)">
+                      {pageContent.detailPage.aboutCategoriesLabel}
+                    </p>
+                    <p className="mt-2">{master.categoryNames.join(', ')}</p>
+                  </div>
+                  <div className="rounded-[1.5rem] border border-(--line) bg-white/72 p-4">
+                    <p className="font-medium text-(--foreground)">
+                      {pageContent.detailPage.aboutUpdatedLabel}
+                    </p>
+                    <p className="mt-2">{new Date(master.updatedAt).toLocaleDateString('ru-RU')}</p>
+                  </div>
+                </div>
+              </article>
+            ) : null}
+
+            {showApproach ? (
+              <article className="surface-card p-6">
+                <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">
+                  {pageContent.detailPage.approachEyebrow}
+                </p>
+                <h2 className="mt-4 font-serif text-4xl text-(--ink)">
+                  {pageContent.detailPage.approachTitle}
+                </h2>
+                <p className="mt-4 text-sm leading-7 text-(--muted)">
+                  {pageContent.detailPage.approachDescription}
+                </p>
+              </article>
+            ) : null}
+          </section>
+        ) : null}
+
+        {showServices ? (
+          <section className="mt-16">
+            <SectionHeading
+              eyebrow={pageContent.detailPage.servicesEyebrow}
+              title={pageContent.detailPage.servicesTitle}
+              description={pageContent.detailPage.servicesDescription}
+            />
+            <div className="mt-8 grid gap-6 md:grid-cols-2">
+              {services.map((service) => (
+                <ServiceCard
+                  key={service.id}
+                  href={`/services/${service.categorySlug}/${service.slug}`}
+                  categoryName={service.category.name}
+                  name={service.displayName}
+                  excerpt={service.teaser}
+                  durationMinutes={Math.round(service.durationSec / 60)}
+                  priceFrom={service.priceMin}
+                  imageUrl={service.imageUrl || service.category.imageUrl || null}
+                />
+              ))}
+            </div>
+          </section>
+        ) : null}
+      </Container>
+
+      {showCta ? (
+        <CtaPanel
+          eyebrow={pageContent.detailPage.ctaEyebrow}
+          title={pageContent.detailPage.ctaTitle}
+          description={pageContent.detailPage.ctaDescription}
           actions={
             <>
               <ButtonLink href={`/booking?master=${master.slug}`}>
-                {pageContent.detailPage.heroPrimaryCtaLabel}
+                {pageContent.detailPage.ctaPrimaryLabel}
               </ButtonLink>
-              <ButtonLink href="/masters" variant="secondary">
-                {pageContent.detailPage.heroSecondaryCtaLabel}
+              <ButtonLink href="/contacts" variant="secondary">
+                {pageContent.detailPage.ctaSecondaryLabel}
               </ButtonLink>
             </>
           }
-          details={[
-            applySpecialistsPageTemplate(pageContent.detailPage.detailsServicesTemplate, {
-              count: services.length,
-            }),
-            applySpecialistsPageTemplate(pageContent.detailPage.detailsCategoriesTemplate, {
-              categories: master.categoryNames.slice(0, 3).join(', '),
-            }),
-          ]}
         />
-
-        <section className="grid gap-6 lg:grid-cols-[0.88fr_1.12fr]">
-          <article className="surface-card p-6">
-            <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">
-              {pageContent.detailPage.aboutEyebrow}
-            </p>
-            <div className="mt-5 space-y-4 text-sm text-(--muted)">
-              <div className="rounded-[1.5rem] border border-(--line) bg-white/72 p-4">
-                <p className="font-medium text-(--foreground)">
-                  {pageContent.detailPage.aboutSpecialtyLabel}
-                </p>
-                <p className="mt-2">{master.specialtyLabel}</p>
-              </div>
-              <div className="rounded-[1.5rem] border border-(--line) bg-white/72 p-4">
-                <p className="font-medium text-(--foreground)">
-                  {pageContent.detailPage.aboutCategoriesLabel}
-                </p>
-                <p className="mt-2">{master.categoryNames.join(', ')}</p>
-              </div>
-              <div className="rounded-[1.5rem] border border-(--line) bg-white/72 p-4">
-                <p className="font-medium text-(--foreground)">
-                  {pageContent.detailPage.aboutUpdatedLabel}
-                </p>
-                <p className="mt-2">{new Date(master.updatedAt).toLocaleDateString('ru-RU')}</p>
-              </div>
-            </div>
-          </article>
-
-          <article className="surface-card p-6">
-            <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">
-              {pageContent.detailPage.approachEyebrow}
-            </p>
-            <h2 className="mt-4 font-serif text-4xl text-(--ink)">
-              {pageContent.detailPage.approachTitle}
-            </h2>
-            <p className="mt-4 text-sm leading-7 text-(--muted)">
-              {pageContent.detailPage.approachDescription}
-            </p>
-          </article>
-        </section>
-
-        <section className="mt-16">
-          <SectionHeading
-            eyebrow={pageContent.detailPage.servicesEyebrow}
-            title={pageContent.detailPage.servicesTitle}
-            description={pageContent.detailPage.servicesDescription}
-          />
-          <div className="mt-8 grid gap-6 md:grid-cols-2">
-            {services.map((service) => (
-              <ServiceCard
-                key={service.id}
-                href={`/services/${service.categorySlug}/${service.slug}`}
-                categoryName={service.category.name}
-                name={service.displayName}
-                excerpt={service.teaser}
-                durationMinutes={Math.round(service.durationSec / 60)}
-                priceFrom={service.priceMin}
-                imageUrl={service.imageUrl || service.category.imageUrl || null}
-              />
-            ))}
-          </div>
-        </section>
-      </Container>
-
-      <CtaPanel
-        eyebrow={pageContent.detailPage.ctaEyebrow}
-        title={pageContent.detailPage.ctaTitle}
-        description={pageContent.detailPage.ctaDescription}
-        actions={
-          <>
-            <ButtonLink href={`/booking?master=${master.slug}`}>
-              {pageContent.detailPage.ctaPrimaryLabel}
-            </ButtonLink>
-            <ButtonLink href="/contacts" variant="secondary">
-              {pageContent.detailPage.ctaSecondaryLabel}
-            </ButtonLink>
-          </>
-        }
-      />
+      ) : null}
     </main>
   );
 }

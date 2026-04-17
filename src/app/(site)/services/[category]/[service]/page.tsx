@@ -13,6 +13,7 @@ import { formatCurrency } from '@/lib/format';
 import { createPageMetadata } from '@/lib/site';
 import { getLiveCatalog } from '@/lib/live-catalog';
 import { resolveSitePageHero } from '@/lib/site-page-heroes';
+import { isSiteBlockVisible, SITE_BLOCK_KEYS } from '@/lib/site-visibility';
 
 export async function generateStaticParams() {
   const catalog = await getLiveCatalog();
@@ -76,37 +77,40 @@ export default async function ServiceDetailPage({
     serviceName: service.displayName,
     serviceTeaser: service.teaser,
   });
+  const showHero = isSiteBlockVisible(catalog.bootstrap.config.extra, SITE_BLOCK_KEYS.pageHero('serviceDetails'));
 
   return (
     <main className="pb-14">
       <Container>
-        <PageHero
-          eyebrow={hero.eyebrow}
-          title={hero.title}
-          description={hero.description}
-          imageUrl={service.imageUrl || category?.imageUrl || hero.imageUrl}
-          imageAlt={service.displayName}
-          breadcrumbs={[
-            { label: 'Главная', href: '/' },
-            { label: 'Услуги', href: '/services' },
-            category
-              ? { label: category.name, href: `/services/${category.slug}` }
-              : { label: service.category.name, href: '/services' },
-            { label: service.displayName },
-          ]}
-          actions={
-            <>
-              <ButtonLink href={`/booking?service=${service.slug}`}>Записаться</ButtonLink>
-              <ButtonLink href={`/services/${service.categorySlug}`} variant="secondary">
-                Все услуги категории
-              </ButtonLink>
-            </>
-          }
-          details={[
-            `Длительность ${Math.round(service.durationSec / 60)} мин.`,
-            `Стоимость от ${formatCurrency(service.priceMin)}.`,
-          ]}
-        />
+        {showHero ? (
+          <PageHero
+            eyebrow={hero.eyebrow}
+            title={hero.title}
+            description={hero.description}
+            imageUrl={service.imageUrl || category?.imageUrl || hero.imageUrl}
+            imageAlt={service.displayName}
+            breadcrumbs={[
+              { label: 'Главная', href: '/' },
+              { label: 'Услуги', href: '/services' },
+              category
+                ? { label: category.name, href: `/services/${category.slug}` }
+                : { label: service.category.name, href: '/services' },
+              { label: service.displayName },
+            ]}
+            actions={
+              <>
+                <ButtonLink href={`/booking?service=${service.slug}`}>Записаться</ButtonLink>
+                <ButtonLink href={`/services/${service.categorySlug}`} variant="secondary">
+                  Все услуги категории
+                </ButtonLink>
+              </>
+            }
+            details={[
+              `Длительность ${Math.round(service.durationSec / 60)} мин.`,
+              `Стоимость от ${formatCurrency(service.priceMin)}.`,
+            ]}
+          />
+        ) : null}
 
         <section className="grid gap-6 lg:grid-cols-[0.88fr_1.12fr]">
           <article className="surface-card p-6">

@@ -7,6 +7,7 @@ import { getClientBootstrap } from '@/lib/api/backend';
 import { resolveSitePageHero } from '@/lib/site-page-heroes';
 import { getGalleryMoments } from '@/content/queries';
 import { createPageMetadata } from '@/lib/site';
+import { isSiteBlockVisible, SITE_BLOCK_KEYS } from '@/lib/site-visibility';
 
 export const metadata = createPageMetadata({
   title: 'Галерея',
@@ -18,19 +19,22 @@ export default async function GalleryPage() {
   const moments = getGalleryMoments();
   const bootstrap = await getClientBootstrap();
   const hero = resolveSitePageHero('gallery', bootstrap.config.extra);
+  const showHero = isSiteBlockVisible(bootstrap.config.extra, SITE_BLOCK_KEYS.pageHero('gallery'));
 
   return (
     <main className="pb-14">
       <Container>
-        <PageHero
-          eyebrow={hero.eyebrow}
-          title={hero.title}
-          description={hero.description}
-          imageUrl={hero.imageUrl}
-          imageAlt={hero.title}
-          breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Галерея' }]}
-          actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
-        />
+        {showHero ? (
+          <PageHero
+            eyebrow={hero.eyebrow}
+            title={hero.title}
+            description={hero.description}
+            imageUrl={hero.imageUrl}
+            imageAlt={hero.title}
+            breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Галерея' }]}
+            actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
+          />
+        ) : null}
 
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {moments.map((moment) => (

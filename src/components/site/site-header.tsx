@@ -77,10 +77,10 @@ export function SiteHeader({ salon }: SiteHeaderProps) {
               />
               <span>
                 <span className="block font-serif text-[1.85rem] leading-none tracking-[0.22em] text-(--ink)">
-                  MARI
+                  МАРИ
                 </span>
                 <span className="block text-[0.68rem] uppercase tracking-[0.38em] text-(--muted-strong)">
-                  Beauty Salon
+                  Салон Красоты
                 </span>
               </span>
             </Link>

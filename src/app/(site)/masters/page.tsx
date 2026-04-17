@@ -6,6 +6,7 @@ import { ButtonLink } from '@/components/ui/button';
 import { createPageMetadata } from '@/lib/site';
 import { getLiveCatalog } from '@/lib/live-catalog';
 import { resolveSitePageHero } from '@/lib/site-page-heroes';
+import { isSiteBlockVisible, SITE_BLOCK_KEYS } from '@/lib/site-visibility';
 import {
   applySpecialistsPageTemplate,
   getSpecialistsPageContent,
@@ -19,45 +20,52 @@ export const metadata = createPageMetadata({
 
 export default async function MastersPage() {
   const [catalog, pageContent] = await Promise.all([getLiveCatalog(), getSpecialistsPageContent()]);
+  const extra = catalog.bootstrap.config.extra;
   const hero = resolveSitePageHero('masters', catalog.bootstrap.config.extra);
+  const showHero = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.pageHero('masters'));
+  const showCta = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.specialistsPage.listCta);
 
   return (
     <main className="pb-14">
       <Container>
-        <PageHero
-          eyebrow={hero.eyebrow}
-          title={hero.title}
-          description={hero.description}
-          imageUrl={hero.imageUrl}
-          imageAlt={hero.title}
-          breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Специалисты' }]}
-          actions={
-            <ButtonLink href="/booking">{pageContent.listPage.heroPrimaryCtaLabel}</ButtonLink>
-          }
-          details={[
-            applySpecialistsPageTemplate(pageContent.listPage.detailsCountTemplate, {
-              count: catalog.specialists.length,
-            }),
-            pageContent.listPage.detailsFilterText,
-          ]}
-        />
+        {showHero ? (
+          <PageHero
+            eyebrow={hero.eyebrow}
+            title={hero.title}
+            description={hero.description}
+            imageUrl={hero.imageUrl}
+            imageAlt={hero.title}
+            breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Специалисты' }]}
+            actions={
+              <ButtonLink href="/booking">{pageContent.listPage.heroPrimaryCtaLabel}</ButtonLink>
+            }
+            details={[
+              applySpecialistsPageTemplate(pageContent.listPage.detailsCountTemplate, {
+                count: catalog.specialists.length,
+              }),
+              pageContent.listPage.detailsFilterText,
+            ]}
+          />
+        ) : null}
 
         <MastersBrowser masters={catalog.specialists} />
       </Container>
 
-      <CtaPanel
-        eyebrow={pageContent.listPage.ctaEyebrow}
-        title={pageContent.listPage.ctaTitle}
-        description={pageContent.listPage.ctaDescription}
-        actions={
-          <>
-            <ButtonLink href="/booking">{pageContent.listPage.ctaPrimaryLabel}</ButtonLink>
-            <ButtonLink href="/services" variant="secondary">
-              {pageContent.listPage.ctaSecondaryLabel}
-            </ButtonLink>
-          </>
-        }
-      />
+      {showCta ? (
+        <CtaPanel
+          eyebrow={pageContent.listPage.ctaEyebrow}
+          title={pageContent.listPage.ctaTitle}
+          description={pageContent.listPage.ctaDescription}
+          actions={
+            <>
+              <ButtonLink href="/booking">{pageContent.listPage.ctaPrimaryLabel}</ButtonLink>
+              <ButtonLink href="/services" variant="secondary">
+                {pageContent.listPage.ctaSecondaryLabel}
+              </ButtonLink>
+            </>
+          }
+        />
+      ) : null}
     </main>
   );
 }

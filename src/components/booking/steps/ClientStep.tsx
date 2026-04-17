@@ -22,7 +22,7 @@ type ClientStepProps = {
 function PhoneInput({
   value,
   onChange,
-  error
+  error,
 }: {
   value: string;
   onChange: (value: string) => void;
@@ -47,9 +47,11 @@ function PhoneInput({
           autoComplete="tel-national"
           inputMode="numeric"
           maxLength={10}
-          placeholder="9780001818"
+          placeholder="9786778130"
           className={`w-full rounded-[1.3rem] border bg-(--panel) py-3.5 pl-8 pr-4 text-sm outline-none transition ${
-            error ? 'border-[#d0817c] bg-[#fff1f0]' : 'border-(--line) focus:border-(--accent-strong)'
+            error
+              ? 'border-[#d0817c] bg-[#fff1f0]'
+              : 'border-(--line) focus:border-(--accent-strong)'
           }`}
         />
       </div>
@@ -66,7 +68,7 @@ export function ClientStep({
   sessionAuthenticated,
   maintenanceMode,
   maintenanceMessage,
-  onChange
+  onChange,
 }: ClientStepProps) {
   return (
     <div className="space-y-5">
@@ -82,7 +84,7 @@ export function ClientStep({
           <div className="flex items-start justify-between gap-3">
             <span>Специалист</span>
             <span className="text-right font-medium text-(--ink)">
-              {draft.isAnyStaff ? 'Любой специалист' : draft.staff?.name ?? 'Не выбрано'}
+              {draft.isAnyStaff ? 'Любой специалист' : (draft.staff?.name ?? 'Не выбрано')}
             </span>
           </div>
           <div className="flex items-start justify-between gap-3">
@@ -95,7 +97,8 @@ export function ClientStep({
             <div className="flex items-start justify-between gap-3">
               <span>Стоимость</span>
               <span className="text-right font-medium text-(--ink)">
-                {formatPriceRange(draft.service.priceMin, draft.service.priceMax)} · {formatDuration(draft.service.durationSec)}
+                {formatPriceRange(draft.service.priceMin, draft.service.priceMax)} ·{' '}
+                {formatDuration(draft.service.durationSec)}
               </span>
             </div>
           ) : null}
@@ -108,14 +111,12 @@ export function ClientStep({
           <div className="mt-3 flex flex-wrap gap-4">
             <Link
               href="/account/login"
-              className="text-(--foreground) underline decoration-(--line-strong) underline-offset-4"
-            >
+              className="text-(--foreground) underline decoration-(--line-strong) underline-offset-4">
               Войти
             </Link>
             <Link
               href="/account/register"
-              className="text-(--foreground) underline decoration-(--line-strong) underline-offset-4"
-            >
+              className="text-(--foreground) underline decoration-(--line-strong) underline-offset-4">
               Создать кабинет
             </Link>
           </div>
@@ -136,7 +137,9 @@ export function ClientStep({
           autoComplete="name"
           placeholder="Как к вам обращаться"
           className={`w-full rounded-[1.3rem] border bg-(--panel) px-4 py-3.5 text-sm outline-none transition ${
-            formErrors.name ? 'border-[#d0817c] bg-[#fff1f0]' : 'border-(--line) focus:border-(--accent-strong)'
+            formErrors.name
+              ? 'border-[#d0817c] bg-[#fff1f0]'
+              : 'border-(--line) focus:border-(--accent-strong)'
           }`}
         />
         {formErrors.name ? <p className="text-sm text-[#7d3a37]">{formErrors.name}</p> : null}
@@ -159,7 +162,9 @@ export function ClientStep({
       </label>
 
       <label className="space-y-2">
-        <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Комментарий</span>
+        <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">
+          Комментарий
+        </span>
         <textarea
           value={draft.client.comment}
           onChange={(event) => onChange({ comment: event.target.value })}

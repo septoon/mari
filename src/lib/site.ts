@@ -6,7 +6,7 @@ export const siteConfig = {
   description:
     'Салон красоты МАРИ: услуги, специалисты, цены, подарочные сертификаты и личный кабинет.',
   phone: '+7 (978) 000-18-18',
-  phoneHref: 'tel:+79780001818',
+  phoneHref: 'tel:+79786778130',
   email: 'hello@maribeauty.ru',
   address: 'Симферополь, ул. Екатерининская, 18',
   heroHeadline: 'Красота в спокойном ритме.',
