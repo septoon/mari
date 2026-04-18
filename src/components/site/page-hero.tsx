@@ -67,9 +67,6 @@ export function PageHero({
             <div className="flex min-h-72 flex-col items-center justify-center gap-4 px-8 text-center text-(--muted)">
               <ImageIcon className="h-10 w-10 text-(--accent-strong)" />
               <p className="font-serif text-3xl text-(--ink)">Место под фото</p>
-              <p className="max-w-sm text-sm leading-7">
-                Изображение для этой страницы настраивается в `mari-staff` через `/online-booking`.
-              </p>
             </div>
           )}
         </div>

@@ -233,14 +233,7 @@ export function AccountPanel() {
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-2xl">
           <p className="section-kicker">Личный кабинет</p>
-          <h2 className="section-title">
-            {session.authenticated ? 'Профиль, записи и история визитов.' : 'Войдите или создайте кабинет.'}
-          </h2>
-          <p className="section-copy">
-            {session.authenticated
-              ? 'Здесь можно посмотреть ближайшие визиты, обновить фото профиля, проверить скидку и при необходимости отменить запись.'
-              : 'После входа будут доступны профиль, история визитов, записи и все основные действия в личном кабинете.'}
-          </p>
+
         </div>
 
         {session.authenticated ? (
@@ -372,7 +365,7 @@ export function AccountPanel() {
             </div>
 
             <div className="grid gap-5 md:grid-cols-2">
-              <div className="rounded-[1.5rem] border border-(--line) bg-[linear-gradient(180deg,rgba(242,239,235,0.9),rgba(230,238,235,0.8))] p-5">
+              <div className="rounded-[1.5rem] hidden lg:block border border-(--line) bg-[linear-gradient(180deg,rgba(242,239,235,0.9),rgba(230,238,235,0.8))] p-5">
                 <p className="text-xs uppercase tracking-[0.24em] text-(--ink-muted)">
                   Состояние
                 </p>

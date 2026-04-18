@@ -94,9 +94,7 @@ export function DateStep({
               <span className="block text-base font-semibold">
                 {new Date(`${item.date}T00:00:00`).getDate()}
               </span>
-              <span className={`mt-1 block text-[11px] ${active ? 'text-white/75' : 'text-(--muted-strong)'}`}>
-                {item.totalSlots > 0 ? item.totalSlots : 'нет'}
-              </span>
+
             </button>
           );
         })}

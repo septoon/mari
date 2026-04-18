@@ -25,21 +25,6 @@ export default async function ServicesPage() {
   return (
     <main className="pb-14">
       <Container>
-        {showHero ? (
-          <PageHero
-            eyebrow={hero.eyebrow}
-            title={hero.title}
-            description={hero.description}
-            imageUrl={hero.imageUrl}
-            imageAlt={hero.title}
-            breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Услуги' }]}
-            actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
-            details={[
-              `${catalog.serviceCategories.length} категорий и ${catalog.services.length} активных услуг.`,
-              'Из карточки услуги можно сразу перейти к подробностям и записи.',
-            ]}
-          />
-        ) : null}
 
         <SectionHeading
           eyebrow="Навигация по категориям"

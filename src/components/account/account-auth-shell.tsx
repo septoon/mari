@@ -38,7 +38,7 @@ export function AccountAuthShell({
 
         <section className="grid gap-6 lg:grid-cols-[1.02fr_0.98fr]">
           <aside
-            className={`relative overflow-hidden rounded-[2.2rem] border border-(--line) bg-[linear-gradient(180deg,rgba(242,236,230,0.98),rgba(231,239,236,0.94))] px-6 py-8 md:px-8 md:py-10${
+            className={`relative hidden lg:block overflow-hidden rounded-[2.2rem] border border-(--line) bg-[linear-gradient(180deg,rgba(242,236,230,0.98),rgba(231,239,236,0.94))] px-6 py-8 md:px-8 md:py-10${
               hideHeroOnMobile ? ' hidden md:block' : ''
             }`}>
             <div

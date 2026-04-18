@@ -18,6 +18,7 @@ import { ServiceStep } from '@/components/booking/steps/ServiceStep';
 import { StaffStep } from '@/components/booking/steps/StaffStep';
 import { SuccessStep } from '@/components/booking/steps/SuccessStep';
 import { TimeStep } from '@/components/booking/steps/TimeStep';
+import { cn } from '@/lib/classnames';
 
 type BookingFlowProps = {
   flow: ReturnType<typeof useBookingFlow>;
@@ -51,7 +52,7 @@ const STEP_META: Record<
   },
   date: {
     title: 'Дата',
-    description: 'Доступны только реальные даты со слотами. Ближайшую дату предлагаем автоматически.',
+    description: 'Запись на ближайшую дату',
     actionLabel: 'Выбрать время'
   },
   time: {
@@ -61,7 +62,7 @@ const STEP_META: Record<
   },
   client: {
     title: 'Контакты клиента',
-    description: 'Форма использует текущие валидаторы и реальный submit в существующий API записи.',
+    description: '',
     actionLabel: 'Записаться'
   }
 };
@@ -260,9 +261,10 @@ export function BookingFlow({
 
   return (
     <div
-      className={`flex min-h-full flex-col bg-(--background) text-(--ink) ${
-        variant === 'sheet' ? 'h-full min-h-0 overflow-hidden' : ''
-      }`}
+      className={cn(
+        'flex min-h-full flex-col bg-(--background) text-(--ink)',
+        variant === 'sheet' && 'h-full min-h-0 overflow-hidden'
+      )}
     >
       <BookingStepHeader
         showBack={Boolean(flow.previousStep)}
@@ -281,25 +283,23 @@ export function BookingFlow({
       />
 
       <div
-        className={`flex min-h-0 flex-1 flex-col px-4 sm:px-6 ${
-          variant === 'sheet' ? 'overflow-hidden' : ''
-        }`}
+        className={cn(
+          'flex min-h-0 flex-1 flex-col px-4 sm:px-6',
+          variant === 'sheet' && 'overflow-hidden'
+        )}
       >
         <div
-          className={`min-h-0 flex-1 ${
-            variant === 'sheet'
-              ? usesInnerStepScroll
-                ? 'overflow-hidden'
-                : 'overflow-y-auto'
-              : ''
-          }`}
+          className={cn(
+            'min-h-0 flex-1',
+            variant === 'sheet' && (usesInnerStepScroll ? 'overflow-hidden' : 'overflow-y-auto')
+          )}
         >
           <div
-            className={`${
+            className={cn(
               variant === 'sheet'
                 ? 'flex h-full min-h-0 flex-1 flex-col pt-5'
                 : 'pt-5'
-            }`}
+            )}
           >
             {showSummary ? (
               <div className="mb-4 flex flex-wrap gap-2">
@@ -337,13 +337,10 @@ export function BookingFlow({
             ) : null}
 
             <div
-              className={`flex min-h-0 flex-1 flex-col ${
-                variant === 'sheet'
-                  ? usesInnerStepScroll
-                    ? 'overflow-hidden pb-6'
-                    : 'pb-6'
-                  : ''
-              }`}
+              className={cn(
+                'flex min-h-0 flex-1 flex-col',
+                variant === 'sheet' && (usesInnerStepScroll ? 'overflow-hidden pb-6' : 'pb-6')
+              )}
             >
               {services.length === 0 ? (
                 <div className="rounded-[1.5rem] border border-dashed border-(--line) bg-(--panel) px-5 py-6 text-sm text-(--muted)">
@@ -443,11 +440,12 @@ export function BookingFlow({
 
         {showFooter ? (
           <div
-            className={`z-20 mt-auto shrink-0 border-t border-(--line) bg-(--background) ${
+            className={cn(
+              'z-20 mt-auto shrink-0 border-t border-(--line) bg-(--background)',
               variant === 'sheet'
                 ? 'pb-4 pt-4 shadow-[0_-18px_40px_rgba(19,29,31,0.06)]'
                 : 'sticky bottom-0 pb-4 pt-4'
-            }`}
+            )}
           >
             {flow.state.step === 'success' ? (
               <div className="flex flex-col gap-3 sm:flex-row">
