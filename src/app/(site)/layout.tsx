@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 
 import { ClientSessionProvider } from '@/components/client-session-provider';
 import { CookieConsentBanner } from '@/components/site/cookie-consent-banner';
+import { FloatingContactButton } from '@/components/site/floating-contact-button';
 import { RouteScrollReset } from '@/components/site/route-scroll-reset';
 import { SiteFooter } from '@/components/site/site-footer';
 import { SiteHeader } from '@/components/site/site-header';
@@ -29,6 +30,7 @@ export default async function SiteLayout({
         <SiteHeader salon={catalog.salon} />
         {children}
         <SiteFooter salon={catalog.salon} />
+        <FloatingContactButton phoneHref={catalog.salon.phoneHref} />
         <CookieConsentBanner
           title={privacyPolicy.cookieBannerTitle}
           description={privacyPolicy.cookieBannerDescription}

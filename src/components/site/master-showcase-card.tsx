@@ -50,15 +50,15 @@ export function MasterShowcaseCard({
         </div>
       </div>
 
-      <div className="relative mt-8 text-center">
+      <div className="relative mt-6 text-center">
         <h3 className="font-serif text-[clamp(2.5rem,5vw,4rem)] leading-none text-[#5d4336]">{name}</h3>
       </div>
 
-      <div className="relative mt-7 text-[#7f6858]">
+      <div className="relative mt-4 text-[#7f6858]">
         <p className="text-center text-lg leading-7 sm:text-[1.7rem] sm:leading-9">
           Работает по направлениям:
         </p>
-        <ul className="mt-4 flex flex-wrap justify-center gap-x-6 gap-y-3 text-base leading-7 sm:text-[1.15rem] sm:leading-8">
+        <ul className="mt-4 flex flex-wrap justify-center gap-x-6 gap-y-1 text-base leading-7 sm:text-[1.15rem] sm:leading-8">
           {focusAreas.map((category) => (
             <li key={category} className="flex items-start gap-3">
               <span className="mt-2.5 h-2.5 w-2.5 shrink-0 rounded-full bg-[#c8a788]" />
@@ -70,7 +70,7 @@ export function MasterShowcaseCard({
 
       <Link
         href={href}
-        className="relative mt-10 inline-flex min-h-16 w-full items-center justify-center gap-3 rounded-full border border-[#ead9ca] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(247,239,230,0.96))] px-6 text-lg font-medium text-[#6d5343] shadow-[0_10px_26px_rgba(181,144,109,0.14),inset_0_1px_0_rgba(255,255,255,0.96)] transition duration-300 hover:border-[#d9b99d] hover:text-[#5a4335] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d7b08d] focus-visible:ring-offset-2"
+        className="relative mt-6 inline-flex min-h-16 w-full items-center justify-center gap-3 rounded-full border border-[#ead9ca] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(247,239,230,0.96))] px-6 text-lg font-medium text-[#6d5343] shadow-[0_10px_26px_rgba(181,144,109,0.14),inset_0_1px_0_rgba(255,255,255,0.96)] transition duration-300 hover:border-[#d9b99d] hover:text-[#5a4335] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d7b08d] focus-visible:ring-offset-2"
       >
         <span>Профиль специалиста</span>
         <ArrowRight className="h-5 w-5 transition duration-300 group-hover:translate-x-1" />
