@@ -79,7 +79,7 @@ export function SiteHeader({ salon }: SiteHeaderProps) {
                 <span className="block font-serif text-[1.85rem] leading-none tracking-[0.22em] text-(--ink)">
                   МАРИ
                 </span>
-                <span className="block text-[0.68rem] uppercase tracking-[0.38em] text-(--muted-strong)">
+                <span className="block text-[0.68rem] uppercase font-bold tracking-[0.38em] text-(--muted-strong)">
                   Салон Красоты
                 </span>
               </span>
