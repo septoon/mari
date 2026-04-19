@@ -17,14 +17,16 @@ type FloatingContactButtonProps = {
   phoneHref: string;
 };
 
-const iconClassName = 'text-[1.45rem]';
-
-const actions: Array<{
+type ContactAction = {
   name: string;
   href: string;
   icon: ReactNode;
   external?: boolean;
-}> = [
+};
+
+const iconClassName = 'text-[1.45rem]';
+
+const actions: ContactAction[] = [
   {
     name: 'WhatsApp',
     href: 'https://wa.me/+79786778130',
@@ -73,7 +75,7 @@ function FloatingContactButtonInner({ phoneHref }: FloatingContactButtonProps) {
   );
 
   const hasCookieBanner = consent === null;
-  const contactActions = [
+  const contactActions: ContactAction[] = [
     {
       name: 'Позвонить',
       href: phoneHref,
