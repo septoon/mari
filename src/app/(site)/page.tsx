@@ -141,7 +141,7 @@ export default async function HomePage() {
               }
             />
             <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {(featuredServices.length > 0 ? featuredServices : fallbackFeaturedServices).map((service) => (
+              {featuredServices.map((service) => (
                 <ServiceCard
                   key={service.id}
                   href={`/services/${service.categorySlug}/${service.slug}`}
