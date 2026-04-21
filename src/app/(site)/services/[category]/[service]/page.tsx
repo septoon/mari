@@ -65,6 +65,9 @@ export default async function ServiceDetailPage({
   }
 
   const category = catalog.serviceCategories.find((item) => item.slug === service.categorySlug);
+  const section = category?.sectionId
+    ? catalog.serviceSections.find((item) => item.id === category.sectionId) ?? null
+    : null;
   const masters = catalog.specialists.filter((specialist) =>
     specialist.services.some((item) => item.id === service.id),
   );
@@ -92,6 +95,7 @@ export default async function ServiceDetailPage({
             breadcrumbs={[
               { label: 'Главная', href: '/' },
               { label: 'Услуги', href: '/services' },
+              ...(section ? [{ label: section.name, href: `/services/section/${section.slug}` }] : []),
               category
                 ? { label: category.name, href: `/services/${category.slug}` }
                 : { label: service.category.name, href: '/services' },

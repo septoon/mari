@@ -197,3 +197,9 @@ export const fetchSlots = async (authToken: string | undefined, path: string) =>
     authToken,
   });
 };
+
+export const fetchPopularServices = async (limit = 6) =>
+  backendRequest(`/services/public/popular?limit=${limit}`, serviceListSchema, {
+    cache: 'force-cache',
+    next: { revalidate: 300 },
+  }).then((payload) => payload.items);

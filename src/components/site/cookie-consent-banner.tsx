@@ -37,7 +37,7 @@ export function CookieConsentBanner({
   }
 
   return (
-    <div className="fixed bottom-4 left-1/2 z-[70] w-[min(100%-1.5rem,36rem)] -translate-x-1/2 rounded-[1.75rem] border border-(--line) bg-[rgba(255,252,247,0.96)] p-5 shadow-[0_28px_70px_rgba(24,32,36,0.18)] backdrop-blur-xl">
+    <div className="fixed bottom-4 left-1/2 z-[70] w-[min(calc(100vw-1.5rem),36rem)] max-w-[calc(100vw-1.5rem)] -translate-x-1/2 rounded-[1.75rem] border border-(--line) bg-[rgba(255,252,247,0.96)] p-5 shadow-[0_28px_70px_rgba(24,32,36,0.18)] backdrop-blur-xl">
       <p className="text-sm font-semibold text-(--foreground)">{title}</p>
       <p className="mt-2 text-sm leading-6 text-(--muted)">{description}</p>
       <div className="mt-4 flex flex-wrap gap-3">

@@ -168,6 +168,7 @@ export type LiveServiceCategory = {
   imageUrl: string | null;
   sectionId: string | null;
   sectionName: string | null;
+  sectionSlug: string | null;
   services: LiveService[];
 };
 
@@ -384,6 +385,7 @@ export const getLiveCatalog = cache(async () => {
       imageUrl: category.imageUrl,
       sectionId: category.section?.id ?? null,
       sectionName: category.section?.name ?? null,
+      sectionSlug: category.section ? sectionSlugById.get(category.section.id) ?? slugify(category.section.name) : null,
       services: services.filter((service) => service.category.id === category.id),
     };
   });

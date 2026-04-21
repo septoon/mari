@@ -1,6 +1,5 @@
 import { ArrowRight, CalendarDays, ShieldCheck, Sparkles } from 'lucide-react';
 
-import { CategoryCard } from '@/components/cards/category-card';
 import { MasterCard } from '@/components/cards/master-card';
 import { ServiceCard } from '@/components/cards/service-card';
 import { CtaPanel } from '@/components/site/cta-panel';
@@ -8,6 +7,7 @@ import { EditorialVisual } from '@/components/site/editorial-visual';
 import { Container } from '@/components/ui/container';
 import { SectionHeading } from '@/components/ui/section-heading';
 import { ButtonLink } from '@/components/ui/button';
+import { fetchPopularServices } from '@/lib/api/backend';
 import { getHomePageContent } from '@/lib/home-page-content';
 import { createPageMetadata } from '@/lib/site';
 import { getLiveCatalog } from '@/lib/live-catalog';
@@ -21,9 +21,16 @@ export const metadata = createPageMetadata({
 export default async function HomePage() {
   const [catalog, homePageContent] = await Promise.all([getLiveCatalog(), getHomePageContent()]);
   const extra = catalog.bootstrap.config.extra;
-  const featuredCategories = catalog.serviceCategories.slice(0, 6);
-  const featuredServices = catalog.services.slice(0, 4);
+  const categoriesServicesLimit = homePageContent.categories.itemsLimit;
+  const popularServices = await fetchPopularServices(categoriesServicesLimit).catch(() => []);
+  const popularHomeServices =
+    popularServices
+      .map((service) => catalog.servicesById.get(service.id) ?? null)
+      .filter((service): service is NonNullable<typeof service> => service !== null)
+      .slice(0, categoriesServicesLimit);
   const masters = catalog.specialists.slice(0, 4);
+  const fallbackPopularHomeServices = catalog.services.slice(0, categoriesServicesLimit);
+  const featuredServices = catalog.services.slice(0, 4);
   const showHero = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.homePage.hero);
   const showCategories = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.homePage.categories);
   const showValuePillars = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.homePage.valuePillars);
@@ -83,11 +90,16 @@ export default async function HomePage() {
               }
             />
             <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {featuredCategories.map((category) => (
-                <CategoryCard
-                  key={category.id}
-                  category={category}
-                  serviceCount={category.services.length}
+              {(popularHomeServices.length > 0 ? popularHomeServices : fallbackPopularHomeServices).map((service) => (
+                <ServiceCard
+                  key={service.id}
+                  href={`/services/${service.categorySlug}/${service.slug}`}
+                  categoryName={service.category.name}
+                  name={service.displayName}
+                  excerpt={service.teaser}
+                  durationMinutes={Math.round(service.durationSec / 60)}
+                  priceFrom={service.priceMin}
+                  imageUrl={service.imageUrl || service.category.imageUrl || null}
                 />
               ))}
             </div>
@@ -128,8 +140,8 @@ export default async function HomePage() {
                 </ButtonLink>
               }
             />
-            <div className="mt-8 grid gap-6 md:grid-cols-2">
-              {featuredServices.map((service) => (
+            <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {(featuredServices.length > 0 ? featuredServices : fallbackFeaturedServices).map((service) => (
                 <ServiceCard
                   key={service.id}
                   href={`/services/${service.categorySlug}/${service.slug}`}

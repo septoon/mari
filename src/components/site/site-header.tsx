@@ -65,21 +65,24 @@ export function SiteHeader({ salon }: SiteHeaderProps) {
     <>
       <header className="sticky top-0 z-50 border-b border-(--line) bg-(--background)/86 backdrop-blur-xl">
         <div className="mx-auto max-w-7xl">
-          <div className="flex items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-            <Link href="/" className="inline-flex items-center gap-4" onClick={() => setOpen(false)}>
+          <div className="flex items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-8">
+            <Link
+              href="/"
+              className="inline-flex min-w-0 flex-1 items-center gap-3 sm:gap-4"
+              onClick={() => setOpen(false)}>
               <Image
                 src="/logo.webp"
                 alt="MARI app icon"
                 width={44}
                 height={44}
                 priority
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-(--line) tracking-[0.12em] object-cover"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-(--line) tracking-[0.12em] object-cover"
               />
-              <span>
-                <span className="block font-serif text-[1.85rem] leading-none tracking-[0.22em] text-(--ink)">
+              <span className="min-w-0">
+                <span className="block truncate font-serif text-[1.55rem] leading-none tracking-[0.16em] text-(--ink) sm:text-[1.85rem] sm:tracking-[0.22em]">
                   МАРИ
                 </span>
-                <span className="block text-[0.68rem] uppercase font-bold tracking-[0.38em] text-(--muted-strong)">
+                <span className="block truncate text-[0.58rem] font-bold uppercase tracking-[0.28em] text-(--muted-strong) sm:text-[0.68rem] sm:tracking-[0.38em]">
                   Салон Красоты
                 </span>
               </span>
@@ -131,7 +134,7 @@ export function SiteHeader({ salon }: SiteHeaderProps) {
               )}
             </div>
 
-            <div className="flex items-center gap-2 lg:hidden">
+            <div className="flex shrink-0 items-center gap-2 lg:hidden">
               {accountIconLink}
               <button
                 type="button"

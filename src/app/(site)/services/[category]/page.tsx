@@ -62,6 +62,9 @@ export default async function ServiceCategoryPage({
     servicesCount: item.services.length,
   });
   const showHero = isSiteBlockVisible(catalog.bootstrap.config.extra, SITE_BLOCK_KEYS.pageHero('serviceCategory'));
+  const section = item.sectionId
+    ? catalog.serviceSections.find((entry) => entry.id === item.sectionId) ?? null
+    : null;
 
   return (
     <main className="pb-14">
@@ -76,14 +79,21 @@ export default async function ServiceCategoryPage({
             breadcrumbs={[
               { label: 'Главная', href: '/' },
               { label: 'Услуги', href: '/services' },
+              ...(section ? [{ label: section.name, href: `/services/section/${section.slug}` }] : []),
               { label: item.name },
             ]}
             actions={
               <>
                 <ButtonLink href="/booking">Записаться</ButtonLink>
-                <ButtonLink href="/services" variant="secondary">
-                  Все категории
-                </ButtonLink>
+                {section ? (
+                  <ButtonLink href={`/services/section/${section.slug}`} variant="secondary">
+                    К разделу
+                  </ButtonLink>
+                ) : (
+                  <ButtonLink href="/services" variant="secondary">
+                    Все категории
+                  </ButtonLink>
+                )}
               </>
             }
             details={[

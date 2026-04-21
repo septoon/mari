@@ -37,18 +37,15 @@ export function EditorialVisual({
         />
       ) : null}
       <div className={cn('relative flex min-h-80 flex-col justify-between', imageUrl ? 'text-white' : '')}>
-        <div className="flex justify-between gap-4">
+        {/* <div className="flex justify-between gap-4">
           <Badge>{label}</Badge>
-          <div className="hidden h-16 w-16 items-center justify-center rounded-full border border-(--line) bg-white/88 font-serif text-4xl text-(--ink) md:flex">
-            {monogram}
-          </div>
-        </div>
+        </div> */}
 
         <div className="space-y-4">
-          <h3 className="max-w-md font-serif text-4xl leading-[1.02] text-(--ink) md:text-5xl">
+          {/* <h3 className="max-w-md font-serif text-4xl leading-[1.02] text-(--ink) md:text-5xl">
             {title}
           </h3>
-          <p className="max-w-md text-sm leading-7 text-(--muted)">{subtitle}</p>
+          <p className="max-w-md text-sm leading-7 text-(--muted)">{subtitle}</p> */}
           {!imageUrl ? (
             <div className="inline-flex items-center gap-2 rounded-full border border-(--line) bg-white/80 px-4 py-2 text-sm text-(--muted-strong)">
               <ImageIcon className="h-4 w-4" />

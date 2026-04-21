@@ -40,10 +40,16 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
   min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
   background:
     radial-gradient(circle at top left, rgba(255, 255, 255, 0.92), transparent 26%),
     radial-gradient(circle at right 12% top 16%, rgba(140, 112, 84, 0.12), transparent 23%),
@@ -142,5 +148,11 @@ select {
 @media (max-width: 768px) {
   .headline-xl {
     max-width: none;
+  }
+
+  input,
+  textarea,
+  select {
+    font-size: 16px;
   }
 }

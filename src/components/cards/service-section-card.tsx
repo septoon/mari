@@ -18,7 +18,7 @@ export function ServiceSectionCard({
 }) {
   return (
     <Link
-      href={`#${section.slug}`}
+      href={`/services/section/${section.slug}`}
       className="group surface-card flex h-full flex-col justify-between overflow-hidden p-6 transition duration-200 hover:-translate-y-0.5 hover:border-(--accent-strong) hover:bg-white"
     >
       <div>

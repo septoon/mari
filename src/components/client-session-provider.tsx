@@ -10,7 +10,13 @@ import {
   type ReactNode
 } from 'react';
 
-import { clientSessionSchema, type ClientProfile, type ClientSession } from '@/lib/api/contracts';
+import {
+  apiErrorSchema,
+  buildApiOkSchema,
+  clientSessionSchema,
+  type ClientProfile,
+  type ClientSession
+} from '@/lib/api/contracts';
 
 type SessionContextValue = {
   session: ClientSession;
@@ -42,7 +48,17 @@ export function ClientSessionProvider({ children }: { children: ReactNode }) {
         cache: 'no-store'
       });
       const payload = await response.json();
-      const parsed = clientSessionSchema.parse(payload.data);
+      const parsedError = apiErrorSchema.safeParse(payload);
+      if (!response.ok && parsedError.success) {
+        throw new Error(parsedError.data.error.message);
+      }
+
+      const parsedPayload = buildApiOkSchema(clientSessionSchema).safeParse(payload);
+      if (!parsedPayload.success) {
+        throw new Error('Invalid client session response');
+      }
+
+      const parsed = parsedPayload.data.data;
 
       startTransition(() => {
         setSession(parsed);
