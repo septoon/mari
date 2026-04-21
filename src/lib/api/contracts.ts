@@ -217,7 +217,18 @@ export const serviceSchema = z.object({
     id: z.string().uuid(),
     name: z.string(),
     imageAssetId: z.string().uuid().nullable().optional(),
-    imageUrl: z.string().nullable().optional()
+    imageUrl: z.string().nullable().optional(),
+    sectionId: z.string().uuid().nullable().optional(),
+    section: z
+      .object({
+        id: z.string().uuid(),
+        name: z.string(),
+        orderIndex: z.number().int(),
+        imageAssetId: z.string().uuid().nullable().optional(),
+        imageUrl: z.string().nullable().optional()
+      })
+      .nullable()
+      .optional()
   }),
   name: z.string(),
   nameOnline: z.string().nullable(),

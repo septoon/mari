@@ -166,7 +166,19 @@ export type LiveServiceCategory = {
   description: string;
   heroText: string;
   imageUrl: string | null;
+  sectionId: string | null;
+  sectionName: string | null;
   services: LiveService[];
+};
+
+export type LiveServiceSection = {
+  id: string;
+  slug: string;
+  name: string;
+  imageUrl: string | null;
+  orderIndex: number;
+  categories: LiveServiceCategory[];
+  servicesCount: number;
 };
 
 export type LiveService = Service & {
@@ -246,12 +258,32 @@ export const getLiveCatalog = cache(async () => {
   );
   const activeServices = landing.services.filter((item) => item.isActive);
 
-  const categorySource = activeServices.reduce<Array<{ id: string; name: string; imageUrl: string | null }>>(
+  const categorySource = activeServices.reduce<
+    Array<{
+      id: string;
+      name: string;
+      imageUrl: string | null;
+      section: {
+        id: string;
+        name: string;
+        imageUrl: string | null;
+        orderIndex: number;
+      } | null;
+    }>
+  >(
     (acc, service) => {
       const existing = acc.find((item) => item.id === service.category.id);
       if (existing) {
         if (!existing.imageUrl && service.category.imageUrl) {
           existing.imageUrl = service.category.imageUrl;
+        }
+        if (!existing.section && service.category.section) {
+          existing.section = {
+            id: service.category.section.id,
+            name: service.category.section.name,
+            imageUrl: service.category.section.imageUrl ?? null,
+            orderIndex: service.category.section.orderIndex,
+          };
         }
         return acc;
       }
@@ -259,6 +291,14 @@ export const getLiveCatalog = cache(async () => {
         id: service.category.id,
         name: service.category.name,
         imageUrl: service.category.imageUrl ?? null,
+        section: service.category.section
+          ? {
+              id: service.category.section.id,
+              name: service.category.section.name,
+              imageUrl: service.category.section.imageUrl ?? null,
+              orderIndex: service.category.section.orderIndex,
+            }
+          : null,
       });
       return acc;
     },
@@ -268,6 +308,17 @@ export const getLiveCatalog = cache(async () => {
   const categorySlugById = new Map(
     categorySource.map((item, index) => [item.id, categorySlugs[index]]),
   );
+  const sectionSource = categorySource.reduce<
+    Array<{ id: string; name: string; imageUrl: string | null; orderIndex: number }>
+  >((acc, category) => {
+    if (!category.section || acc.some((item) => item.id === category.section?.id)) {
+      return acc;
+    }
+    acc.push(category.section);
+    return acc;
+  }, []);
+  const sectionSlugs = buildUniqueSlugs(sectionSource, (item) => item.name);
+  const sectionSlugById = new Map(sectionSource.map((item, index) => [item.id, sectionSlugs[index]]));
 
   const specialistSlugs = buildUniqueSlugs(visibleSpecialists, (item) => item.name);
   const specialistSlugById = new Map(
@@ -331,9 +382,30 @@ export const getLiveCatalog = cache(async () => {
       description: meta.description,
       heroText: meta.heroText,
       imageUrl: category.imageUrl,
+      sectionId: category.section?.id ?? null,
+      sectionName: category.section?.name ?? null,
       services: services.filter((service) => service.category.id === category.id),
     };
   });
+  const serviceSections: LiveServiceSection[] = sectionSource
+    .map((section) => {
+      const categories = serviceCategories.filter((category) => category.sectionId === section.id);
+      return {
+        id: section.id,
+        slug: sectionSlugById.get(section.id) ?? slugify(section.name),
+        name: section.name,
+        imageUrl: section.imageUrl,
+        orderIndex: section.orderIndex,
+        servicesCount: categories.reduce((sum, category) => sum + category.services.length, 0),
+        categories,
+      };
+    })
+    .sort((left, right) => {
+      if (left.orderIndex !== right.orderIndex) {
+        return left.orderIndex - right.orderIndex;
+      }
+      return left.name.localeCompare(right.name, 'ru');
+    });
 
   const primaryContact =
     landing.bootstrap.config.contacts.find((item) => item.isPrimary) ??
@@ -348,5 +420,6 @@ export const getLiveCatalog = cache(async () => {
     servicesById,
     specialists,
     serviceCategories,
+    serviceSections,
   };
 });
