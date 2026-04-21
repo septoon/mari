@@ -10,6 +10,8 @@ type TimeStepProps = {
   selectedSlot: BookingSlotSelection | null;
   loading: boolean;
   error: string | null;
+  hasBlockedSlots: boolean;
+  isSlotDisabled: (slot: BookingSlotSelection) => boolean;
   onSelect: (slot: BookingSlotSelection) => void;
 };
 
@@ -18,6 +20,8 @@ export function TimeStep({
   selectedSlot,
   loading,
   error,
+  hasBlockedSlots,
+  isSlotDisabled,
   onSelect
 }: TimeStepProps) {
   if (loading) {
@@ -60,6 +64,12 @@ export function TimeStep({
 
   return (
     <div className="space-y-5">
+      {hasBlockedSlots ? (
+        <div className="rounded-[1.5rem] border border-(--line) bg-white px-5 py-4 text-sm text-(--muted)">
+          Время, на которое у вас уже есть запись, недоступно для повторного выбора.
+        </div>
+      ) : null}
+
       {groupedSlots.map((group) => (
         <section key={group.label} className="space-y-3">
           <div className="flex items-center justify-between gap-3">
@@ -69,27 +79,30 @@ export function TimeStep({
 
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {group.items.map((slot) => {
+              const selection = {
+                staffId: slot.staffId,
+                staffName: slot.staffName,
+                startAt: slot.startAt,
+                endAt: slot.endAt
+              } satisfies BookingSlotSelection;
               const active =
                 selectedSlot?.staffId === slot.staffId &&
                 selectedSlot?.startAt === slot.startAt;
+              const disabled = isSlotDisabled(selection);
 
               return (
                 <button
                   key={`${slot.staffId}:${slot.startAt}`}
                   type="button"
-                  onClick={() =>
-                    onSelect({
-                      staffId: slot.staffId,
-                      staffName: slot.staffName,
-                      startAt: slot.startAt,
-                      endAt: slot.endAt
-                    })
-                  }
+                  onClick={() => onSelect(selection)}
+                  disabled={disabled}
                   aria-pressed={active}
                   className={`rounded-[1rem] border px-4 py-3 text-sm font-medium transition ${
                     active
                       ? 'border-(--foreground) bg-(--foreground) text-white'
-                      : 'border-(--line) bg-white text-(--ink) hover:border-(--accent-strong) hover:bg-(--panel)'
+                      : disabled
+                        ? 'cursor-not-allowed border-(--line) bg-(--panel) text-(--muted-strong) opacity-55'
+                        : 'border-(--line) bg-white text-(--ink) hover:border-(--accent-strong) hover:bg-(--panel)'
                   }`}
                 >
                   {formatTime(slot.startAt)}

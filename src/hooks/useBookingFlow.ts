@@ -6,17 +6,26 @@ import {
   useEffect,
   useMemo,
   useReducer,
-  useRef
+  useRef,
+  useState
 } from 'react';
 
+import { CLIENT_SLOT_BLOCKING_APPOINTMENT_STATUSES } from '@/lib/appointment-labels';
 import { useClientSession } from '@/components/client-session-provider';
 import {
   reachYandexMetrikaGoal,
   yandexMetrikaGoals
 } from '@/components/analytics/yandex-metrika-goals';
 import type { ClientApiError } from '@/lib/api/browser';
-import type { CreatedAppointment, Service, SlotDaysResult, SlotsResult, SpecialistCard } from '@/lib/api/contracts';
-import { createAppointment, fetchSlotDays, fetchSlots } from '@/lib/booking/client';
+import type {
+  ClientAppointmentsResult,
+  CreatedAppointment,
+  Service,
+  SlotDaysResult,
+  SlotsResult,
+  SpecialistCard
+} from '@/lib/api/contracts';
+import { createAppointment, fetchClientAppointments, fetchSlotDays, fetchSlots } from '@/lib/booking/client';
 import { fromPhoneE164, toPhoneE164 } from '@/lib/booking/phone';
 import type {
   BookingClientForm,
@@ -40,6 +49,7 @@ import {
   getSlotsKey,
   hasDateSlots
 } from '@/lib/booking/utils';
+import { getSalonDate } from '@/lib/format';
 
 type Action =
   | { type: 'select-category'; categoryId: string }
@@ -199,6 +209,8 @@ const reducer = (state: BookingFlowState, action: Action): BookingFlowState => {
     case 'select-slot':
       return {
         ...state,
+        selectedStaffId: action.slot ? action.slot.staffId : state.selectedStaffId,
+        selectedDate: action.slot ? action.slot.startAt.slice(0, 10) : state.selectedDate,
         selectedSlot: action.slot,
         errors: {
           ...state.errors,
@@ -434,6 +446,7 @@ export function useBookingFlow({
   );
   const [state, dispatch] = useReducer(reducer, initialState);
   const [availabilityVersion, refreshAvailability] = useReducer((value: number) => value + 1, 0);
+  const [clientAppointments, setClientAppointments] = useState<ClientAppointmentsResult['items']>([]);
   const slotDaysCacheRef = useRef(new Map<string, CacheEntry<SlotDaysResult>>());
   const slotsCacheRef = useRef(new Map<string, CacheEntry<SlotsResult>>());
   const restoredServiceRef = useRef(false);
@@ -552,9 +565,42 @@ export function useBookingFlow({
     [services, specialists, state]
   );
   const selectedDateAvailability = state.slotDays?.items.find((item) => item.date === state.selectedDate) ?? null;
+  const blockedClientSlotStartTimes = useMemo(
+    () =>
+      new Set(
+        clientAppointments
+          .filter(
+            (appointment) =>
+              CLIENT_SLOT_BLOCKING_APPOINTMENT_STATUSES.has(appointment.status) &&
+              isFutureBookingSlot(appointment.startAt)
+          )
+          .map((appointment) => appointment.startAt)
+      ),
+    [clientAppointments]
+  );
+  const hasBlockedSlotsOnSelectedDate = useMemo(
+    () =>
+      Boolean(
+        state.selectedDate &&
+          clientAppointments.some(
+            (appointment) =>
+              CLIENT_SLOT_BLOCKING_APPOINTMENT_STATUSES.has(appointment.status) &&
+              isFutureBookingSlot(appointment.startAt) &&
+              getSalonDate(appointment.startAt) === state.selectedDate
+          )
+      ),
+    [clientAppointments, state.selectedDate]
+  );
+  const isSlotBlockedForClient = useCallback(
+    (slot: BookingSlotSelection) => blockedClientSlotStartTimes.has(slot.startAt),
+    [blockedClientSlotStartTimes]
+  );
 
   useEffect(() => {
     if (!session.authenticated) {
+      startTransition(() => {
+        setClientAppointments([]);
+      });
       return;
     }
 
@@ -572,6 +618,36 @@ export function useBookingFlow({
       });
     });
   }, [session.authenticated, session.client?.name, session.client?.phoneE164, state.clientForm.name, state.clientForm.phone]);
+
+  useEffect(() => {
+    if (!session.authenticated) {
+      return;
+    }
+
+    const controller = new AbortController();
+
+    void fetchClientAppointments({
+      signal: controller.signal
+    })
+      .then((result) => {
+        if (controller.signal.aborted) {
+          return;
+        }
+
+        startTransition(() => {
+          setClientAppointments(result.items);
+        });
+      })
+      .catch((error: unknown) => {
+        if (controller.signal.aborted) {
+          return;
+        }
+
+        console.error('[LOAD_BOOKING_CLIENT_APPOINTMENTS_FAILED]', error);
+      });
+
+    return () => controller.abort();
+  }, [session.authenticated]);
 
   useEffect(() => {
     if (!restoreStoredService) {
@@ -641,6 +717,14 @@ export function useBookingFlow({
     dispatch({ type: 'select-staff', staffId: null });
     dispatch({ type: 'set-step', step: 'staff' });
   }, [availableSpecialists, canChooseAnyStaff, state.selectedStaffId]);
+
+  useEffect(() => {
+    if (!state.selectedSlot || !isSlotBlockedForClient(state.selectedSlot)) {
+      return;
+    }
+
+    dispatch({ type: 'select-slot', slot: null });
+  }, [isSlotBlockedForClient, state.selectedSlot]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -841,8 +925,12 @@ export function useBookingFlow({
   }, []);
 
   const selectSlot = useCallback((slot: BookingSlotSelection) => {
+    if (isSlotBlockedForClient(slot)) {
+      return;
+    }
+
     dispatch({ type: 'select-slot', slot });
-  }, []);
+  }, [isSlotBlockedForClient]);
 
   const openDateCalendar = useCallback(
     ({
@@ -869,6 +957,10 @@ export function useBookingFlow({
 
   const selectPreviewSlot = useCallback(
     (slot: BookingSlotSelection) => {
+      if (isSlotBlockedForClient(slot)) {
+        return;
+      }
+
       if (!state.selectedServiceId) {
         openDateCalendar({
           staffId: slot.staffId,
@@ -885,7 +977,7 @@ export function useBookingFlow({
       dispatch({ type: 'select-slot', slot });
       dispatch({ type: 'set-step', step: 'time' });
     },
-    [openDateCalendar, state.selectedServiceId, state.selectedStaffId]
+    [isSlotBlockedForClient, openDateCalendar, state.selectedServiceId, state.selectedStaffId]
   );
 
   const updateClientForm = useCallback((patch: Partial<BookingClientForm>) => {
@@ -915,6 +1007,14 @@ export function useBookingFlow({
       dispatch({
         type: 'set-submit-error',
         message: 'Сначала завершите выбор услуги, специалиста и времени.'
+      });
+      return false;
+    }
+
+    if (isSlotBlockedForClient(state.selectedSlot)) {
+      dispatch({
+        type: 'set-submit-error',
+        message: 'У вас уже есть запись на это время. Выберите другой слот.'
       });
       return false;
     }
@@ -970,7 +1070,7 @@ export function useBookingFlow({
       });
       return false;
     }
-  }, [clearAvailabilityCache, state.clientForm.comment, state.clientForm.consentAccepted, state.clientForm.name, state.clientForm.phone, state.clientForm.promoCode, state.selectedServiceId, state.selectedSlot, state.selectedStaffId]);
+  }, [clearAvailabilityCache, isSlotBlockedForClient, state.clientForm.comment, state.clientForm.consentAccepted, state.clientForm.name, state.clientForm.phone, state.clientForm.promoCode, state.selectedServiceId, state.selectedSlot, state.selectedStaffId]);
 
   return {
     state,
@@ -986,6 +1086,8 @@ export function useBookingFlow({
     availableSpecialists,
     canChooseAnyStaff,
     selectedDateAvailability,
+    hasBlockedSlotsOnSelectedDate,
+    isSlotBlockedForClient,
     selectCategory,
     selectService,
     selectStaff,

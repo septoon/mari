@@ -14,6 +14,8 @@ type DateStepProps = {
   slotsLoading: boolean;
   error: string | null;
   slotsError: string | null;
+  hasBlockedSlots: boolean;
+  isSlotDisabled: (slot: BookingSlotSelection) => boolean;
   onSelect: (date: string) => void;
   onSelectSlot: (slot: BookingSlotSelection) => void;
 };
@@ -29,6 +31,8 @@ export function DateStep({
   slotsLoading,
   error,
   slotsError,
+  hasBlockedSlots,
+  isSlotDisabled,
   onSelect,
   onSelectSlot
 }: DateStepProps) {
@@ -145,45 +149,56 @@ export function DateStep({
               {slotsError}
             </div>
           ) : groupedSlots.length ? (
-            groupedSlots.map((group) => (
-              <section key={group.label} className="space-y-3">
-                <div className="flex items-center justify-between gap-3">
-                  <h3 className="text-[1.65rem] font-semibold text-(--ink)">{group.label}</h3>
-                  <span className="text-xs text-(--muted-strong)">{group.items.length} слотов</span>
+            <>
+              {hasBlockedSlots ? (
+                <div className="rounded-[1.5rem] border border-(--line) bg-white px-5 py-4 text-sm text-(--muted)">
+                  Время, на которое у вас уже есть запись, недоступно для повторного выбора.
                 </div>
+              ) : null}
 
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                  {group.items.map((slot) => {
-                    const active =
-                      selectedSlot?.staffId === slot.staffId &&
-                      selectedSlot?.startAt === slot.startAt;
+              {groupedSlots.map((group) => (
+                <section key={group.label} className="space-y-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-[1.65rem] font-semibold text-(--ink)">{group.label}</h3>
+                    <span className="text-xs text-(--muted-strong)">{group.items.length} слотов</span>
+                  </div>
 
-                    return (
-                      <button
-                        key={`${slot.staffId}:${slot.startAt}`}
-                        type="button"
-                        onClick={() =>
-                          onSelectSlot({
-                            staffId: slot.staffId,
-                            staffName: slot.staffName,
-                            startAt: slot.startAt,
-                            endAt: slot.endAt
-                          })
-                        }
-                        aria-pressed={active}
-                        className={`rounded-[1rem] px-4 py-3 text-sm font-medium transition ${
-                          active
-                            ? 'bg-(--foreground) text-white'
-                            : 'bg-(--panel) text-(--ink) hover:bg-(--surface-strong)'
-                        }`}
-                      >
-                        {formatTime(slot.startAt)}
-                      </button>
-                    );
-                  })}
-                </div>
-              </section>
-            ))
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    {group.items.map((slot) => {
+                      const selection = {
+                        staffId: slot.staffId,
+                        staffName: slot.staffName,
+                        startAt: slot.startAt,
+                        endAt: slot.endAt
+                      } satisfies BookingSlotSelection;
+                      const active =
+                        selectedSlot?.staffId === slot.staffId &&
+                        selectedSlot?.startAt === slot.startAt;
+                      const disabled = isSlotDisabled(selection);
+
+                      return (
+                        <button
+                          key={`${slot.staffId}:${slot.startAt}`}
+                          type="button"
+                          onClick={() => onSelectSlot(selection)}
+                          disabled={disabled}
+                          aria-pressed={active}
+                          className={`rounded-[1rem] px-4 py-3 text-sm font-medium transition ${
+                            active
+                              ? 'bg-(--foreground) text-white'
+                              : disabled
+                                ? 'cursor-not-allowed bg-(--panel) text-(--muted-strong) opacity-55'
+                                : 'bg-(--panel) text-(--ink) hover:bg-(--surface-strong)'
+                          }`}
+                        >
+                          {formatTime(slot.startAt)}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
+              ))}
+            </>
           ) : (
             <div className="rounded-[1.5rem] border border-dashed border-(--line) bg-(--panel) px-5 py-6 text-sm text-(--muted)">
               На выбранную дату свободного времени пока нет.

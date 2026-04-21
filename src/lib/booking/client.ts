@@ -2,8 +2,10 @@
 
 import {
   appointmentCreatedSchema,
+  clientAppointmentsSchema,
   slotDaysResultSchema,
   slotsResultSchema,
+  type ClientAppointmentsResult,
   type CreatedAppointment,
   type SlotDaysResult,
   type SlotsResult
@@ -91,4 +93,20 @@ export const createAppointment = async ({
   });
 
   return readApiOk(response, appointmentCreatedSchema) as Promise<CreatedAppointment>;
+};
+
+export const fetchClientAppointments = async ({
+  limit = 50,
+  signal
+}: {
+  limit?: number;
+  signal?: AbortSignal;
+}) => {
+  const response = await fetch(`/api/client/appointments?limit=${limit}`, {
+    method: 'GET',
+    cache: 'no-store',
+    signal
+  });
+
+  return readApiOk(response, clientAppointmentsSchema) as Promise<ClientAppointmentsResult>;
 };

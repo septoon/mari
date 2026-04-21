@@ -14,6 +14,7 @@ type StaffStepProps = {
   selectedStaffId: string | 'any' | null;
   canChooseAnyStaff: boolean;
   selectedServiceId: string | null;
+  isSlotDisabled: (slot: BookingSlotSelection) => boolean;
   onSelect: (staffId: string | 'any') => void;
   onOpenCalendar: (options?: { staffId?: string | 'any'; date?: string | null }) => void;
   onSelectPreviewSlot: (slot: BookingSlotSelection) => void;
@@ -87,6 +88,7 @@ export function StaffStep({
   selectedStaffId,
   canChooseAnyStaff,
   selectedServiceId,
+  isSlotDisabled,
   onSelect,
   onOpenCalendar,
   onSelectPreviewSlot
@@ -286,16 +288,25 @@ export function StaffStep({
         </p>
 
         <div className="flex flex-wrap gap-2">
-          {preview.slots.map((slot) => (
-            <button
-              key={`${slot.staffId}:${slot.startAt}`}
-              type="button"
-              onClick={() => onSelectPreviewSlot(slot)}
-              className="rounded-[0.95rem] bg-(--panel) px-4 py-2 text-sm font-medium text-(--ink) transition hover:bg-(--surface-strong)"
-            >
-              {formatTime(slot.startAt)}
-            </button>
-          ))}
+          {preview.slots.map((slot) => {
+            const disabled = isSlotDisabled(slot);
+
+            return (
+              <button
+                key={`${slot.staffId}:${slot.startAt}`}
+                type="button"
+                onClick={() => onSelectPreviewSlot(slot)}
+                disabled={disabled}
+                className={`rounded-[0.95rem] px-4 py-2 text-sm font-medium transition ${
+                  disabled
+                    ? 'cursor-not-allowed bg-(--panel) text-(--muted-strong) opacity-55'
+                    : 'bg-(--panel) text-(--ink) hover:bg-(--surface-strong)'
+                }`}
+              >
+                {formatTime(slot.startAt)}
+              </button>
+            );
+          })}
 
           <button
             type="button"

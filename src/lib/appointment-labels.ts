@@ -34,6 +34,10 @@ export const CANCELLABLE_APPOINTMENT_STATUSES = new Set<
   CreatedAppointment['appointment']['status']
 >(['PENDING', 'CONFIRMED']);
 
+export const CLIENT_SLOT_BLOCKING_APPOINTMENT_STATUSES = new Set<
+  CreatedAppointment['appointment']['status']
+>(['PENDING', 'CONFIRMED']);
+
 export const formatAppointmentStatus = (
   status: CreatedAppointment['appointment']['status']
 ) => APPOINTMENT_STATUS_LABELS[status];

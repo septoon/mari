@@ -383,6 +383,7 @@ export function BookingFlow({
               specialists={flow.availableSpecialists}
               selectedStaffId={flow.state.selectedStaffId}
               canChooseAnyStaff={flow.canChooseAnyStaff}
+              isSlotDisabled={flow.isSlotBlockedForClient}
               onSelect={flow.selectStaff}
               selectedServiceId={flow.state.selectedServiceId}
               onOpenCalendar={flow.openDateCalendar}
@@ -400,6 +401,8 @@ export function BookingFlow({
                   slotsLoading={flow.state.loading.slots}
                   error={flow.state.errors.slotDays}
                   slotsError={flow.state.errors.slots}
+                  hasBlockedSlots={flow.hasBlockedSlotsOnSelectedDate}
+                  isSlotDisabled={flow.isSlotBlockedForClient}
                   onSelect={flow.selectDate}
                   onSelectSlot={flow.selectSlot}
                 />
@@ -411,6 +414,8 @@ export function BookingFlow({
                   selectedSlot={flow.state.selectedSlot}
                   loading={flow.state.loading.slots}
                   error={flow.state.errors.slots}
+                  hasBlockedSlots={flow.hasBlockedSlotsOnSelectedDate}
+                  isSlotDisabled={flow.isSlotBlockedForClient}
                   onSelect={flow.selectSlot}
                 />
               ) : null}

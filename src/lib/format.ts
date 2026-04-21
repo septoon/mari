@@ -12,6 +12,13 @@ const dateFormatter = new Intl.DateTimeFormat('ru-RU', {
   timeZone: SALON_TIME_ZONE
 });
 
+const datePartsFormatter = new Intl.DateTimeFormat('en-GB', {
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric',
+  timeZone: SALON_TIME_ZONE
+});
+
 const dateTimeFormatter = new Intl.DateTimeFormat('ru-RU', {
   day: '2-digit',
   month: 'long',
@@ -67,6 +74,15 @@ export const formatDuration = (durationSec: number) => {
 };
 
 export const formatBookingDate = (iso: string) => dateFormatter.format(parseDate(iso));
+
+export const getSalonDate = (value: string) => {
+  const parts = datePartsFormatter.formatToParts(parseDate(value));
+  const day = parts.find((part) => part.type === 'day')?.value ?? '01';
+  const month = parts.find((part) => part.type === 'month')?.value ?? '01';
+  const year = parts.find((part) => part.type === 'year')?.value ?? '1970';
+
+  return `${year}-${month}-${day}`;
+};
 
 export const formatBookingDateTime = (iso: string) => dateTimeFormatter.format(parseDate(iso));
 
