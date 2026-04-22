@@ -24,6 +24,13 @@ export type HomePageContent = {
     visualSubtitle: string;
     visualImageUrl?: string;
   };
+  news: {
+    eyebrow: string;
+    title: string;
+    description: string;
+    actionLabel: string;
+    itemsLimit: number;
+  };
   categories: {
     eyebrow: string;
     title: string;
@@ -78,6 +85,14 @@ export const HOME_PAGE_DEFAULTS: HomePageContent = {
     visualTitle: 'Пространство для ухода, цвета и точной работы с образом.',
     visualSubtitle: '',
     visualImageUrl: '',
+  },
+  news: {
+    eyebrow: 'Новости',
+    title: 'Свежие обновления MARI.',
+    description:
+      'Коротко о новых пространствах, сезонных уходах и сервисных обновлениях, которые уже доступны в салоне.',
+    actionLabel: 'Все новости',
+    itemsLimit: 3,
   },
   categories: {
     eyebrow: 'Популярные направления',
@@ -216,6 +231,7 @@ const readHighlights = (value: unknown) => {
 export const readHomePageContent = (value: unknown): HomePageContent => {
   const source = asObjectRecord(value);
   const hero = asObjectRecord(source.hero);
+  const news = asObjectRecord(source.news);
   const categories = asObjectRecord(source.categories);
   const valuePillars = asObjectRecord(source.valuePillars);
   const featuredServices = asObjectRecord(source.featuredServices);
@@ -237,6 +253,13 @@ export const readHomePageContent = (value: unknown): HomePageContent => {
       visualTitle: readString(hero.visualTitle, HOME_PAGE_DEFAULTS.hero.visualTitle),
       visualSubtitle: readString(hero.visualSubtitle, HOME_PAGE_DEFAULTS.hero.visualSubtitle),
       visualImageUrl: readString(hero.visualImageUrl, HOME_PAGE_DEFAULTS.hero.visualImageUrl || ''),
+    },
+    news: {
+      eyebrow: readString(news.eyebrow, HOME_PAGE_DEFAULTS.news.eyebrow),
+      title: readString(news.title, HOME_PAGE_DEFAULTS.news.title),
+      description: readString(news.description, HOME_PAGE_DEFAULTS.news.description),
+      actionLabel: readString(news.actionLabel, HOME_PAGE_DEFAULTS.news.actionLabel),
+      itemsLimit: readInt(news.itemsLimit, HOME_PAGE_DEFAULTS.news.itemsLimit, 1, 12),
     },
     categories: {
       eyebrow: readString(categories.eyebrow, HOME_PAGE_DEFAULTS.categories.eyebrow),
