@@ -95,7 +95,7 @@ export default async function HomePage() {
             </section>
           </Container>
         ) : null}
-
+{/* 
         {showCategories ? (
           <section id="services" className="py-10 md:py-14">
             <Container>
@@ -128,9 +128,9 @@ export default async function HomePage() {
               </div>
             </Container>
           </section>
-        ) : null}
+        ) : null} */}
 
-        {priceHighlightServices.length ? (
+        {/* {priceHighlightServices.length ? (
           <section id="prices" className="py-10 md:py-14">
             <Container>
               <SectionHeading
@@ -173,7 +173,7 @@ export default async function HomePage() {
               </div>
             </Container>
           </section>
-        ) : null}
+        ) : null} */}
 
         {showValuePillars ? (
           <section className="py-10 md:py-14">
@@ -195,7 +195,7 @@ export default async function HomePage() {
           </section>
         ) : null}
 
-        {showFeaturedServices ? (
+        {/* {showFeaturedServices ? (
           <section className="py-10 md:py-14">
             <Container>
               <SectionHeading
@@ -224,9 +224,9 @@ export default async function HomePage() {
               </div>
             </Container>
           </section>
-        ) : null}
+        ) : null} */}
 
-        <section id="about" className="py-10 md:py-14">
+        {/* <section id="about" className="py-10 md:py-14">
           <Container>
             <SectionHeading
               eyebrow="О салоне"
@@ -283,7 +283,7 @@ export default async function HomePage() {
               </aside>
             </div>
           </Container>
-        </section>
+        </section> */}
 
         {showFeaturedSpecialists ? (
           <section className="py-10 md:py-14">
@@ -316,7 +316,7 @@ export default async function HomePage() {
           </section>
         ) : null}
 
-        {showContacts || showHighlights ? (
+        {/* {showContacts || showHighlights ? (
           <section id="contacts" className="py-10 md:py-14">
             <Container>
               <div
@@ -361,7 +361,7 @@ export default async function HomePage() {
               </div>
             </Container>
           </section>
-        ) : null}
+        ) : null} */}
 
         {showBottomCta ? (
           <div id="booking">
