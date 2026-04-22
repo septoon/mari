@@ -84,16 +84,16 @@ export default async function MasterDetailPage({ params }: { params: Promise<{ s
               { label: master.name },
             ]}
             actions={
-              <>
-                <ButtonLink href={`/booking?master=${master.slug}`}>
-                  {pageContent.detailPage.heroPrimaryCtaLabel}
-                </ButtonLink>
-                <ButtonLink href="/masters" variant="secondary">
-                  {pageContent.detailPage.heroSecondaryCtaLabel}
-                </ButtonLink>
-              </>
+              <ButtonLink href={`/booking?master=${master.slug}`} className="w-full sm:w-auto">
+                {pageContent.detailPage.heroPrimaryCtaLabel}
+              </ButtonLink>
             }
             meta={<SpecialistRatingPanel specialist={master} />}
+            metaPlacement="separate"
+            actionsPlacement="separate"
+            imageClassName="order-2 lg:order-none"
+            metaClassName="order-3 lg:order-none"
+            actionsClassName="order-4 lg:order-none"
           />
         ) : null}
 

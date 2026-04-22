@@ -6,6 +6,7 @@ import { z } from 'zod';
 
 import { useClientSession } from '@/components/client-session-provider';
 import { ButtonLink } from '@/components/ui/button';
+import { FullScreenLoader } from '@/components/ui/full-screen-loader';
 import { LoadingLabel } from '@/components/ui/loading-indicator';
 import { ClientApiError, readApiOk } from '@/lib/api/browser';
 import {
@@ -225,71 +226,67 @@ export function AccountPanel() {
   const permanentDiscount = session.client?.discount.permanentPercent ?? null;
   const appointmentCount = appointments.length;
   const avatarSubmitting = avatarAction !== null;
+  const showFullScreenLoader =
+    status === 'loading' || (session.authenticated && loadingAppointments && appointments.length === 0);
 
   return (
-    <section
-      id="account"
-      className="rounded-[2rem] border border-(--line) bg-white/74 px-6 py-8 shadow-[0_25px_70px_rgba(12,77,85,0.06)] md:px-8">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div className="max-w-2xl">
-          <p className="section-kicker">Личный кабинет</p>
+    <>
+      {showFullScreenLoader ? <FullScreenLoader label="Загружаю личный кабинет..." /> : null}
+      <section
+        id="account"
+        className="rounded-[2rem] border border-(--line) bg-white/74 px-6 py-8 shadow-[0_25px_70px_rgba(12,77,85,0.06)] md:px-8">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-2xl">
+            <p className="section-kicker">Личный кабинет</p>
 
-        </div>
-
-        {session.authenticated ? (
-          <div className="flex flex-wrap gap-3">
-            <ButtonLink href="/booking" variant="secondary">
-              Новая запись
-            </ButtonLink>
-            <button
-              type="button"
-              onClick={submitLogout}
-              disabled={logoutSubmitting || Boolean(cancellingAppointmentId)}
-              aria-busy={logoutSubmitting}
-              className="inline-flex items-center gap-2 rounded-full border border-(--line) px-5 py-3 text-sm font-medium text-(--ink) disabled:opacity-60">
-              {logoutSubmitting ? (
-                <LoadingLabel label="Выхожу..." size="sm" spinnerClassName="text-(--ink)" />
-              ) : (
-                <>
-                  <LogOut className="h-4 w-4" />
-                  Выйти
-                </>
-              )}
-            </button>
           </div>
-        ) : (
-          <div className="flex flex-wrap gap-3">
-            <ButtonLink href="/account/login" size="sm">
-              Войти
-            </ButtonLink>
-            <ButtonLink href="/account/register" variant="secondary" size="sm">
-              Создать кабинет
-            </ButtonLink>
+
+          {session.authenticated ? (
+            <div className="flex flex-wrap gap-3">
+              <ButtonLink href="/booking" variant="secondary">
+                Новая запись
+              </ButtonLink>
+              <button
+                type="button"
+                onClick={submitLogout}
+                disabled={logoutSubmitting || Boolean(cancellingAppointmentId)}
+                aria-busy={logoutSubmitting}
+                className="inline-flex items-center gap-2 rounded-full border border-(--line) px-5 py-3 text-sm font-medium text-(--ink) disabled:opacity-60">
+                {logoutSubmitting ? (
+                  <LoadingLabel label="Выхожу..." size="sm" spinnerClassName="text-(--ink)" />
+                ) : (
+                  <>
+                    <LogOut className="h-4 w-4" />
+                    Выйти
+                  </>
+                )}
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-3">
+              <ButtonLink href="/account/login" size="sm">
+                Войти
+              </ButtonLink>
+              <ButtonLink href="/account/register" variant="secondary" size="sm">
+                Создать кабинет
+              </ButtonLink>
+            </div>
+          )}
+        </div>
+
+        {feedback ? (
+          <div
+            className={`mt-6 rounded-[1.2rem] px-4 py-3 text-sm ${
+              feedback.type === 'success'
+                ? 'border border-[#86aa96]/40 bg-[#e3f0e8] text-[#21573b]'
+                : 'border border-[#c4847d]/35 bg-[#f5dddb] text-[#7d3a37]'
+            }`}>
+            {feedback.text}
           </div>
-        )}
-      </div>
+        ) : null}
 
-      {feedback ? (
-        <div
-          className={`mt-6 rounded-[1.2rem] px-4 py-3 text-sm ${
-            feedback.type === 'success'
-              ? 'border border-[#86aa96]/40 bg-[#e3f0e8] text-[#21573b]'
-              : 'border border-[#c4847d]/35 bg-[#f5dddb] text-[#7d3a37]'
-          }`}>
-          {feedback.text}
-        </div>
-      ) : null}
-
-      {status === 'loading' ? (
-        <div className="mt-8 rounded-[1.5rem] border border-(--line) bg-(--panel) px-6 py-8 text-sm text-(--ink-muted)">
-          <LoadingLabel
-            label="Проверяю вход..."
-            className="text-(--ink-muted)"
-            spinnerClassName="text-(--ink-muted)"
-          />
-        </div>
-      ) : !session.authenticated ? null : (
-        <div className="mt-8 space-y-5">
+        {status === 'loading' ? null : !session.authenticated ? null : (
+          <div className="mt-8 space-y-5">
           <div className="grid gap-5 xl:grid-cols-[0.78fr_1.22fr]">
             <div className="rounded-[1.5rem] border border-(--line) bg-(--panel) p-5">
               <p className="text-xs uppercase tracking-[0.24em] text-(--ink-muted)">
@@ -478,8 +475,9 @@ export function AccountPanel() {
               </div>
             )}
           </div>
-        </div>
-      )}
-    </section>
+          </div>
+        )}
+      </section>
+    </>
   );
 }

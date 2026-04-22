@@ -20,7 +20,12 @@ export function PageHero({
   imageUrl,
   imageAlt,
   className,
-  titleClassName
+  titleClassName,
+  metaPlacement = 'inline',
+  actionsPlacement = 'inline',
+  imageClassName,
+  metaClassName,
+  actionsClassName
 }: {
   eyebrow?: string;
   title: string;
@@ -33,16 +38,21 @@ export function PageHero({
   imageAlt?: string;
   className?: string;
   titleClassName?: string;
+  metaPlacement?: 'inline' | 'separate';
+  actionsPlacement?: 'inline' | 'separate';
+  imageClassName?: string;
+  metaClassName?: string;
+  actionsClassName?: string;
 }) {
   return (
     <section className={cn('pb-10 pt-8 md:pb-14 md:pt-12', className)}>
       {breadcrumbs?.length ? <Breadcrumbs items={breadcrumbs} className="mb-6" /> : null}
       <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
-        <div className="max-w-3xl">
+        <div className="order-1 max-w-3xl">
           {eyebrow ? <p className="section-kicker">{eyebrow}</p> : null}
           <h1 className={cn('headline-xl', titleClassName)}>{title}</h1>
           {meta ? (
-            <div className="mt-6">{meta}</div>
+            metaPlacement === 'inline' ? <div className="mt-6">{meta}</div> : null
           ) : (
             <>
               <p className="mt-6 max-w-2xl text-base leading-8 text-(--muted)">{description}</p>
@@ -60,10 +70,17 @@ export function PageHero({
               ) : null}
             </>
           )}
-          {actions ? <div className="mt-8 flex flex-wrap gap-3">{actions}</div> : null}
+          {actions && actionsPlacement === 'inline' ? (
+            <div className="mt-8 flex flex-wrap gap-3">{actions}</div>
+          ) : null}
         </div>
 
-        <div className="relative overflow-hidden rounded-[2rem] border border-(--line) bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(247,241,234,0.88)_52%,rgba(232,224,215,0.8)_100%)] shadow-[0_30px_90px_rgba(69,48,29,0.08)]">
+        <div
+          className={cn(
+            'relative order-4 overflow-hidden rounded-[2rem] border border-(--line) bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(247,241,234,0.88)_52%,rgba(232,224,215,0.8)_100%)] shadow-[0_30px_90px_rgba(69,48,29,0.08)] lg:order-none',
+            imageClassName
+          )}
+        >
           {imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -78,6 +95,16 @@ export function PageHero({
             </div>
           )}
         </div>
+
+        {meta && metaPlacement === 'separate' ? (
+          <div className={cn('order-2 lg:order-none', metaClassName)}>{meta}</div>
+        ) : null}
+
+        {actions && actionsPlacement === 'separate' ? (
+          <div className={cn('order-3 flex flex-wrap gap-3 lg:order-none', actionsClassName)}>
+            {actions}
+          </div>
+        ) : null}
       </div>
     </section>
   );

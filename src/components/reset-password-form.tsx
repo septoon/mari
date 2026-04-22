@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 import { z } from 'zod';
 
+import { FullScreenLoader } from '@/components/ui/full-screen-loader';
 import { LoadingLabel } from '@/components/ui/loading-indicator';
 import { readApiOk } from '@/lib/api/browser';
 import { clientProfileSchema } from '@/lib/api/contracts';
@@ -69,6 +70,7 @@ export function ResetPasswordForm() {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-6xl items-center px-4 py-10 sm:px-6 lg:px-8">
+      {submitting ? <FullScreenLoader label="Обновляю пароль..." /> : null}
       <div className="grid w-full gap-6 lg:grid-cols-[0.9fr_1.1fr]">
 
         <section className="rounded-[2rem] border border-(--line) bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(238,243,241,0.82))] p-8 shadow-[0_25px_70px_rgba(12,77,85,0.08)]">

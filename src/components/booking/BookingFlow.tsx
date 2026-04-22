@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { LoadingLabel } from '@/components/ui/loading-indicator';
@@ -19,6 +20,7 @@ import { StaffStep } from '@/components/booking/steps/StaffStep';
 import { SuccessStep } from '@/components/booking/steps/SuccessStep';
 import { TimeStep } from '@/components/booking/steps/TimeStep';
 import { cn } from '@/lib/classnames';
+import { FullScreenLoader } from '@/components/ui/full-screen-loader';
 
 type BookingFlowProps = {
   flow: ReturnType<typeof useBookingFlow>;
@@ -80,6 +82,7 @@ export function BookingFlow({
   onClose,
   onDone
 }: BookingFlowProps) {
+  const pathname = usePathname();
   const headingRef = useRef<HTMLHeadingElement>(null);
   const service = flow.selectedService;
   const progressSteps = flow.hasCategoryStep
@@ -258,6 +261,14 @@ export function BookingFlow({
       : flow.state.step === 'success'
         ? 'Готово'
         : `Шаг ${progressIndex} из ${progressSteps.length}`;
+  const showFullScreenLoader =
+    pathname !== '/booking' &&
+    (flow.state.loading.slotDays || flow.state.loading.slots || flow.state.loading.submit);
+  const fullScreenLoaderLabel = flow.state.loading.submit
+    ? 'Создаю запись...'
+    : flow.state.loading.slots
+      ? 'Загружаю доступное время...'
+      : 'Загружаю доступные даты...';
 
   return (
     <div
@@ -266,6 +277,12 @@ export function BookingFlow({
         variant === 'sheet' && 'h-full min-h-0 overflow-hidden'
       )}
     >
+      {showFullScreenLoader && variant !== 'page' ? (
+        <FullScreenLoader
+          label={fullScreenLoaderLabel}
+          scope="site"
+        />
+      ) : null}
       <BookingStepHeader
         showBack={Boolean(flow.previousStep)}
         showClose={variant === 'sheet' && Boolean(onClose)}
@@ -296,9 +313,7 @@ export function BookingFlow({
         >
           <div
             className={cn(
-              variant === 'sheet'
-                ? 'flex h-full min-h-0 flex-1 flex-col pt-5'
-                : 'pt-5'
+              variant === 'sheet' ? 'flex h-full min-h-0 flex-1 flex-col pt-5' : 'pt-5'
             )}
           >
             {showSummary ? (
@@ -379,17 +394,17 @@ export function BookingFlow({
               ) : null}
 
               {flow.state.step === 'staff' ? (
-            <StaffStep
-              specialists={flow.availableSpecialists}
-              selectedStaffId={flow.state.selectedStaffId}
-              canChooseAnyStaff={flow.canChooseAnyStaff}
-              isSlotDisabled={flow.isSlotBlockedForClient}
-              onSelect={flow.selectStaff}
-              selectedServiceId={flow.state.selectedServiceId}
-              onOpenCalendar={flow.openDateCalendar}
-              onSelectPreviewSlot={flow.selectPreviewSlot}
-            />
-          ) : null}
+                <StaffStep
+                  specialists={flow.availableSpecialists}
+                  selectedStaffId={flow.state.selectedStaffId}
+                  canChooseAnyStaff={flow.canChooseAnyStaff}
+                  isSlotDisabled={flow.isSlotBlockedForClient}
+                  onSelect={flow.selectStaff}
+                  selectedServiceId={flow.state.selectedServiceId}
+                  onOpenCalendar={flow.openDateCalendar}
+                  onSelectPreviewSlot={flow.selectPreviewSlot}
+                />
+              ) : null}
 
               {flow.state.step === 'date' ? (
                 <DateStep

@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Menu, UserRound, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useClientSession } from '@/components/client-session-provider';
 import { MobileNavDrawer } from '@/components/site/mobile-nav-drawer';
@@ -20,6 +20,7 @@ type SiteHeaderProps = {
 };
 
 export function SiteHeader({ salon }: SiteHeaderProps) {
+  const headerRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
   const { session } = useClientSession();
   const [open, setOpen] = useState(false);
@@ -61,9 +62,39 @@ export function SiteHeader({ salon }: SiteHeaderProps) {
     </Link>
   );
 
+  useEffect(() => {
+    const headerElement = headerRef.current;
+    if (!headerElement) {
+      return;
+    }
+
+    const updateHeaderOffset = () => {
+      document.documentElement.style.setProperty(
+        '--site-header-offset',
+        `${headerElement.offsetHeight}px`
+      );
+    };
+
+    updateHeaderOffset();
+
+    const resizeObserver = new ResizeObserver(() => {
+      updateHeaderOffset();
+    });
+
+    resizeObserver.observe(headerElement);
+    window.addEventListener('resize', updateHeaderOffset);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener('resize', updateHeaderOffset);
+    };
+  }, []);
+
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-(--line) bg-(--background)/86 backdrop-blur-xl">
+      <header
+        ref={headerRef}
+        className="sticky top-0 z-50 border-b border-(--line) bg-(--background)/86 backdrop-blur-xl">
         <div className="mx-auto max-w-7xl">
           <div className="flex items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-8">
             <Link

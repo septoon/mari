@@ -23,6 +23,7 @@
   --gold: var(--accent-strong);
   --panel: var(--surface);
   --panel-strong: var(--surface-strong);
+  --site-header-offset: 0px;
 }
 
 @theme inline {
@@ -70,6 +71,14 @@ body::before {
     radial-gradient(circle at 72% 70%, rgba(111, 91, 71, 0.04) 0 1px, transparent 1px);
   background-size: 240px 240px;
   opacity: 0.8;
+}
+
+.site-loader-backdrop {
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.94), transparent 26%),
+    radial-gradient(circle at right 12% top 16%, rgba(140, 112, 84, 0.12), transparent 23%),
+    radial-gradient(circle at left 12% bottom 16%, rgba(128, 106, 88, 0.1), transparent 22%),
+    linear-gradient(180deg, var(--background) 0%, var(--background-deep) 100%);
 }
 
 a {

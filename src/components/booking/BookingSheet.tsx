@@ -37,7 +37,8 @@ export function BookingSheet({
   specialists,
   maintenanceMode,
   maintenanceMessage,
-  consentLabel
+  consentLabel,
+  initialSelection
 }: BookingSheetProps) {
   const ref = useRef<SheetRef>(null);
   const didInitializeOpenRef = useRef(false);
@@ -46,6 +47,7 @@ export function BookingSheet({
   const flow = useBookingFlow({
     services,
     specialists,
+    initialSelection,
     restoreStoredService: false,
     startStep: 'overview'
   });

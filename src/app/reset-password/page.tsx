@@ -1,15 +1,12 @@
 import { Suspense } from 'react';
 
+import { FullScreenLoader } from '@/components/ui/full-screen-loader';
 import { ResetPasswordForm } from '@/components/reset-password-form';
 
 export default function ResetPasswordPage() {
   return (
     <Suspense
-      fallback={
-        <main className="mx-auto flex min-h-screen max-w-6xl items-center px-4 py-10 text-sm text-(--ink-muted) sm:px-6 lg:px-8">
-          Загружаю форму восстановления...
-        </main>
-      }
+      fallback={<FullScreenLoader label="Загружаю форму восстановления..." />}
     >
       <ResetPasswordForm />
     </Suspense>

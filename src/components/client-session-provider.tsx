@@ -9,6 +9,7 @@ import {
   useState,
   type ReactNode
 } from 'react';
+import { usePathname } from 'next/navigation';
 
 import {
   apiErrorSchema,
@@ -17,6 +18,7 @@ import {
   type ClientProfile,
   type ClientSession
 } from '@/lib/api/contracts';
+import { FullScreenLoader } from '@/components/ui/full-screen-loader';
 
 type SessionContextValue = {
   session: ClientSession;
@@ -34,6 +36,7 @@ const defaultSession: ClientSession = {
 };
 
 export function ClientSessionProvider({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
   const [session, setSession] = useState<ClientSession>(defaultSession);
   const [status, setStatus] = useState<'loading' | 'ready'>('loading');
 
@@ -102,7 +105,14 @@ export function ClientSessionProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
+  return (
+    <SessionContext.Provider value={value}>
+      {children}
+      {status === 'loading' && pathname !== '/booking' ? (
+        <FullScreenLoader label="Проверяю сессию..." scope="site" />
+      ) : null}
+    </SessionContext.Provider>
+  );
 }
 
 export const useClientSession = () => {

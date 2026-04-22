@@ -11,6 +11,7 @@ import {
 } from '@/components/analytics/yandex-metrika-goals';
 import { useClientSession } from '@/components/client-session-provider';
 import { ConsentCheckbox } from '@/components/legal/consent-checkbox';
+import { FullScreenLoader } from '@/components/ui/full-screen-loader';
 import { LoadingLabel } from '@/components/ui/loading-indicator';
 import { readApiOk } from '@/lib/api/browser';
 import { clientProfileSchema } from '@/lib/api/contracts';
@@ -159,44 +160,47 @@ export function AccountLoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-5">
-      <label className="space-y-2">
-        <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Телефон</span>
-        <PhoneInput
-          value={form.phone}
-          onChange={(phone) => setForm((current) => ({ ...current, phone }))}
+    <>
+      {submitting ? <FullScreenLoader label="Выполняю вход..." /> : null}
+      <form onSubmit={handleSubmit} className="grid gap-5">
+        <label className="space-y-2">
+          <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Телефон</span>
+          <PhoneInput
+            value={form.phone}
+            onChange={(phone) => setForm((current) => ({ ...current, phone }))}
+          />
+        </label>
+
+        <label className="space-y-2">
+          <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Пароль</span>
+          <input
+            type="password"
+            value={form.password}
+            onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
+            autoComplete="current-password"
+            placeholder="Ваш пароль"
+            className={inputClassName}
+          />
+        </label>
+
+        <FeedbackMessage feedback={feedback} />
+
+        <button
+          type="submit"
+          disabled={submitting}
+          aria-busy={submitting}
+          className={submitClassName}>
+          {submitting ? <LoadingLabel label="Вхожу..." /> : 'Войти'}
+        </button>
+
+        <AuthLinks
+          items={[
+            { href: '/account/register', label: 'Создать кабинет' },
+            { href: '/account/recover', label: 'Восстановить доступ' },
+          ]}
         />
-      </label>
-
-      <label className="space-y-2">
-        <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Пароль</span>
-        <input
-          type="password"
-          value={form.password}
-          onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
-          autoComplete="current-password"
-          placeholder="Ваш пароль"
-          className={inputClassName}
-        />
-      </label>
-
-      <FeedbackMessage feedback={feedback} />
-
-      <button
-        type="submit"
-        disabled={submitting}
-        aria-busy={submitting}
-        className={submitClassName}>
-        {submitting ? <LoadingLabel label="Вхожу..." /> : 'Войти'}
-      </button>
-
-      <AuthLinks
-        items={[
-          { href: '/account/register', label: 'Создать кабинет' },
-          { href: '/account/recover', label: 'Восстановить доступ' },
-        ]}
-      />
-    </form>
+      </form>
+    </>
   );
 }
 
@@ -273,83 +277,86 @@ export function AccountRegisterForm({ consentLabel }: { consentLabel: string }) 
   }
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-5">
-      <label className="space-y-2">
-        <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Имя</span>
-        <input
-          value={form.name}
-          onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
-          autoComplete="name"
-          placeholder="Как к вам обращаться"
-          className={inputClassName}
+    <>
+      {submitting ? <FullScreenLoader label="Создаю кабинет..." /> : null}
+      <form onSubmit={handleSubmit} className="grid gap-5">
+        <label className="space-y-2">
+          <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Имя</span>
+          <input
+            value={form.name}
+            onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
+            autoComplete="name"
+            placeholder="Как к вам обращаться"
+            className={inputClassName}
+          />
+        </label>
+
+        <label className="space-y-2">
+          <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Email</span>
+          <input
+            type="email"
+            value={form.email}
+            onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
+            autoComplete="email"
+            placeholder="name@example.com"
+            className={inputClassName}
+          />
+        </label>
+
+        <label className="space-y-2">
+          <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Телефон</span>
+          <PhoneInput
+            value={form.phone}
+            onChange={(phone) => setForm((current) => ({ ...current, phone }))}
+          />
+        </label>
+
+        <label className="space-y-2">
+          <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Пароль</span>
+          <input
+            type="password"
+            value={form.password}
+            onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
+            autoComplete="new-password"
+            placeholder="Не короче 8 символов"
+            className={inputClassName}
+          />
+        </label>
+
+        <FeedbackMessage feedback={feedback} />
+
+        <ConsentCheckbox
+          checked={consentAccepted}
+          onChange={(checked) => {
+            setConsentAccepted(checked);
+            if (checked) {
+              setFeedback((current) =>
+                current?.type === 'error' &&
+                current.text === 'Подтвердите согласие на обработку персональных данных.'
+                  ? null
+                  : current,
+              );
+            }
+          }}
+          label={consentLabel}
         />
-      </label>
 
-      <label className="space-y-2">
-        <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Email</span>
-        <input
-          type="email"
-          value={form.email}
-          onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
-          autoComplete="email"
-          placeholder="name@example.com"
-          className={inputClassName}
+        <button
+          type="submit"
+          disabled={submitting}
+          aria-busy={submitting}
+          className={submitClassName}>
+          {submitting ? <LoadingLabel label="Создаю кабинет..." /> : 'Создать кабинет'}
+        </button>
+
+        <AuthLinks
+          items={[
+            { href: '/account/login', label: 'Уже есть кабинет? Войти' },
+            { href: '/account/recover', label: 'Восстановить доступ' },
+          ]}
         />
-      </label>
-
-      <label className="space-y-2">
-        <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Телефон</span>
-        <PhoneInput
-          value={form.phone}
-          onChange={(phone) => setForm((current) => ({ ...current, phone }))}
-        />
-      </label>
-
-      <label className="space-y-2">
-        <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Пароль</span>
-        <input
-          type="password"
-          value={form.password}
-          onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
-          autoComplete="new-password"
-          placeholder="Не короче 8 символов"
-          className={inputClassName}
-        />
-      </label>
-
-      <FeedbackMessage feedback={feedback} />
-
-      <ConsentCheckbox
-        checked={consentAccepted}
-        onChange={(checked) => {
-          setConsentAccepted(checked);
-          if (checked) {
-            setFeedback((current) =>
-              current?.type === 'error' &&
-              current.text === 'Подтвердите согласие на обработку персональных данных.'
-                ? null
-                : current,
-            );
-          }
-        }}
-        label={consentLabel}
-      />
-
-      <button
-        type="submit"
-        disabled={submitting}
-        aria-busy={submitting}
-        className={submitClassName}>
-        {submitting ? <LoadingLabel label="Создаю кабинет..." /> : 'Создать кабинет'}
-      </button>
-
-      <AuthLinks
-        items={[
-          { href: '/account/login', label: 'Уже есть кабинет? Войти' },
-          { href: '/account/recover', label: 'Восстановить доступ' },
-        ]}
-      />
-    </form>
+      </form>
+    </>
   );
 }
 
@@ -418,67 +425,70 @@ export function AccountRecoverForm({ consentLabel }: { consentLabel: string }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-5">
-      <label className="space-y-2">
-        <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Email</span>
-        <input
-          type="email"
-          value={form.email}
-          onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
-          autoComplete="email"
-          placeholder="name@example.com"
-          className={inputClassName}
+    <>
+      {submitting ? <FullScreenLoader label="Отправляю ссылку..." /> : null}
+      <form onSubmit={handleSubmit} className="grid gap-5">
+        <label className="space-y-2">
+          <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Email</span>
+          <input
+            type="email"
+            value={form.email}
+            onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
+            autoComplete="email"
+            placeholder="name@example.com"
+            className={inputClassName}
+          />
+        </label>
+
+        <label className="space-y-2">
+          <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Телефон</span>
+          <PhoneInput
+            value={form.phone}
+            onChange={(phone) => setForm((current) => ({ ...current, phone }))}
+          />
+        </label>
+
+        <FeedbackMessage feedback={feedback} />
+
+        <ConsentCheckbox
+          checked={consentAccepted}
+          onChange={(checked) => {
+            setConsentAccepted(checked);
+            if (checked) {
+              setFeedback((current) =>
+                current?.type === 'error' &&
+                current.text === 'Подтвердите согласие на обработку персональных данных.'
+                  ? null
+                  : current,
+              );
+            }
+          }}
+          label={consentLabel}
         />
-      </label>
 
-      <label className="space-y-2">
-        <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Телефон</span>
-        <PhoneInput
-          value={form.phone}
-          onChange={(phone) => setForm((current) => ({ ...current, phone }))}
+        <button
+          type="submit"
+          disabled={submitting}
+          aria-busy={submitting}
+          className={submitClassName}>
+          {submitting ? <LoadingLabel label="Отправляю..." /> : 'Отправить ссылку'}
+        </button>
+
+        {resetLink ? (
+          <Link
+            href={resetLink}
+            className="text-sm text-(--foreground) underline decoration-(--line-strong) underline-offset-4">
+            Перейти к смене пароля
+          </Link>
+        ) : null}
+
+        <AuthLinks
+          items={[
+            { href: '/account/login', label: 'Вернуться ко входу' },
+            { href: '/account/register', label: 'Создать кабинет' },
+          ]}
         />
-      </label>
-
-      <FeedbackMessage feedback={feedback} />
-
-      <ConsentCheckbox
-        checked={consentAccepted}
-        onChange={(checked) => {
-          setConsentAccepted(checked);
-          if (checked) {
-            setFeedback((current) =>
-              current?.type === 'error' &&
-              current.text === 'Подтвердите согласие на обработку персональных данных.'
-                ? null
-                : current,
-            );
-          }
-        }}
-        label={consentLabel}
-      />
-
-      <button
-        type="submit"
-        disabled={submitting}
-        aria-busy={submitting}
-        className={submitClassName}>
-        {submitting ? <LoadingLabel label="Отправляю..." /> : 'Отправить ссылку'}
-      </button>
-
-      {resetLink ? (
-        <Link
-          href={resetLink}
-          className="text-sm text-(--foreground) underline decoration-(--line-strong) underline-offset-4">
-          Перейти к смене пароля
-        </Link>
-      ) : null}
-
-      <AuthLinks
-        items={[
-          { href: '/account/login', label: 'Вернуться ко входу' },
-          { href: '/account/register', label: 'Создать кабинет' },
-        ]}
-      />
-    </form>
+      </form>
+    </>
   );
 }
