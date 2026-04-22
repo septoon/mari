@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { ImageIcon } from 'lucide-react';
 
 import { ServiceCard } from '@/components/cards/service-card';
 import { CtaPanel } from '@/components/site/cta-panel';
-import { PageHero } from '@/components/site/page-hero';
 import { SpecialistRatingPanel } from '@/components/site/specialist-rating-panel';
+import { Breadcrumbs } from '@/components/ui/breadcrumbs';
 import { Container } from '@/components/ui/container';
 import { ButtonLink } from '@/components/ui/button';
 import { SectionHeading } from '@/components/ui/section-heading';
@@ -72,29 +73,50 @@ export default async function MasterDetailPage({ params }: { params: Promise<{ s
     <main className="pb-14">
       <Container>
         {showHero ? (
-          <PageHero
-            eyebrow={hero.eyebrow}
-            title={hero.title}
-            description={hero.description}
-            imageUrl={master.photo?.preferredUrl || hero.imageUrl}
-            imageAlt={master.name}
-            breadcrumbs={[
-              { label: 'Главная', href: '/' },
-              { label: 'Специалисты', href: '/masters' },
-              { label: master.name },
-            ]}
-            actions={
-              <ButtonLink href={`/booking?master=${master.slug}`} className="w-full sm:w-auto">
-                {pageContent.detailPage.heroPrimaryCtaLabel}
-              </ButtonLink>
-            }
-            meta={<SpecialistRatingPanel specialist={master} />}
-            metaPlacement="separate"
-            actionsPlacement="separate"
-            imageClassName="order-2 lg:order-none"
-            metaClassName="order-3 lg:order-none"
-            actionsClassName="order-4 lg:order-none"
-          />
+          <section className="pb-10 pt-8 md:pb-14 md:pt-12">
+            <Breadcrumbs
+              items={[
+                { label: 'Главная', href: '/' },
+                { label: 'Специалисты', href: '/masters' },
+                { label: master.name },
+              ]}
+              className="mb-6"
+            />
+
+            <div className="max-w-4xl md:hidden">
+             {hero.eyebrow ? <p className="section-kicker">{hero.eyebrow}</p> : null}
+              <h1 className="headline-xl">{hero.title}</h1>
+            </div>
+
+            <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(22rem,0.95fr)] lg:items-start">
+              <div className="relative overflow-hidden rounded-[2rem] border border-(--line) bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(247,241,234,0.88)_52%,rgba(232,224,215,0.8)_100%)] shadow-[0_30px_90px_rgba(69,48,29,0.08)]">
+                {master.photo?.preferredUrl || hero.imageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={master.photo?.preferredUrl || hero.imageUrl || undefined}
+                    alt={master.name}
+                    className="h-full min-h-72 w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex min-h-72 flex-col items-center justify-center gap-4 px-8 text-center text-(--muted)">
+                    <ImageIcon className="h-10 w-10 text-(--accent-strong)" />
+                    <p className="font-serif text-3xl text-(--ink)">Место под фото</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-4 lg:gap-5">
+                <div className="hidden md:block">
+                  {hero.eyebrow ? <p className="section-kicker">{hero.eyebrow}</p> : null}
+                  <h1 className="headline-xl">{hero.title}</h1>
+                </div>
+                <SpecialistRatingPanel specialist={master} />
+                <ButtonLink href={`/booking?master=${master.slug}`} className="w-full sm:w-auto lg:w-fit">
+                  {pageContent.detailPage.heroPrimaryCtaLabel}
+                </ButtonLink>
+              </div>
+            </div>
+          </section>
         ) : null}
 
         {showAbout || showApproach ? (
