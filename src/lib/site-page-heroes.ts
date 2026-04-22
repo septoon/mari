@@ -118,7 +118,7 @@ const SITE_PAGE_HERO_DEFAULTS: Record<SitePageHeroKey, SitePageHeroFields> = {
   },
   prices: {
     eyebrow: 'Цены',
-    title: 'Цены без сложных условий.',
+    title: 'Цены на все услуги.',
     description:
       'Смотрите услуги, длительность и ориентир по стоимости, чтобы сразу спланировать визит.',
   },

@@ -16,6 +16,7 @@ export function PageHero({
   breadcrumbs,
   actions,
   details,
+  meta,
   imageUrl,
   imageAlt,
   className,
@@ -27,6 +28,7 @@ export function PageHero({
   breadcrumbs?: BreadcrumbItem[];
   actions?: ReactNode;
   details?: string[];
+  meta?: ReactNode;
   imageUrl?: string | null;
   imageAlt?: string;
   className?: string;
@@ -35,23 +37,29 @@ export function PageHero({
   return (
     <section className={cn('pb-10 pt-8 md:pb-14 md:pt-12', className)}>
       {breadcrumbs?.length ? <Breadcrumbs items={breadcrumbs} className="mb-6" /> : null}
-      <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
+      <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
         <div className="max-w-3xl">
           {eyebrow ? <p className="section-kicker">{eyebrow}</p> : null}
           <h1 className={cn('headline-xl', titleClassName)}>{title}</h1>
-          <p className="mt-6 max-w-2xl text-base leading-8 text-(--muted)">{description}</p>
-          {details?.length ? (
-            <div className="mt-6 flex flex-wrap gap-3">
-              {details.map((detail) => (
-                <span
-                  key={detail}
-                  className="inline-flex items-center rounded-full border border-(--line) bg-white/78 px-4 py-2 text-sm text-(--muted-strong)"
-                >
-                  {detail}
-                </span>
-              ))}
-            </div>
-          ) : null}
+          {meta ? (
+            <div className="mt-6">{meta}</div>
+          ) : (
+            <>
+              <p className="mt-6 max-w-2xl text-base leading-8 text-(--muted)">{description}</p>
+              {details?.length ? (
+                <div className="mt-6 flex flex-wrap gap-3">
+                  {details.map((detail) => (
+                    <span
+                      key={detail}
+                      className="inline-flex items-center rounded-full border border-(--line) bg-white/78 px-4 py-2 text-sm text-(--muted-strong)"
+                    >
+                      {detail}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
+            </>
+          )}
           {actions ? <div className="mt-8 flex flex-wrap gap-3">{actions}</div> : null}
         </div>
 

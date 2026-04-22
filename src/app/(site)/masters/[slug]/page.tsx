@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { ServiceCard } from '@/components/cards/service-card';
 import { CtaPanel } from '@/components/site/cta-panel';
 import { PageHero } from '@/components/site/page-hero';
+import { SpecialistRatingPanel } from '@/components/site/specialist-rating-panel';
 import { Container } from '@/components/ui/container';
 import { ButtonLink } from '@/components/ui/button';
 import { SectionHeading } from '@/components/ui/section-heading';
@@ -12,7 +13,6 @@ import { getLiveCatalog } from '@/lib/live-catalog';
 import { resolveSitePageHero } from '@/lib/site-page-heroes';
 import { isSiteBlockVisible, SITE_BLOCK_KEYS } from '@/lib/site-visibility';
 import {
-  applySpecialistsPageTemplate,
   getSpecialistsPageContent,
 } from '@/lib/specialists-page-content';
 
@@ -93,14 +93,7 @@ export default async function MasterDetailPage({ params }: { params: Promise<{ s
                 </ButtonLink>
               </>
             }
-            details={[
-              applySpecialistsPageTemplate(pageContent.detailPage.detailsServicesTemplate, {
-                count: services.length,
-              }),
-              applySpecialistsPageTemplate(pageContent.detailPage.detailsCategoriesTemplate, {
-                categories: master.categoryNames.slice(0, 3).join(', '),
-              }),
-            ]}
+            meta={<SpecialistRatingPanel specialist={master} />}
           />
         ) : null}
 

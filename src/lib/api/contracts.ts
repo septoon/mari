@@ -251,6 +251,11 @@ const specialistServiceSchema = z.object({
   })
 });
 
+const specialistRatingStatsSchema = z.object({
+  average: z.number().min(1).max(5).nullable(),
+  count: z.number().int().nonnegative()
+});
+
 export const specialistCardSchema = z.object({
   staffId: z.string().uuid(),
   name: z.string(),
@@ -262,6 +267,7 @@ export const specialistCardSchema = z.object({
   photoAssetId: z.string().uuid().nullable(),
   photo: specialistPhotoSchema.nullable(),
   services: z.array(specialistServiceSchema),
+  rating: specialistRatingStatsSchema,
   isActive: z.boolean(),
   firedAt: z.string().datetime().nullable(),
   updatedAt: z.string().datetime()
@@ -537,6 +543,17 @@ export const clientSessionSchema = z.object({
   client: clientProfileSchema.nullable()
 });
 
+export const submitSpecialistRatingInputSchema = z.object({
+  value: z.number().int().min(1).max(5)
+});
+
+export const submitSpecialistRatingResultSchema = z.object({
+  staffId: z.string().uuid(),
+  rating: specialistRatingStatsSchema.extend({
+    submittedValue: z.number().int().min(1).max(5)
+  })
+});
+
 export type ClientBootstrap = z.infer<typeof clientBootstrapSchema>;
 export type ClientContentBlock = z.infer<typeof clientContentBlockSchema>;
 export type ClientAppointmentsResult = z.infer<typeof clientAppointmentsSchema>;
@@ -550,3 +567,5 @@ export type ServiceList = z.infer<typeof serviceListSchema>;
 export type SlotDaysResult = z.infer<typeof slotDaysResultSchema>;
 export type SlotsResult = z.infer<typeof slotsResultSchema>;
 export type SpecialistCard = z.infer<typeof specialistCardSchema>;
+export type SubmitSpecialistRatingInput = z.infer<typeof submitSpecialistRatingInputSchema>;
+export type SubmitSpecialistRatingResult = z.infer<typeof submitSpecialistRatingResultSchema>;

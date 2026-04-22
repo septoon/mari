@@ -13,8 +13,10 @@ import {
   passwordResetRequestResultSchema,
   serviceListSchema,
   slotsResultSchema,
+  submitSpecialistRatingResultSchema,
   type ClientBootstrap,
   type Service,
+  type SubmitSpecialistRatingInput,
 } from '@/lib/api/contracts';
 
 const backendBaseUrl = (process.env.MARI_SERVER_URL ?? 'http://localhost:3000').replace(/\/+$/, '');
@@ -203,3 +205,16 @@ export const fetchPopularServices = async (limit = 6) =>
     cache: 'force-cache',
     next: { revalidate: 300 },
   }).then((payload) => payload.items);
+
+export const submitSpecialistRating = async (
+  authToken: string,
+  staffId: string,
+  payload: SubmitSpecialistRatingInput
+) =>
+  backendRequest(`/client-front/specialists/${staffId}/rating`, submitSpecialistRatingResultSchema, {
+    authToken,
+    init: {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+  });
