@@ -10,13 +10,7 @@ import { Container } from '@/components/ui/container';
 import { SectionHeading } from '@/components/ui/section-heading';
 import { ButtonLink } from '@/components/ui/button';
 import { fetchPopularServices } from '@/lib/api/backend';
-import {
-  buildBeautySalonJsonLd,
-  HOME_PAGE_H1,
-  HOME_PAGE_HERO_DESCRIPTION,
-  HOME_PAGE_PRICE_NOTES,
-  HOME_PAGE_SEO_PARAGRAPHS,
-} from '@/lib/home-seo';
+import { buildBeautySalonJsonLd } from '@/lib/home-seo';
 import { formatCurrency } from '@/lib/format';
 import { getHomePageContent } from '@/lib/home-page-content';
 import { getSiteNews, getSiteOffers } from '@/lib/site-content';
@@ -85,9 +79,9 @@ export default async function HomePage() {
             <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
               <div className="rounded-[2rem] border border-(--line) bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(247,241,234,0.88)_52%,rgba(232,224,215,0.8)_100%)] px-6 py-8 shadow-[0_35px_110px_rgba(41,30,18,0.08)] md:px-8 md:py-10">
                 <p className="section-kicker">{homePageContent.hero.eyebrow}</p>
-                <h1 className="headline-xl max-w-4xl whitespace-pre-line">{HOME_PAGE_H1}</h1>
+                <h1 className="headline-xl max-w-4xl whitespace-pre-line">{homePageContent.hero.title}</h1>
                 <p className="mt-6 max-w-2xl text-base leading-8 text-(--muted)">
-                  {HOME_PAGE_HERO_DESCRIPTION}
+                  {homePageContent.hero.description}
                 </p>
 
                 <div className="mt-8 flex flex-wrap gap-3">
