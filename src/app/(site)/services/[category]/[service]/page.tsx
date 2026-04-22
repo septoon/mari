@@ -10,7 +10,7 @@ import { Container } from '@/components/ui/container';
 import { ButtonLink } from '@/components/ui/button';
 import { SectionHeading } from '@/components/ui/section-heading';
 import { formatCurrency } from '@/lib/format';
-import { createPageMetadata } from '@/lib/site';
+import { createPageMetadata, siteSeoConfig } from '@/lib/site';
 import { getLiveCatalog } from '@/lib/live-catalog';
 import { resolveSitePageHero } from '@/lib/site-page-heroes';
 import { isSiteBlockVisible, SITE_BLOCK_KEYS } from '@/lib/site-visibility';
@@ -43,8 +43,8 @@ export async function generateMetadata({
   }
 
   return createPageMetadata({
-    title: service.displayName,
-    description: service.teaser,
+    title: `${service.displayName} в ${siteSeoConfig.city}`,
+    description: `${service.teaser} В МАРИ в ${siteSeoConfig.city}: от ${formatCurrency(service.priceMin)}, ${Math.round(service.durationSec / 60)} мин и удобная онлайн-запись.`,
     path: `/services/${service.categorySlug}/${service.slug}`,
   });
 }

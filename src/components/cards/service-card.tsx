@@ -25,7 +25,11 @@ export function ServiceCard({
       <div className="mb-5 overflow-hidden rounded-[1.5rem] border border-(--line)">
         {imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={imageUrl} alt={name} className="h-44 w-full object-cover" />
+          <img
+            src={imageUrl}
+            alt={`${name} — ${categoryName} в салоне красоты МАРИ`}
+            className="h-44 w-full object-cover"
+          />
         ) : (
           <div className="flex h-44 w-full flex-col items-center justify-center gap-3 bg-[linear-gradient(145deg,rgba(247,241,234,0.9),rgba(255,255,255,0.98))] text-(--muted)">
             <ImageIcon className="h-8 w-8 text-(--accent-strong)" />

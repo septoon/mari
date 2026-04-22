@@ -10,7 +10,7 @@ import { isSiteBlockVisible, SITE_BLOCK_KEYS } from '@/lib/site-visibility';
 export const metadata = createPageMetadata({
   title: 'Политика конфиденциальности',
   description:
-    'Стандартная политика конфиденциальности и обработки персональных данных сайта МАРИ Салон Красоты.',
+    'Политика конфиденциальности и обработки персональных данных сайта МАРИ Салон Красоты.',
   path: '/privacy-policy',
 });
 

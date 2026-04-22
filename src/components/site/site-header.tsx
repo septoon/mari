@@ -72,7 +72,7 @@ export function SiteHeader({ salon }: SiteHeaderProps) {
               onClick={() => setOpen(false)}>
               <Image
                 src="/logo.webp"
-                alt="MARI app icon"
+                alt="Логотип салона красоты МАРИ"
                 width={44}
                 height={44}
                 priority
@@ -88,7 +88,7 @@ export function SiteHeader({ salon }: SiteHeaderProps) {
               </span>
             </Link>
 
-            <nav className="hidden items-center gap-7 lg:flex">
+            <nav aria-label="Основная навигация" className="hidden items-center gap-7 lg:flex">
               {siteConfig.nav.map((item) => {
                 const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
 

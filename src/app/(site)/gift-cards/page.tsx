@@ -62,7 +62,7 @@ export default async function GiftCardsPage() {
         <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
           <EditorialVisual
             label="Gift cards"
-            title="Подарок, который легко выбрать и приятно дарить."
+            title="Подарок, который легко выбрать и дарить."
             subtitle="Сертификат подойдёт для первого знакомства с салоном, любимой процедуры или полноценного beauty-дня."
             imageUrl={hero.imageUrl}
             imageAlt={hero.title}

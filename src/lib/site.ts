@@ -4,7 +4,7 @@ export const siteConfig = {
   name: 'МАРИ Салон Красоты',
   shortName: 'МАРИ',
   description:
-    'Салон красоты МАРИ: услуги, специалисты, цены, подарочные сертификаты и личный кабинет.',
+    'Салон красоты МАРИ в Симферополе: маникюр, педикюр, стрижки, окрашивание, косметолог, лазерная эпиляция и онлайн-запись.',
   phone: '+7 (978) 000-18-18',
   phoneHref: 'tel:+79786778130',
   email: 'hello@maribeauty.ru',
@@ -43,6 +43,47 @@ export const siteConfig = {
   ],
 } as const;
 
+export const siteSeoConfig = {
+  city: 'Симферополь',
+  region: 'Республика Крым',
+  countryCode: 'RU',
+  streetAddress: 'ул. Екатерининская, 18',
+  priceRange: '₽₽',
+  geo: {
+    latitude: 44.9521,
+    longitude: 34.1024,
+  },
+  openingHours: ['Mo-Su 09:00-21:00'],
+  sameAs: [
+    'https://wa.me/+79786778130',
+    'https://t.me/maribeauty2025',
+    'https://www.instagram.com/mari_beauty_simf',
+    'https://vk.com/mari_beauty_simf',
+  ],
+  home: {
+    title: 'Салон красоты в Симферополе',
+    description:
+      'Салон красоты МАРИ в Симферополе: маникюр, педикюр, стрижки, окрашивание, косметолог, ресницы, лазерная эпиляция и онлайн-запись.',
+    keywords: [
+      'салон красоты Симферополь',
+      'студия красоты Симферополь',
+      'парикмахерская Симферополь',
+      'салон маникюра Симферополь',
+      'косметолог Симферополь',
+      'маникюр Симферополь',
+      'педикюр Симферополь',
+      'окрашивание волос Симферополь',
+      'стрижка Симферополь',
+      'наращивание ресниц Симферополь',
+      'татуаж бровей Симферополь',
+      'чистка лица Симферополь',
+      'лазерная эпиляция Симферополь',
+      'визажист Симферополь',
+      'записаться в салон красоты',
+    ],
+  },
+} as const;
+
 export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://maribeauty.ru').replace(
   /\/+$/,
   '',
@@ -59,29 +100,49 @@ export const createPageMetadata = ({
   title,
   description,
   path = '',
+  keywords,
+  robots,
 }: {
   title: string;
   description: string;
   path?: string;
-}): Metadata => ({
-  title,
-  description,
-  alternates: {
-    canonical: path ? `${siteUrl}${path}` : siteUrl,
-  },
-  openGraph: {
+  keywords?: string[];
+  robots?: Metadata['robots'];
+}): Metadata => {
+  const pageUrl = path && path !== '/' ? `${siteUrl}${path}` : siteUrl;
+
+  return {
     title,
     description,
-    url: path ? `${siteUrl}${path}` : siteUrl,
-    siteName: siteConfig.name,
-    locale: 'ru_RU',
-    type: 'website',
-    images: [defaultMetaImage],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title,
-    description,
-    images: [siteImageUrl],
-  },
-});
+    keywords,
+    robots: robots ?? {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+        'max-video-preview': -1,
+      },
+    },
+    alternates: {
+      canonical: pageUrl,
+    },
+    openGraph: {
+      title,
+      description,
+      url: pageUrl,
+      siteName: siteConfig.name,
+      locale: 'ru_RU',
+      type: 'website',
+      images: [defaultMetaImage],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [siteImageUrl],
+    },
+  };
+};

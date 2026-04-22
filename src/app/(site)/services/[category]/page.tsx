@@ -7,7 +7,7 @@ import { PageHero } from '@/components/site/page-hero';
 import { Container } from '@/components/ui/container';
 import { ButtonLink } from '@/components/ui/button';
 import { SectionHeading } from '@/components/ui/section-heading';
-import { createPageMetadata } from '@/lib/site';
+import { createPageMetadata, siteSeoConfig } from '@/lib/site';
 import { getLiveCatalog } from '@/lib/live-catalog';
 import { resolveSitePageHero } from '@/lib/site-page-heroes';
 import { isSiteBlockVisible, SITE_BLOCK_KEYS } from '@/lib/site-visibility';
@@ -35,8 +35,8 @@ export async function generateMetadata({
   }
 
   return createPageMetadata({
-    title: item.name,
-    description: item.description,
+    title: `${item.name} в ${siteSeoConfig.city}`,
+    description: `${item.description} В салоне красоты МАРИ в ${siteSeoConfig.city}: описание услуг, цены и онлайн-запись.`,
     path: `/services/${item.slug}`,
   });
 }

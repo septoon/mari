@@ -89,7 +89,7 @@ const categoryMeta: Record<string, { eyebrow: string; description: string; heroT
   'Лазерная эпиляция 3Д': {
     eyebrow: 'Laser',
     description: 'Лазерная эпиляция по зонам и комбо-наборам.',
-    heroText: 'Комфортные процедуры для гладкой кожи и понятного графика ухода.',
+    heroText: 'Комфортные процедуры для гладкой кожи и удобного графика ухода.',
   },
   Маникюр: {
     eyebrow: 'Manicure',
@@ -124,7 +124,7 @@ const categoryMeta: Record<string, { eyebrow: string; description: string; heroT
   Проколы: {
     eyebrow: 'Piercing',
     description: 'Проколы ушей, хряща и носа.',
-    heroText: 'Аккуратные проколы в спокойной атмосфере и с понятными рекомендациями по уходу.',
+    heroText: 'Аккуратные проколы в спокойной атмосфере и с рекомендациями по уходу без лишней сложности.',
   },
   'Стрижки женские': {
     eyebrow: 'Women haircuts',

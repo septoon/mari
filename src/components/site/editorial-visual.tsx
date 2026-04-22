@@ -1,15 +1,11 @@
 import { ImageIcon, Sparkles } from 'lucide-react';
 
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/classnames';
 
 export function EditorialVisual({
-  label,
   title,
-  subtitle,
   imageUrl,
   imageAlt,
-  monogram = 'M',
   className
 }: {
   label: string;

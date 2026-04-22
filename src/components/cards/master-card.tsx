@@ -1,13 +1,11 @@
 import Link from 'next/link';
-import { ArrowRight, BriefcaseBusiness, ImageIcon } from 'lucide-react';
+import { ArrowRight, ImageIcon } from 'lucide-react';
 
 export function MasterCard({
   href,
   name,
   specialty,
   summary,
-  servicesCount,
-  categories,
   imageUrl,
 }: {
   href: string;
