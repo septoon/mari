@@ -270,9 +270,11 @@ export function BookingFlow({
     (flow.state.step === 'staff' && !flow.state.selectedStaffId) ||
     (flow.state.step === 'date' && !flow.state.selectedDate) ||
     (flow.state.step === 'time' && !flow.state.selectedSlot) ||
-    (flow.state.step === 'client' && (maintenanceMode || flow.state.loading.submit));
+    (flow.state.step === 'client' &&
+      (!flow.session.authenticated || maintenanceMode || flow.state.loading.submit));
 
   const showFooter = services.length > 0 && flow.state.step !== 'overview';
+  const showPrimaryAction = flow.state.step !== 'client' || flow.session.authenticated;
   const usesInnerStepScroll = flow.state.step === 'service';
   const progressLabel =
     flow.state.step === 'overview'
@@ -504,20 +506,22 @@ export function BookingFlow({
                     Назад
                   </Button>
                 ) : null}
-                <Button
-                  type="button"
-                  disabled={isPrimaryDisabled}
-                  onClick={() => {
-                    void handlePrimaryAction();
-                  }}
-                  className="sm:flex-1"
-                >
-                  {flow.state.step === 'client' && flow.state.loading.submit ? (
-                    <LoadingLabel label="Создаю запись..." />
-                  ) : (
-                    actionLabel
-                  )}
-                </Button>
+                {showPrimaryAction ? (
+                  <Button
+                    type="button"
+                    disabled={isPrimaryDisabled}
+                    onClick={() => {
+                      void handlePrimaryAction();
+                    }}
+                    className="sm:flex-1"
+                  >
+                    {flow.state.step === 'client' && flow.state.loading.submit ? (
+                      <LoadingLabel label="Создаю запись..." />
+                    ) : (
+                      actionLabel
+                    )}
+                  </Button>
+                ) : null}
               </div>
             )}
           </div>

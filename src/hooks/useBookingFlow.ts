@@ -1010,6 +1010,14 @@ export function useBookingFlow({
   }, [state.loading.submit]);
 
   const submit = useCallback(async () => {
+    if (!session.authenticated) {
+      dispatch({
+        type: 'set-submit-error',
+        message: 'Для записи нужно войти в кабинет клиента или зарегистрироваться.'
+      });
+      return false;
+    }
+
     const formErrors: BookingFlowState['errors']['form'] = {};
 
     if (!state.clientForm.name.trim()) {
@@ -1091,7 +1099,7 @@ export function useBookingFlow({
       });
       return false;
     }
-  }, [clearAvailabilityCache, isSlotBlockedForClient, state.clientForm.comment, state.clientForm.consentAccepted, state.clientForm.name, state.clientForm.phone, state.clientForm.promoCode, state.selectedServiceIds, state.selectedSlot, state.selectedStaffId]);
+  }, [clearAvailabilityCache, isSlotBlockedForClient, session.authenticated, state.clientForm.comment, state.clientForm.consentAccepted, state.clientForm.name, state.clientForm.phone, state.clientForm.promoCode, state.selectedServiceIds, state.selectedSlot, state.selectedStaffId]);
 
   return {
     state,

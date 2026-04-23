@@ -1,8 +1,8 @@
 'use client';
 
-import Link from 'next/link';
 import type { ClipboardEvent } from 'react';
 
+import { ButtonLink } from '@/components/ui/button';
 import { ConsentCheckbox } from '@/components/legal/consent-checkbox';
 import type { BookingClientForm, BookingDraft } from '@/lib/booking/types';
 import { normalizePhoneDigits, normalizePhonePaste } from '@/lib/booking/phone';
@@ -111,89 +111,93 @@ export function ClientStep({
       </div>
 
       {!sessionAuthenticated ? (
-        <div className="rounded-[1.4rem] border border-(--line) bg-(--panel) px-5 py-4 text-sm text-(--muted)">
-          <p>Можно продолжить запись как гость или войти в личный кабинет.</p>
-          <div className="mt-3 flex flex-wrap gap-4">
-            <Link
-              href="/account/login"
-              className="text-(--foreground) underline decoration-(--line-strong) underline-offset-4">
+        <div className="rounded-[1.4rem] border border-(--line) bg-(--panel) px-5 py-5 text-sm text-(--muted)">
+          <p className="text-base font-medium text-(--foreground)">
+            Для записи на услуги нужно войти в кабинет или зарегистрироваться.
+          </p>
+          <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+            <ButtonLink href="/account/login" className="sm:flex-1">
               Войти
-            </Link>
-            <Link
-              href="/account/register"
-              className="text-(--foreground) underline decoration-(--line-strong) underline-offset-4">
-              Создать кабинет
-            </Link>
+            </ButtonLink>
+            <ButtonLink href="/account/register" variant="secondary" className="sm:flex-1">
+              Зарегистрироваться
+            </ButtonLink>
           </div>
         </div>
-      ) : null}
-
-      {maintenanceMode ? (
+      ) : maintenanceMode ? (
         <div className="rounded-[1.4rem] border border-[#d7b78d] bg-[#fff3e5] px-5 py-4 text-sm text-[#6f5233]">
           {maintenanceMessage || 'Сервис записи временно недоступен.'}
         </div>
-      ) : null}
+      ) : (
+        <>
+          {maintenanceMode ? (
+            <div className="rounded-[1.4rem] border border-[#d7b78d] bg-[#fff3e5] px-5 py-4 text-sm text-[#6f5233]">
+              {maintenanceMessage || 'Сервис записи временно недоступен.'}
+            </div>
+          ) : null}
 
-      <label className="space-y-2">
-        <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Имя</span>
-        <input
-          value={draft.client.name}
-          onChange={(event) => onChange({ name: event.target.value })}
-          autoComplete="name"
-          placeholder="Как к вам обращаться"
-          className={`w-full rounded-[1.3rem] border bg-(--panel) px-4 py-3.5 text-sm outline-none transition ${
-            formErrors.name
-              ? 'border-[#d0817c] bg-[#fff1f0]'
-              : 'border-(--line) focus:border-(--accent-strong)'
-          }`}
-        />
-        {formErrors.name ? <p className="text-sm text-[#7d3a37]">{formErrors.name}</p> : null}
-      </label>
+          <label className="space-y-2">
+            <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Имя</span>
+            <input
+              value={draft.client.name}
+              onChange={(event) => onChange({ name: event.target.value })}
+              autoComplete="name"
+              placeholder="Как к вам обращаться"
+              className={`w-full rounded-[1.3rem] border bg-(--panel) px-4 py-3.5 text-sm outline-none transition ${
+                formErrors.name
+                  ? 'border-[#d0817c] bg-[#fff1f0]'
+                  : 'border-(--line) focus:border-(--accent-strong)'
+              }`}
+            />
+            {formErrors.name ? <p className="text-sm text-[#7d3a37]">{formErrors.name}</p> : null}
+          </label>
 
-      <PhoneInput
-        value={draft.client.phone}
-        onChange={(value) => onChange({ phone: value })}
-        error={formErrors.phone}
-      />
+          <PhoneInput
+            value={draft.client.phone}
+            onChange={(value) => onChange({ phone: value })}
+            error={formErrors.phone}
+          />
 
-      <label className="space-y-2">
-        <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Промокод</span>
-        <input
-          value={draft.client.promoCode}
-          onChange={(event) => onChange({ promoCode: event.target.value })}
-          placeholder="Если есть"
-          className="w-full rounded-[1.3rem] border border-(--line) bg-(--panel) px-4 py-3.5 text-sm outline-none transition focus:border-(--accent-strong)"
-        />
-      </label>
+          <label className="space-y-2">
+            <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">Промокод</span>
+            <input
+              value={draft.client.promoCode}
+              onChange={(event) => onChange({ promoCode: event.target.value })}
+              placeholder="Если есть"
+              className="w-full rounded-[1.3rem] border border-(--line) bg-(--panel) px-4 py-3.5 text-sm outline-none transition focus:border-(--accent-strong)"
+            />
+          </label>
 
-      <label className="space-y-2">
-        <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">
-          Комментарий
-        </span>
-        <textarea
-          value={draft.client.comment}
-          onChange={(event) => onChange({ comment: event.target.value })}
-          placeholder="Комментарий к записи"
-          rows={4}
-          maxLength={1000}
-          className="w-full rounded-[1.3rem] border border-(--line) bg-(--panel) px-4 py-3.5 text-sm outline-none transition focus:border-(--accent-strong)"
-        />
-      </label>
+          <label className="space-y-2">
+            <span className="text-xs uppercase tracking-[0.24em] text-(--muted-strong)">
+              Комментарий
+            </span>
+            <textarea
+              value={draft.client.comment}
+              onChange={(event) => onChange({ comment: event.target.value })}
+              placeholder="Комментарий к записи"
+              rows={4}
+              maxLength={1000}
+              className="w-full rounded-[1.3rem] border border-(--line) bg-(--panel) px-4 py-3.5 text-sm outline-none transition focus:border-(--accent-strong)"
+            />
+          </label>
 
-      <div className="space-y-2">
-        <ConsentCheckbox
-          checked={draft.client.consentAccepted}
-          onChange={(checked) => onChange({ consentAccepted: checked })}
-          label={consentLabel}
-        />
-        {formErrors.consent ? <p className="text-sm text-[#7d3a37]">{formErrors.consent}</p> : null}
-      </div>
+          <div className="space-y-2">
+            <ConsentCheckbox
+              checked={draft.client.consentAccepted}
+              onChange={(checked) => onChange({ consentAccepted: checked })}
+              label={consentLabel}
+            />
+            {formErrors.consent ? <p className="text-sm text-[#7d3a37]">{formErrors.consent}</p> : null}
+          </div>
 
-      {submitError ? (
-        <div className="rounded-[1.4rem] border border-[#c4847d]/35 bg-[#f5dddb] px-5 py-4 text-sm text-[#7d3a37]">
-          {submitError}
-        </div>
-      ) : null}
+          {submitError ? (
+            <div className="rounded-[1.4rem] border border-[#c4847d]/35 bg-[#f5dddb] px-5 py-4 text-sm text-[#7d3a37]">
+              {submitError}
+            </div>
+          ) : null}
+        </>
+      )}
     </div>
   );
 }
