@@ -84,35 +84,54 @@ export function BookingFlow({
 }: BookingFlowProps) {
   const pathname = usePathname();
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const service = flow.selectedService;
+  const servicesSummary = flow.selectedServices;
+  const primaryService = servicesSummary[0] ?? null;
   const progressSteps = flow.hasCategoryStep
     ? (['category', 'service', 'staff', 'date', 'time', 'client'] as BookingStep[])
     : (['service', 'staff', 'date', 'time', 'client'] as BookingStep[]);
   const progressIndex = Math.max(progressSteps.indexOf(flow.state.step), 0) + 1;
   const permanentDiscount = flow.session.client?.discount.permanentPercent ?? null;
   const hasPermanentDiscount = Boolean(
-    flow.session.authenticated && permanentDiscount && permanentDiscount > 0 && service
+    flow.session.authenticated && permanentDiscount && permanentDiscount > 0 && servicesSummary.length > 0
   );
-  const summaryPrice = useMemo(() => {
-    if (!service) {
+  const servicesLabel = useMemo(() => {
+    if (servicesSummary.length === 0) {
       return null;
     }
 
+    if (servicesSummary.length === 1) {
+      return servicesSummary[0].nameOnline ?? servicesSummary[0].name;
+    }
+
+    const firstLabel = servicesSummary[0].nameOnline ?? servicesSummary[0].name;
+    return `${firstLabel} + ещё ${servicesSummary.length - 1}`;
+  }, [servicesSummary]);
+  const summaryPrice = useMemo(() => {
+    if (servicesSummary.length === 0) {
+      return null;
+    }
+
+    const totalPriceMin = servicesSummary.reduce((total, item) => total + item.priceMin, 0);
+    const hasOpenEndedPrice = servicesSummary.some((item) => item.priceMax === null);
+    const totalPriceMax = hasOpenEndedPrice
+      ? null
+      : servicesSummary.reduce((total, item) => total + (item.priceMax ?? item.priceMin), 0);
+
     if (!hasPermanentDiscount || flow.state.clientForm.promoCode.trim()) {
-      return formatPriceRange(service.priceMin, service.priceMax);
+      return formatPriceRange(totalPriceMin, totalPriceMax);
     }
 
     return formatPriceRange(
-      applyPercentDiscount(service.priceMin, permanentDiscount!),
-      service.priceMax === null ? null : applyPercentDiscount(service.priceMax, permanentDiscount!)
+      applyPercentDiscount(totalPriceMin, permanentDiscount!),
+      totalPriceMax === null ? null : applyPercentDiscount(totalPriceMax, permanentDiscount!)
     );
-  }, [flow.state.clientForm.promoCode, hasPermanentDiscount, permanentDiscount, service]);
+  }, [flow.state.clientForm.promoCode, hasPermanentDiscount, permanentDiscount, servicesSummary]);
   const summaryItems = [
-    service
+    servicesLabel
       ? {
           key: 'service',
-          label: 'Услуга',
-          value: service.nameOnline ?? service.name,
+          label: servicesSummary.length > 1 ? 'Услуги' : 'Услуга',
+          value: servicesLabel,
           step: 'service' as BookingStep
         }
       : null,
@@ -152,10 +171,10 @@ export function BookingFlow({
         : flow.state.step === 'date'
           ? {
               ...STEP_META.date,
-              description: flow.state.selectedServiceId
+              description: flow.state.selectedServiceIds.length > 0
                 ? STEP_META.date.description
                 : 'Показываем календарь по текущему графику. Для точного свободного времени потом выберите услугу.',
-              actionLabel: flow.state.selectedServiceId
+              actionLabel: flow.state.selectedServiceIds.length > 0
                 ? flow.state.selectedSlot
                   ? 'Продолжить'
                   : STEP_META.date.actionLabel
@@ -164,7 +183,7 @@ export function BookingFlow({
         : STEP_META[flow.state.step];
   const actionLabel =
     flow.state.step === 'staff'
-      ? flow.selectedService
+      ? primaryService
         ? 'Выбрать дату'
         : 'Выбрать услугу'
       : meta?.actionLabel ?? 'Готово';
@@ -207,7 +226,7 @@ export function BookingFlow({
     }
 
     if (flow.state.step === 'staff') {
-      if (!flow.state.selectedServiceId) {
+      if (flow.state.selectedServiceIds.length === 0) {
         openServicesStep();
         return;
       }
@@ -217,7 +236,7 @@ export function BookingFlow({
     }
 
     if (flow.state.step === 'date') {
-      if (!flow.state.selectedServiceId) {
+      if (flow.state.selectedServiceIds.length === 0) {
         openServicesStep();
         return;
       }
@@ -247,7 +266,7 @@ export function BookingFlow({
   const isPrimaryDisabled =
     flow.state.step === 'overview' ||
     (flow.state.step === 'category' && !flow.state.selectedCategoryId) ||
-    (flow.state.step === 'service' && !flow.state.selectedServiceId) ||
+    (flow.state.step === 'service' && flow.state.selectedServiceIds.length === 0) ||
     (flow.state.step === 'staff' && !flow.state.selectedStaffId) ||
     (flow.state.step === 'date' && !flow.state.selectedDate) ||
     (flow.state.step === 'time' && !flow.state.selectedSlot) ||
@@ -365,7 +384,7 @@ export function BookingFlow({
 
               {flow.state.step === 'overview' ? (
                 <OverviewStep
-                  serviceLabel={flow.selectedService?.nameOnline ?? flow.selectedService?.name ?? null}
+                  serviceLabel={servicesLabel}
                   staffLabel={flow.state.selectedStaffId === 'any' ? 'Любой специалист' : flow.selectedStaff?.name ?? null}
                   dateLabel={flow.state.selectedDate ? formatBookingDate(flow.state.selectedDate) : null}
                   onOpenServices={openServicesStep}
@@ -386,7 +405,7 @@ export function BookingFlow({
                 <ServiceStep
                   services={flow.availableServices}
                   selectedCategoryId={flow.state.selectedCategoryId}
-                  selectedServiceId={flow.state.selectedServiceId}
+                  selectedServiceIds={flow.state.selectedServiceIds}
                   title={meta?.title ?? STEP_META.service.title}
                   description={meta?.description ?? STEP_META.service.description}
                   onSelect={flow.selectService}
@@ -400,7 +419,7 @@ export function BookingFlow({
                   canChooseAnyStaff={flow.canChooseAnyStaff}
                   isSlotDisabled={flow.isSlotBlockedForClient}
                   onSelect={flow.selectStaff}
-                  selectedServiceId={flow.state.selectedServiceId}
+                  selectedServiceIds={flow.state.selectedServiceIds}
                   onOpenCalendar={flow.openDateCalendar}
                   onSelectPreviewSlot={flow.selectPreviewSlot}
                 />

@@ -53,8 +53,8 @@ import { getSalonDate } from '@/lib/format';
 
 type Action =
   | { type: 'select-category'; categoryId: string }
-  | { type: 'select-service'; serviceId: string; categoryId: string }
-  | { type: 'clear-service'; categoryId: string | null }
+  | { type: 'toggle-service'; serviceId: string; categoryId: string }
+  | { type: 'clear-services'; categoryId: string | null }
   | { type: 'select-staff'; staffId: BookingStaffChoice | null }
   | { type: 'select-date'; date: string | null }
   | { type: 'select-slot'; slot: BookingSlotSelection | null }
@@ -74,7 +74,7 @@ type Action =
   | { type: 'submit-error'; message: string }
   | { type: 'reset'; state: BookingFlowState };
 
-const BOOKING_SERVICE_STORAGE_KEY = 'mari.booking.selected-service-id';
+const BOOKING_SERVICE_STORAGE_KEY = 'mari.booking.selected-service-ids';
 const AVAILABILITY_CACHE_TTL_MS = 30_000;
 
 type CacheEntry<T> = {
@@ -126,7 +126,7 @@ const reducer = (state: BookingFlowState, action: Action): BookingFlowState => {
         ...state,
         step: 'service',
         selectedCategoryId: action.categoryId,
-        selectedServiceId: null,
+        selectedServiceIds: [],
         selectedStaffId: null,
         selectedDate: null,
         selectedSlot: null,
@@ -141,11 +141,16 @@ const reducer = (state: BookingFlowState, action: Action): BookingFlowState => {
           form: {}
         }
       };
-    case 'select-service':
+    case 'toggle-service': {
+      const alreadySelected = state.selectedServiceIds.includes(action.serviceId);
+      const nextServiceIds = alreadySelected
+        ? state.selectedServiceIds.filter((serviceId) => serviceId !== action.serviceId)
+        : [...state.selectedServiceIds, action.serviceId];
+
       return {
         ...state,
         selectedCategoryId: action.categoryId,
-        selectedServiceId: action.serviceId,
+        selectedServiceIds: nextServiceIds,
         selectedDate: null,
         selectedSlot: null,
         slotDays: null,
@@ -159,12 +164,13 @@ const reducer = (state: BookingFlowState, action: Action): BookingFlowState => {
           form: {}
         }
       };
-    case 'clear-service':
+    }
+    case 'clear-services':
       return {
         ...state,
         step: 'service',
         selectedCategoryId: action.categoryId,
-        selectedServiceId: null,
+        selectedServiceIds: [],
         selectedDate: null,
         selectedSlot: null,
         slotDays: null,
@@ -462,9 +468,12 @@ export function useBookingFlow({
   }, [clearAvailabilityCache]);
 
   const categories = useMemo(() => getBookingCategories(services), [services]);
-  const selectedService = useMemo(
-    () => services.find((item) => item.id === state.selectedServiceId) ?? null,
-    [services, state.selectedServiceId]
+  const selectedServices = useMemo(
+    () =>
+      state.selectedServiceIds
+        .map((serviceId) => services.find((item) => item.id === serviceId) ?? null)
+        .filter((item): item is Service => item !== null),
+    [services, state.selectedServiceIds]
   );
   const selectedStaff = useMemo(
     () =>
@@ -482,34 +491,34 @@ export function useBookingFlow({
     return services.filter((service) => supportedServiceIds.has(service.id));
   }, [selectedStaff, services, state.selectedStaffId]);
   const availableSpecialists = useMemo(
-    () => getAvailableSpecialists(specialists, state.selectedServiceId),
-    [specialists, state.selectedServiceId]
+    () => getAvailableSpecialists(specialists, state.selectedServiceIds),
+    [specialists, state.selectedServiceIds]
   );
   const schedulePreviewContext = useMemo(
     () =>
       getSchedulePreviewContext({
-        selectedServiceId: state.selectedServiceId,
+        selectedServiceIds: state.selectedServiceIds,
         selectedStaffId: state.selectedStaffId,
         specialists
       }),
-    [specialists, state.selectedServiceId, state.selectedStaffId]
+    [specialists, state.selectedServiceIds, state.selectedStaffId]
   );
   const shouldLoadSlotDays =
-    Boolean(state.selectedServiceId && state.selectedStaffId) || state.step === 'date';
+    Boolean(state.selectedServiceIds.length > 0 && state.selectedStaffId) || state.step === 'date';
   const slotDaysEffectInput = useMemo(() => {
-    const serviceId = schedulePreviewContext?.serviceId ?? null;
+    const serviceIds = schedulePreviewContext?.serviceIds ?? [];
     const staffId = schedulePreviewContext?.staffId ?? null;
 
-    if (!shouldLoadSlotDays || !serviceId || !staffId) {
+    if (!shouldLoadSlotDays || serviceIds.length === 0 || !staffId) {
       return null;
     }
 
     return {
-      key: `${serviceId}:${staffId}`,
-      serviceId,
+      key: `${serviceIds.slice().sort().join(',')}:${staffId}`,
+      serviceIds,
       staffId
     };
-  }, [schedulePreviewContext?.serviceId, schedulePreviewContext?.staffId, shouldLoadSlotDays]);
+  }, [schedulePreviewContext?.serviceIds, schedulePreviewContext?.staffId, shouldLoadSlotDays]);
   const slotsEffectInput = useMemo(() => {
     const date = state.selectedDate;
 
@@ -517,33 +526,33 @@ export function useBookingFlow({
       return null;
     }
 
-    if (state.selectedServiceId && state.selectedStaffId) {
+    if (state.selectedServiceIds.length > 0 && state.selectedStaffId) {
       return {
-        key: `${state.selectedServiceId}:${state.selectedStaffId}:${date}`,
-        serviceId: state.selectedServiceId,
+        key: `${state.selectedServiceIds.slice().sort().join(',')}:${state.selectedStaffId}:${date}`,
+        serviceIds: state.selectedServiceIds,
         staffId: state.selectedStaffId,
         date
       };
     }
 
-    const serviceId = schedulePreviewContext?.serviceId ?? null;
+    const serviceIds = schedulePreviewContext?.serviceIds ?? [];
     const staffId = schedulePreviewContext?.staffId ?? null;
 
-    if (state.step !== 'date' || !serviceId || !staffId) {
+    if (state.step !== 'date' || serviceIds.length === 0 || !staffId) {
       return null;
     }
 
     return {
-      key: `${serviceId}:${staffId}:${date}`,
-      serviceId,
+      key: `${serviceIds.slice().sort().join(',')}:${staffId}:${date}`,
+      serviceIds,
       staffId,
       date
     };
   }, [
-    schedulePreviewContext?.serviceId,
+    schedulePreviewContext?.serviceIds,
     schedulePreviewContext?.staffId,
     state.selectedDate,
-    state.selectedServiceId,
+    state.selectedServiceIds,
     state.selectedStaffId,
     state.step
   ]);
@@ -660,37 +669,57 @@ export function useBookingFlow({
 
     restoredServiceRef.current = true;
 
-    if (initialSelection?.serviceId) {
+    if (initialSelection?.serviceId || initialSelection?.serviceIds?.length) {
       return;
     }
 
-    const storedServiceId = window.localStorage.getItem(BOOKING_SERVICE_STORAGE_KEY);
-    if (!storedServiceId) {
+    const storedValue = window.localStorage.getItem(BOOKING_SERVICE_STORAGE_KEY);
+    if (!storedValue) {
       return;
     }
 
-    const storedService = services.find((item) => item.id === storedServiceId);
-    if (!storedService) {
+    const storedServiceIds = (() => {
+      try {
+        const parsed = JSON.parse(storedValue);
+        if (Array.isArray(parsed)) {
+          return parsed.filter((item): item is string => typeof item === 'string');
+        }
+      } catch {}
+
+      return [storedValue];
+    })();
+    const validStoredServiceIds = storedServiceIds.filter((serviceId) =>
+      services.some((item) => item.id === serviceId)
+    );
+
+    if (validStoredServiceIds.length === 0) {
       window.localStorage.removeItem(BOOKING_SERVICE_STORAGE_KEY);
       return;
     }
 
-    dispatch({
-      type: 'select-service',
-      serviceId: storedService.id,
-      categoryId: storedService.category.id
+    validStoredServiceIds.forEach((serviceId) => {
+      const storedService = services.find((item) => item.id === serviceId);
+      if (!storedService) {
+        return;
+      }
+
+      dispatch({
+        type: 'toggle-service',
+        serviceId: storedService.id,
+        categoryId: storedService.category.id
+      });
     });
     dispatch({ type: 'set-step', step: 'service' });
-  }, [initialSelection?.serviceId, restoreStoredService, services]);
+  }, [initialSelection?.serviceId, initialSelection?.serviceIds, restoreStoredService, services]);
 
   useEffect(() => {
-    if (state.selectedServiceId) {
-      window.localStorage.setItem(BOOKING_SERVICE_STORAGE_KEY, state.selectedServiceId);
+    if (state.selectedServiceIds.length > 0) {
+      window.localStorage.setItem(BOOKING_SERVICE_STORAGE_KEY, JSON.stringify(state.selectedServiceIds));
       return;
     }
 
     window.localStorage.removeItem(BOOKING_SERVICE_STORAGE_KEY);
-  }, [state.selectedServiceId]);
+  }, [state.selectedServiceIds]);
 
   useEffect(() => {
     if (!state.selectedStaffId) {
@@ -747,11 +776,11 @@ export function useBookingFlow({
       return;
     }
 
-    const { serviceId, staffId } = slotDaysEffectInput;
+    const { serviceIds, staffId } = slotDaysEffectInput;
     const requestFrom = new Date();
     requestFrom.setMinutes(requestFrom.getMinutes() - requestFrom.getTimezoneOffset());
     const from = requestFrom.toISOString().slice(0, 10);
-    const cacheKey = getSlotDaysKey({ serviceId, staffId, from });
+    const cacheKey = getSlotDaysKey({ serviceIds, staffId, from });
 
     if (!cacheKey) {
       return;
@@ -772,7 +801,7 @@ export function useBookingFlow({
 
     void fetchSlotDays({
       from,
-      serviceId,
+      serviceIds,
       staffId,
       signal: controller.signal
     })
@@ -803,8 +832,8 @@ export function useBookingFlow({
       return;
     }
 
-    const { serviceId, staffId, date } = slotsEffectInput;
-    const cacheKey = getSlotsKey({ serviceId, staffId, date });
+    const { serviceIds, staffId, date } = slotsEffectInput;
+    const cacheKey = getSlotsKey({ serviceIds, staffId, date });
     if (!cacheKey) {
       return;
     }
@@ -820,7 +849,7 @@ export function useBookingFlow({
 
     void fetchSlots({
       date,
-      serviceId,
+      serviceIds,
       staffId,
       signal: controller.signal
     })
@@ -870,8 +899,8 @@ export function useBookingFlow({
       const guards: Record<Exclude<BookingStep, 'overview' | 'category' | 'success'>, boolean> = {
         service: true,
         staff: true,
-        date: Boolean(state.selectedServiceId && state.selectedStaffId),
-        time: Boolean(state.selectedServiceId && state.selectedStaffId && state.selectedDate),
+        date: Boolean(state.selectedServiceIds.length > 0 && state.selectedStaffId),
+        time: Boolean(state.selectedServiceIds.length > 0 && state.selectedStaffId && state.selectedDate),
         client: Boolean(state.selectedSlot)
       };
 
@@ -887,7 +916,7 @@ export function useBookingFlow({
       dispatch({ type: 'set-step', step });
       return true;
     },
-    [state.selectedDate, state.selectedServiceId, state.selectedSlot, state.selectedStaffId]
+    [state.selectedDate, state.selectedServiceIds, state.selectedSlot, state.selectedStaffId]
   );
 
   const selectCategory = useCallback((categoryId: string) => {
@@ -899,21 +928,13 @@ export function useBookingFlow({
       const categoryId =
         services.find((item) => item.id === serviceId)?.category.id ?? state.selectedCategoryId ?? '';
 
-      if (state.selectedServiceId === serviceId) {
-        dispatch({
-          type: 'clear-service',
-          categoryId: categoryId || null
-        });
-        return;
-      }
-
       dispatch({
-        type: 'select-service',
+        type: 'toggle-service',
         serviceId,
         categoryId
       });
     },
-    [services, state.selectedCategoryId, state.selectedServiceId]
+    [services, state.selectedCategoryId]
   );
 
   const selectStaff = useCallback((staffId: BookingStaffChoice) => {
@@ -961,7 +982,7 @@ export function useBookingFlow({
         return;
       }
 
-      if (!state.selectedServiceId) {
+      if (state.selectedServiceIds.length === 0) {
         openDateCalendar({
           staffId: slot.staffId,
           date: slot.startAt.slice(0, 10)
@@ -977,7 +998,7 @@ export function useBookingFlow({
       dispatch({ type: 'select-slot', slot });
       dispatch({ type: 'set-step', step: 'time' });
     },
-    [isSlotBlockedForClient, openDateCalendar, state.selectedServiceId, state.selectedStaffId]
+    [isSlotBlockedForClient, openDateCalendar, state.selectedServiceIds.length, state.selectedStaffId]
   );
 
   const updateClientForm = useCallback((patch: Partial<BookingClientForm>) => {
@@ -1003,7 +1024,7 @@ export function useBookingFlow({
       formErrors.consent = 'Подтвердите согласие на обработку персональных данных.';
     }
 
-    if (!state.selectedServiceId || !state.selectedStaffId || !state.selectedSlot) {
+    if (state.selectedServiceIds.length === 0 || !state.selectedStaffId || !state.selectedSlot) {
       dispatch({
         type: 'set-submit-error',
         message: 'Сначала завершите выбор услуги, специалиста и времени.'
@@ -1038,7 +1059,7 @@ export function useBookingFlow({
       const slotStaffId = state.selectedSlot.staffId;
       const payload = await createAppointment({
         payload: {
-          serviceIds: [state.selectedServiceId],
+          serviceIds: state.selectedServiceIds,
           staffId: slotStaffId,
           startAt: state.selectedSlot.startAt,
           comment: state.clientForm.comment.trim() || undefined,
@@ -1070,7 +1091,7 @@ export function useBookingFlow({
       });
       return false;
     }
-  }, [clearAvailabilityCache, isSlotBlockedForClient, state.clientForm.comment, state.clientForm.consentAccepted, state.clientForm.name, state.clientForm.phone, state.clientForm.promoCode, state.selectedServiceId, state.selectedSlot, state.selectedStaffId]);
+  }, [clearAvailabilityCache, isSlotBlockedForClient, state.clientForm.comment, state.clientForm.consentAccepted, state.clientForm.name, state.clientForm.phone, state.clientForm.promoCode, state.selectedServiceIds, state.selectedSlot, state.selectedStaffId]);
 
   return {
     state,
@@ -1080,7 +1101,7 @@ export function useBookingFlow({
     isDirty,
     hasCategoryStep,
     previousStep,
-    selectedService,
+    selectedServices,
     selectedStaff,
     availableServices,
     availableSpecialists,

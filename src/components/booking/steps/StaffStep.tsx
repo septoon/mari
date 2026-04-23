@@ -13,7 +13,7 @@ type StaffStepProps = {
   specialists: SpecialistCard[];
   selectedStaffId: string | 'any' | null;
   canChooseAnyStaff: boolean;
-  selectedServiceId: string | null;
+  selectedServiceIds: string[];
   isSlotDisabled: (slot: BookingSlotSelection) => boolean;
   onSelect: (staffId: string | 'any') => void;
   onOpenCalendar: (options?: { staffId?: string | 'any'; date?: string | null }) => void;
@@ -28,7 +28,7 @@ type StaffPreview = {
 
 type PreviewTarget = {
   staffId: string | 'any';
-  serviceId: string;
+  serviceIds: string[];
 };
 
 const EMPTY_PREVIEW: StaffPreview = {
@@ -64,7 +64,8 @@ const SelectionIndicator = ({ active }: { active: boolean }) => (
 
 const formatPreviewDate = (date: string) => `${weekdayLabel(date).replace('.', '')}, ${formatBookingDate(date)}`;
 
-const getPreviewKey = (serviceId: string, staffId: string | 'any') => `${serviceId}:${staffId}`;
+const getPreviewKey = (serviceIds: string[], staffId: string | 'any') =>
+  `${serviceIds.slice().sort().join(',')}:${staffId}`;
 
 const getFreshPreview = (
   cache: Map<string, PreviewCacheEntry>,
@@ -87,7 +88,7 @@ export function StaffStep({
   specialists,
   selectedStaffId,
   canChooseAnyStaff,
-  selectedServiceId,
+  selectedServiceIds,
   isSlotDisabled,
   onSelect,
   onOpenCalendar,
@@ -102,23 +103,26 @@ export function StaffStep({
   }, []);
   const previewTargets = useMemo<PreviewTarget[]>(
     () => [
-      ...(canChooseAnyStaff && selectedServiceId ? [{ staffId: 'any' as const, serviceId: selectedServiceId }] : []),
+      ...(canChooseAnyStaff && selectedServiceIds.length > 0
+        ? [{ staffId: 'any' as const, serviceIds: selectedServiceIds }]
+        : []),
       ...specialists.flatMap((specialist) => {
-        const serviceId = selectedServiceId ?? getPreviewServiceIdForSpecialist(specialist);
+        const fallbackServiceId = getPreviewServiceIdForSpecialist(specialist);
+        const nextServiceIds = selectedServiceIds.length > 0 ? selectedServiceIds : fallbackServiceId ? [fallbackServiceId] : [];
 
-        if (!serviceId) {
+        if (nextServiceIds.length === 0) {
           return [];
         }
 
         return [
           {
             staffId: specialist.staffId,
-            serviceId
+            serviceIds: nextServiceIds
           }
         ];
       })
     ],
-    [canChooseAnyStaff, selectedServiceId, specialists]
+    [canChooseAnyStaff, selectedServiceIds, specialists]
   );
   const resolvedPreviews = previewTargets.length ? previews : {};
 
@@ -148,8 +152,8 @@ export function StaffStep({
 
     setPreviews((current) =>
       Object.fromEntries(
-        previewTargets.map(({ staffId, serviceId }) => {
-          const cacheKey = getPreviewKey(serviceId, staffId);
+        previewTargets.map(({ staffId, serviceIds }) => {
+          const cacheKey = getPreviewKey(serviceIds, staffId);
           return [
             staffId,
             getFreshPreview(previewCacheRef.current, cacheKey) ??
@@ -161,8 +165,8 @@ export function StaffStep({
     );
 
     void Promise.all(
-      previewTargets.map(async ({ staffId, serviceId }) => {
-        const cacheKey = getPreviewKey(serviceId, staffId);
+      previewTargets.map(async ({ staffId, serviceIds }) => {
+        const cacheKey = getPreviewKey(serviceIds, staffId);
         const cached = getFreshPreview(previewCacheRef.current, cacheKey);
 
         if (cached) {
@@ -171,7 +175,7 @@ export function StaffStep({
 
         const slotDays = await fetchSlotDays({
           from,
-          serviceId,
+          serviceIds,
           staffId,
           signal: controller.signal
         });
@@ -188,7 +192,7 @@ export function StaffStep({
 
         const slots = await fetchSlots({
           date: firstAvailableDate,
-          serviceId,
+          serviceIds,
           staffId,
           signal: controller.signal
         });
@@ -254,7 +258,7 @@ export function StaffStep({
   if (!specialists.length) {
     return (
       <div className="rounded-[1.5rem] border border-dashed border-(--line) bg-(--panel) px-5 py-6 text-sm text-(--muted)">
-        Для выбранной услуги сейчас нет специалистов с онлайн-записью.
+        Для выбранных услуг сейчас нет специалистов с онлайн-записью.
       </div>
     );
   }
@@ -338,7 +342,7 @@ export function StaffStep({
                   Любой специалист
                 </span>
                 <span className="mt-2 block text-sm leading-6 text-(--muted)">
-                  {selectedServiceId
+                  {selectedServiceIds.length > 0
                     ? 'Подберём ближайшее свободное окно у подходящего мастера.'
                     : 'Покажем всех специалистов, а затем сузим список услуг и времени.'}
                 </span>
@@ -346,7 +350,7 @@ export function StaffStep({
               <SelectionIndicator active={selectedStaffId === 'any'} />
             </button>
 
-            {selectedServiceId ? renderPreview(resolvedPreviews.any ?? EMPTY_PREVIEW, 'any') : null}
+            {selectedServiceIds.length > 0 ? renderPreview(resolvedPreviews.any ?? EMPTY_PREVIEW, 'any') : null}
           </article>
         ) : null}
 

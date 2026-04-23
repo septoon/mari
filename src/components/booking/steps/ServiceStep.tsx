@@ -9,7 +9,7 @@ import { formatDuration, formatPriceRange } from '@/lib/format';
 type ServiceStepProps = {
   services: Service[];
   selectedCategoryId: string | null;
-  selectedServiceId: string | null;
+  selectedServiceIds: string[];
   title: string;
   description: string;
   onSelect: (serviceId: string) => void;
@@ -18,7 +18,7 @@ type ServiceStepProps = {
 export function ServiceStep({
   services,
   selectedCategoryId,
-  selectedServiceId,
+  selectedServiceIds,
   title,
   description,
   onSelect
@@ -69,8 +69,8 @@ export function ServiceStep({
     return Array.from(groups.values());
   }, [deferredQuery, services]);
   const selectedServiceCategoryId = useMemo(
-    () => services.find((service) => service.id === selectedServiceId)?.category.id ?? null,
-    [selectedServiceId, services]
+    () => services.find((service) => selectedServiceIds.includes(service.id))?.category.id ?? null,
+    [selectedServiceIds, services]
   );
   const preferredCategoryId = selectedServiceCategoryId ?? selectedCategoryId;
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(() => {
@@ -279,7 +279,7 @@ export function ServiceStep({
 
                 <div className="grid gap-3">
                   {group.items.map((service) => {
-                    const active = service.id === selectedServiceId;
+                    const active = selectedServiceIds.includes(service.id);
 
                     return (
                       <button
@@ -298,6 +298,9 @@ export function ServiceStep({
                             <p className="text-lg font-semibold">{service.nameOnline ?? service.name}</p>
                             <p className={`mt-2 text-sm leading-6 ${active ? 'text-white/80' : 'text-(--muted)'}`}>
                               {service.description?.trim() || 'Онлайн-запись доступна для этой услуги.'}
+                            </p>
+                            <p className={`mt-3 text-xs font-semibold uppercase tracking-[0.18em] ${active ? 'text-white/70' : 'text-(--muted-strong)'}`}>
+                              {active ? 'Нажмите, чтобы убрать' : 'Нажмите, чтобы добавить'}
                             </p>
                           </div>
                           <div className={`shrink-0 text-right text-sm ${active ? 'text-white/80' : 'text-(--muted-strong)'}`}>

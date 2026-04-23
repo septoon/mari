@@ -48,8 +48,8 @@ export const getBookingCategories = (services: Service[]) =>
     []
   );
 
-export const getAvailableSpecialists = (specialists: SpecialistCard[], serviceId: string | null) => {
-  if (!serviceId) {
+export const getAvailableSpecialists = (specialists: SpecialistCard[], serviceIds: string[]) => {
+  if (serviceIds.length === 0) {
     return specialists
       .filter((specialist) => specialist.isVisible && specialist.isActive && !specialist.firedAt)
       .sort((left, right) => left.sortOrder - right.sortOrder || left.name.localeCompare(right.name, 'ru'));
@@ -61,7 +61,7 @@ export const getAvailableSpecialists = (specialists: SpecialistCard[], serviceId
         specialist.isVisible &&
         specialist.isActive &&
         !specialist.firedAt &&
-        specialist.services.some((service) => service.id === serviceId)
+        serviceIds.every((serviceId) => specialist.services.some((service) => service.id === serviceId))
     )
     .sort((left, right) => left.sortOrder - right.sortOrder || left.name.localeCompare(right.name, 'ru'));
 };
@@ -82,24 +82,24 @@ export const getPreviewServiceIdForSpecialist = (specialist: SpecialistCard | nu
     )[0]?.id ?? null;
 
 export const getSchedulePreviewContext = ({
-  selectedServiceId,
+  selectedServiceIds,
   selectedStaffId,
   specialists
 }: {
-  selectedServiceId: string | null;
+  selectedServiceIds: string[];
   selectedStaffId: BookingStaffChoice | null;
   specialists: SpecialistCard[];
 }) => {
-  if (selectedServiceId && selectedStaffId) {
+  if (selectedServiceIds.length > 0 && selectedStaffId) {
     return {
-      serviceId: selectedServiceId,
+      serviceIds: selectedServiceIds,
       staffId: selectedStaffId
     };
   }
 
-  if (selectedServiceId) {
+  if (selectedServiceIds.length > 0) {
     return {
-      serviceId: selectedServiceId,
+      serviceIds: selectedServiceIds,
       staffId: 'any' as const
     };
   }
@@ -112,7 +112,7 @@ export const getSchedulePreviewContext = ({
 
     return serviceId
       ? {
-          serviceId,
+          serviceIds: [serviceId],
           staffId: selectedStaffId
         }
       : null;
@@ -124,15 +124,19 @@ export const getSchedulePreviewContext = ({
 
   return fallbackServiceId
     ? {
-        serviceId: fallbackServiceId,
+        serviceIds: [fallbackServiceId],
         staffId: 'any' as const
       }
     : null;
 };
 
 export const getInitialCategoryId = (services: Service[], initialSelection?: BookingInitialSelection) => {
-  if (initialSelection?.serviceId) {
-    return services.find((service) => service.id === initialSelection.serviceId)?.category.id ?? null;
+  const initialServiceIds =
+    initialSelection?.serviceIds?.filter(Boolean) ??
+    (initialSelection?.serviceId ? [initialSelection.serviceId] : []);
+
+  if (initialServiceIds.length > 0) {
+    return services.find((service) => service.id === initialServiceIds[0])?.category.id ?? null;
   }
 
   const categories = getBookingCategories(services);
@@ -141,12 +145,15 @@ export const getInitialCategoryId = (services: Service[], initialSelection?: Boo
 
 export const getInitialStep = (services: Service[], initialSelection?: BookingInitialSelection): BookingStep => {
   const categories = getBookingCategories(services);
+  const initialServiceIds =
+    initialSelection?.serviceIds?.filter(Boolean) ??
+    (initialSelection?.serviceId ? [initialSelection.serviceId] : []);
 
-  if (initialSelection?.serviceId && initialSelection?.staffId) {
+  if (initialServiceIds.length > 0 && initialSelection?.staffId) {
     return 'date';
   }
 
-  if (initialSelection?.serviceId) {
+  if (initialServiceIds.length > 0) {
     return 'staff';
   }
 
@@ -167,16 +174,23 @@ export const createInitialBookingState = ({
   sessionPhone?: string | null;
 }): BookingFlowState => {
   const initialStep = startStep ?? getInitialStep(services, initialSelection);
-  const selectedService = initialSelection?.serviceId
-    ? services.find((service) => service.id === initialSelection.serviceId) ?? null
-    : null;
-  const selectedCategoryId = selectedService?.category.id ?? getInitialCategoryId(services, initialSelection);
+  const initialServiceIds = Array.from(
+    new Set(
+      initialSelection?.serviceIds?.filter((serviceId) => services.some((service) => service.id === serviceId)) ??
+        (initialSelection?.serviceId && services.some((service) => service.id === initialSelection.serviceId)
+          ? [initialSelection.serviceId]
+          : [])
+    )
+  );
+  const selectedCategoryId =
+    services.find((service) => service.id === initialServiceIds[0])?.category.id ??
+    getInitialCategoryId(services, initialSelection);
 
   return {
     step: initialStep,
     initialStep,
     selectedCategoryId,
-    selectedServiceId: selectedService?.id ?? null,
+    selectedServiceIds: initialServiceIds,
     selectedStaffId: initialSelection?.staffId ?? null,
     selectedDate: null,
     selectedSlot: null,
@@ -249,29 +263,46 @@ export const getBookingDraft = ({
   services: Service[];
   specialists: SpecialistCard[];
 }): BookingDraft => {
-  const service = state.selectedServiceId
-    ? services.find((item) => item.id === state.selectedServiceId) ?? null
-    : null;
+  const selectedServices = state.selectedServiceIds
+    .map((serviceId) => services.find((item) => item.id === serviceId) ?? null)
+    .filter((item): item is Service => item !== null);
   const staff =
     state.selectedStaffId && state.selectedStaffId !== 'any'
       ? specialists.find((item) => item.staffId === state.selectedStaffId) ?? null
       : null;
+  const categories = selectedServices.reduce<Map<string, { id: string; name: string }>>((acc, service) => {
+    if (!acc.has(service.category.id)) {
+      acc.set(service.category.id, {
+        id: service.category.id,
+        name: service.category.name
+      });
+    }
+    return acc;
+  }, new Map());
+  const totalDurationSec = selectedServices.reduce((total, service) => total + service.durationSec, 0);
+  const totalPriceMin = selectedServices.reduce((total, service) => total + service.priceMin, 0);
+  const totalPriceMax = selectedServices.some((service) => service.priceMax === null)
+    ? null
+    : selectedServices.reduce((total, service) => total + (service.priceMax ?? service.priceMin), 0);
 
   return {
-    category: service ? service.category : null,
-    service,
+    category: categories.size === 1 ? Array.from(categories.values())[0] : null,
+    services: selectedServices,
     staff,
     isAnyStaff: state.selectedStaffId === 'any',
     date: state.selectedDate,
     slot: state.selectedSlot,
-    client: state.clientForm
+    client: state.clientForm,
+    totalDurationSec,
+    totalPriceMin,
+    totalPriceMax
   };
 };
 
 export const getBookingStateDirty = (state: BookingFlowState) =>
   Boolean(
     state.selectedCategoryId ||
-      state.selectedServiceId ||
+      state.selectedServiceIds.length > 0 ||
       state.selectedStaffId ||
       state.selectedDate ||
       state.selectedSlot ||
@@ -282,35 +313,35 @@ export const getBookingStateDirty = (state: BookingFlowState) =>
   );
 
 export const getSlotsKey = ({
-  serviceId,
+  serviceIds,
   staffId,
   date
 }: {
-  serviceId: string | null;
+  serviceIds: string[];
   staffId: BookingStaffChoice | null;
   date: string | null;
 }) => {
-  if (!serviceId || !staffId || !date) {
+  if (serviceIds.length === 0 || !staffId || !date) {
     return null;
   }
 
-  return [serviceId, staffId, date].join(':');
+  return [serviceIds.slice().sort().join(','), staffId, date].join(':');
 };
 
 export const getSlotDaysKey = ({
-  serviceId,
+  serviceIds,
   staffId,
   from
 }: {
-  serviceId: string | null;
+  serviceIds: string[];
   staffId: BookingStaffChoice | null;
   from: string;
 }) => {
-  if (!serviceId || !staffId) {
+  if (serviceIds.length === 0 || !staffId) {
     return null;
   }
 
-  return [serviceId, staffId, from].join(':');
+  return [serviceIds.slice().sort().join(','), staffId, from].join(':');
 };
 
 export const filterSlotDaysResult = (slotDays: SlotDaysResult): SlotDaysResult => {

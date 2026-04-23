@@ -70,15 +70,20 @@ export function ClientStep({
   maintenanceMessage,
   onChange,
 }: ClientStepProps) {
+  const servicesLabel =
+    draft.services.length > 0
+      ? draft.services.map((service) => service.nameOnline ?? service.name).join(', ')
+      : 'Не выбрано';
+
   return (
     <div className="space-y-5">
       <div className="rounded-[1.5rem] border border-(--line) bg-[linear-gradient(180deg,rgba(244,240,235,0.94),rgba(235,241,239,0.8))] px-5 py-4">
         <p className="text-xs uppercase tracking-[0.22em] text-(--muted-strong)">Детали записи</p>
         <div className="mt-4 grid gap-3 text-sm text-(--muted)">
           <div className="flex items-start justify-between gap-3">
-            <span>Услуга</span>
+            <span>{draft.services.length > 1 ? 'Услуги' : 'Услуга'}</span>
             <span className="text-right font-medium text-(--ink)">
-              {draft.service?.nameOnline ?? draft.service?.name ?? 'Не выбрано'}
+              {servicesLabel}
             </span>
           </div>
           <div className="flex items-start justify-between gap-3">
@@ -93,12 +98,12 @@ export function ClientStep({
               {draft.slot ? formatBookingDateTime(draft.slot.startAt) : 'Не выбрано'}
             </span>
           </div>
-          {draft.service ? (
+          {draft.services.length > 0 ? (
             <div className="flex items-start justify-between gap-3">
               <span>Стоимость</span>
               <span className="text-right font-medium text-(--ink)">
-                {formatPriceRange(draft.service.priceMin, draft.service.priceMax)} ·{' '}
-                {formatDuration(draft.service.durationSec)}
+                {formatPriceRange(draft.totalPriceMin, draft.totalPriceMax)} ·{' '}
+                {formatDuration(draft.totalDurationSec)}
               </span>
             </div>
           ) : null}

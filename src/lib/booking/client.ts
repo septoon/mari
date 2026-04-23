@@ -15,19 +15,19 @@ import { readApiOk } from '@/lib/api/browser';
 
 export const fetchSlotDays = async ({
   from,
-  serviceId,
+  serviceIds,
   staffId,
   signal
 }: {
   from: string;
-  serviceId: string;
+  serviceIds: string[];
   staffId: string | 'any';
   signal?: AbortSignal;
 }) => {
   const searchParams = new URLSearchParams({
     from,
     days: '21',
-    serviceIds: serviceId,
+    serviceIds: serviceIds.join(','),
     anyStaff: String(staffId === 'any')
   });
 
@@ -47,18 +47,18 @@ export const fetchSlotDays = async ({
 
 export const fetchSlots = async ({
   date,
-  serviceId,
+  serviceIds,
   staffId,
   signal
 }: {
   date: string;
-  serviceId: string;
+  serviceIds: string[];
   staffId: string | 'any';
   signal?: AbortSignal;
 }) => {
   const searchParams = new URLSearchParams({
     date,
-    serviceIds: serviceId,
+    serviceIds: serviceIds.join(','),
     anyStaff: String(staffId === 'any')
   });
 

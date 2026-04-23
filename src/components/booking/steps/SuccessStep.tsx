@@ -13,6 +13,11 @@ export function SuccessStep({
   appointment,
   draft
 }: SuccessStepProps) {
+  const servicesLabel =
+    appointment.services.length > 0
+      ? appointment.services.map((service) => service.name).join(', ')
+      : draft.services.map((service) => service.nameOnline ?? service.name).join(', ');
+
   return (
     <div className="space-y-5">
       <div className="rounded-[1.6rem] border border-[#86aa96]/40 bg-[#e3f0e8] px-5 py-5 text-[#21573b]">
@@ -26,9 +31,9 @@ export function SuccessStep({
       <div className="rounded-[1.5rem] border border-(--line) bg-(--panel) px-5 py-4">
         <div className="grid gap-3 text-sm text-(--muted)">
           <div className="flex items-start justify-between gap-3">
-            <span>Услуга</span>
+            <span>{appointment.services.length > 1 || draft.services.length > 1 ? 'Услуги' : 'Услуга'}</span>
             <span className="text-right font-medium text-(--ink)">
-              {draft.service?.nameOnline ?? draft.service?.name}
+              {servicesLabel}
             </span>
           </div>
           <div className="flex items-start justify-between gap-3">

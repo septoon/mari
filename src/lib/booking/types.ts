@@ -28,6 +28,7 @@ export type BookingSlotSelection = {
 };
 
 export type BookingInitialSelection = {
+  serviceIds?: string[] | null;
   serviceId?: string | null;
   staffId?: string | null;
 };
@@ -36,7 +37,7 @@ export type BookingFlowState = {
   step: BookingStep;
   initialStep: BookingStep;
   selectedCategoryId: string | null;
-  selectedServiceId: string | null;
+  selectedServiceIds: string[];
   selectedStaffId: BookingStaffChoice | null;
   selectedDate: string | null;
   selectedSlot: BookingSlotSelection | null;
@@ -60,12 +61,15 @@ export type BookingFlowState = {
 
 export type BookingDraft = {
   category: { id: string; name: string } | null;
-  service: Service | null;
+  services: Service[];
   staff: SpecialistCard | null;
   isAnyStaff: boolean;
   date: string | null;
   slot: BookingSlotSelection | null;
   client: BookingClientForm;
+  totalDurationSec: number;
+  totalPriceMin: number;
+  totalPriceMax: number | null;
 };
 
 export type BookingPageClientProps = {
