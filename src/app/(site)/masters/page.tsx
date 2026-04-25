@@ -7,10 +7,7 @@ import { createPageMetadata } from '@/lib/site';
 import { getLiveCatalog } from '@/lib/live-catalog';
 import { resolveSitePageHero } from '@/lib/site-page-heroes';
 import { isSiteBlockVisible, SITE_BLOCK_KEYS } from '@/lib/site-visibility';
-import {
-  applySpecialistsPageTemplate,
-  getSpecialistsPageContent,
-} from '@/lib/specialists-page-content';
+import { getSpecialistsPageContent } from '@/lib/specialists-page-content';
 
 export const metadata = createPageMetadata({
   title: 'Специалисты',
@@ -32,19 +29,14 @@ export default async function MastersPage() {
           <PageHero
             eyebrow={hero.eyebrow}
             title={hero.title}
-            description={hero.description}
+            description={null}
             imageUrl={hero.imageUrl}
             imageAlt={hero.title}
+            mobileActionsPlacement="after-image"
             breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Специалисты' }]}
             actions={
               <ButtonLink href="/booking">{pageContent.listPage.heroPrimaryCtaLabel}</ButtonLink>
             }
-            details={[
-              applySpecialistsPageTemplate(pageContent.listPage.detailsCountTemplate, {
-                count: catalog.specialists.length,
-              }),
-              pageContent.listPage.detailsFilterText,
-            ]}
           />
         ) : null}
 

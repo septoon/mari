@@ -25,11 +25,12 @@ export function PageHero({
   actionsPlacement = 'inline',
   imageClassName,
   metaClassName,
-  actionsClassName
+  actionsClassName,
+  mobileActionsPlacement = 'inline',
 }: {
   eyebrow?: string;
   title: string;
-  description: string;
+  description?: string | null;
   breadcrumbs?: BreadcrumbItem[];
   actions?: ReactNode;
   details?: string[];
@@ -43,6 +44,7 @@ export function PageHero({
   imageClassName?: string;
   metaClassName?: string;
   actionsClassName?: string;
+  mobileActionsPlacement?: 'inline' | 'after-image';
 }) {
   return (
     <section className={cn('pb-10 pt-8 md:pb-14 md:pt-12', className)}>
@@ -55,7 +57,9 @@ export function PageHero({
             metaPlacement === 'inline' ? <div className="mt-6">{meta}</div> : null
           ) : (
             <>
-              <p className="mt-6 max-w-2xl text-base leading-8 text-(--muted)">{description}</p>
+              {description ? (
+                <p className="mt-6 max-w-2xl text-base leading-8 text-(--muted)">{description}</p>
+              ) : null}
               {details?.length ? (
                 <div className="mt-6 flex flex-wrap gap-3">
                   {details.map((detail) => (
@@ -71,13 +75,20 @@ export function PageHero({
             </>
           )}
           {actions && actionsPlacement === 'inline' ? (
-            <div className="mt-8 flex flex-wrap gap-3">{actions}</div>
+            <div
+              className={cn(
+                'mt-8 flex flex-wrap gap-3',
+                mobileActionsPlacement === 'after-image' && 'hidden lg:flex',
+              )}
+            >
+              {actions}
+            </div>
           ) : null}
         </div>
 
         <div
           className={cn(
-            'relative order-4 overflow-hidden rounded-[2rem] border border-(--line) bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(247,241,234,0.88)_52%,rgba(232,224,215,0.8)_100%)] shadow-[0_30px_90px_rgba(69,48,29,0.08)] lg:order-none',
+            'relative order-2 aspect-[4/5] min-h-72 overflow-hidden rounded-[2rem] border border-(--line) bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(247,241,234,0.88)_52%,rgba(232,224,215,0.8)_100%)] shadow-[0_30px_90px_rgba(69,48,29,0.08)] lg:order-none',
             imageClassName
           )}
         >
@@ -89,12 +100,16 @@ export function PageHero({
               className="h-full min-h-72 w-full object-cover"
             />
           ) : (
-            <div className="flex min-h-72 flex-col items-center justify-center gap-4 px-8 text-center text-(--muted)">
+            <div className="flex h-full min-h-72 flex-col items-center justify-center gap-4 px-8 text-center text-(--muted)">
               <ImageIcon className="h-10 w-10 text-(--accent-strong)" />
               <p className="font-serif text-3xl text-(--ink)">Место под фото</p>
             </div>
           )}
         </div>
+
+        {actions && actionsPlacement === 'inline' && mobileActionsPlacement === 'after-image' ? (
+          <div className="order-3 flex flex-wrap gap-3 lg:hidden">{actions}</div>
+        ) : null}
 
         {meta && metaPlacement === 'separate' ? (
           <div className={cn('order-2 lg:order-none', metaClassName)}>{meta}</div>

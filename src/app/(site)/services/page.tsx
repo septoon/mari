@@ -9,15 +9,20 @@ import { createPageMetadata } from '@/lib/site';
 import { getLiveCatalog } from '@/lib/live-catalog';
 import { resolveSitePageHero } from '@/lib/site-page-heroes';
 import { isSiteBlockVisible, SITE_BLOCK_KEYS } from '@/lib/site-visibility';
+import { applyServicesPageTemplate, getServicesPageContent } from '@/lib/services-page-content';
 
-export const metadata = createPageMetadata({
-  title: 'Услуги',
-  description: 'Каталог услуг МАРИ: процедуры, цены, длительность и переход к записи.',
-  path: '/services',
-});
+export async function generateMetadata() {
+  const pageContent = await getServicesPageContent();
+  return createPageMetadata({
+    title: pageContent.seo.title,
+    description: pageContent.seo.description,
+    path: '/services',
+  });
+}
 
 export default async function ServicesPage() {
   const catalog = await getLiveCatalog();
+  const pageContent = await getServicesPageContent();
   const hero = resolveSitePageHero('services', catalog.bootstrap.config.extra);
   const showHero = isSiteBlockVisible(catalog.bootstrap.config.extra, SITE_BLOCK_KEYS.pageHero('services'));
   const standaloneCategories = catalog.serviceCategories.filter((category) => !category.sectionId);
@@ -32,54 +37,71 @@ export default async function ServicesPage() {
             description={hero.description}
             imageUrl={hero.imageUrl}
             imageAlt="Услуги МАРИ"
+            mobileActionsPlacement="after-image"
             breadcrumbs={[
               { label: 'Главная', href: '/' },
               { label: 'Услуги' },
             ]}
             actions={
               <>
-                <ButtonLink href="/booking">Записаться</ButtonLink>
+                <ButtonLink href="/booking">{pageContent.heroActions.primaryLabel}</ButtonLink>
                 <ButtonLink href="/prices" variant="secondary">
-                  Смотреть цены
+                  {pageContent.heroActions.secondaryLabel}
                 </ButtonLink>
               </>
             }
-            details={[
-              `${catalog.serviceSections.length} разделов с группировкой по направлениям.`,
-              `${standaloneCategories.length} отдельных категорий вне разделов.`,
-            ]}
           />
         ) : null}
 
         <SectionHeading
-          eyebrow="Каталог услуг"
-          title="Сначала выберите раздел."
-          description="На первом экране показываем только разделы и категории, которые не входят ни в один раздел."
+          eyebrow={pageContent.catalog.eyebrow}
+          title={pageContent.catalog.title}
+          description={pageContent.catalog.description}
         />
 
         <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {catalog.serviceSections.map((section) => (
-            <ServiceSectionCard key={section.id} section={section} />
+            <ServiceSectionCard
+              key={section.id}
+              section={section}
+              labels={{
+                eyebrow: pageContent.catalog.sectionCardEyebrow,
+                fallbackText: pageContent.catalog.sectionCardFallbackText,
+                serviceCountLabel: applyServicesPageTemplate(
+                  pageContent.catalog.sectionCardServiceCountTemplate,
+                  { count: section.servicesCount },
+                ),
+                actionLabel: pageContent.catalog.sectionCardActionLabel,
+              }}
+            />
           ))}
           {standaloneCategories.map((category) => (
                 <CategoryCard
                   key={category.id}
                   category={category}
                   serviceCount={category.services.length}
+                  labels={{
+                    fallbackText: pageContent.catalog.categoryFallbackText,
+                    serviceCountLabel: applyServicesPageTemplate(
+                      pageContent.catalog.categoryServiceCountTemplate,
+                      { count: category.services.length },
+                    ),
+                    actionLabel: pageContent.catalog.categoryActionLabel,
+                  }}
                 />
               ))}
         </div>
       </Container>
 
       <CtaPanel
-        eyebrow="Запись"
-        title="Осталось выбрать услугу и удобное время."
-        description="Можно перейти в карточку процедуры, сравнить варианты или сразу открыть запись."
+        eyebrow={pageContent.bottomCta.eyebrow}
+        title={pageContent.bottomCta.title}
+        description={pageContent.bottomCta.description}
         actions={
           <>
-            <ButtonLink href="/booking">Записаться</ButtonLink>
+            <ButtonLink href="/booking">{pageContent.bottomCta.primaryCtaLabel}</ButtonLink>
             <ButtonLink href="/masters" variant="secondary">
-              Выбрать мастера
+              {pageContent.bottomCta.secondaryCtaLabel}
             </ButtonLink>
           </>
         }

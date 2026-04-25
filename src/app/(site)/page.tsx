@@ -79,10 +79,21 @@ export default async function HomePage() {
             <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
               <div className="rounded-[2rem] border border-(--line) bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(247,241,234,0.88)_52%,rgba(232,224,215,0.8)_100%)] px-6 py-8 shadow-[0_35px_110px_rgba(41,30,18,0.08)] md:px-8 md:py-10">
                 <p className="section-kicker">{homePageContent.hero.eyebrow}</p>
-                <h1 className="headline-xl max-w-4xl whitespace-pre-line">{homePageContent.hero.title}</h1>
+                <h1 className="headline-xl home-hero-title max-w-4xl whitespace-pre-line">
+                  {homePageContent.hero.title}
+                </h1>
                 <p className="mt-6 max-w-2xl text-base leading-8 text-(--muted)">
                   {homePageContent.hero.description}
                 </p>
+
+                <EditorialVisual
+                  label={homePageContent.hero.visualLabel}
+                  title={homePageContent.hero.visualTitle}
+                  subtitle={homePageContent.hero.visualSubtitle}
+                  imageUrl={homePageContent.hero.visualImageUrl}
+                  imageAlt="Интерьер салона красоты МАРИ в Симферополе"
+                  className="mt-8 aspect-[4/5] lg:hidden"
+                />
 
                 <div className="mt-8 flex flex-wrap gap-3">
                   <ButtonLink href="/booking">
@@ -101,6 +112,7 @@ export default async function HomePage() {
                 subtitle={homePageContent.hero.visualSubtitle}
                 imageUrl={homePageContent.hero.visualImageUrl}
                 imageAlt="Интерьер салона красоты МАРИ в Симферополе"
+                className="hidden aspect-[4/5] lg:block"
               />
             </section>
           </Container>
@@ -156,7 +168,6 @@ export default async function HomePage() {
               <SectionHeading
                 eyebrow={homePageContent.valuePillars.eyebrow}
                 title={homePageContent.valuePillars.title}
-                description={homePageContent.valuePillars.description}
               />
               <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
                 {homePageContent.valuePillars.items.map((item) => (

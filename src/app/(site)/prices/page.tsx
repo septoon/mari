@@ -27,15 +27,12 @@ export default async function PricesPage() {
           <PageHero
             eyebrow={hero.eyebrow}
             title={hero.title}
-            description={hero.description}
+            description={null}
             imageUrl={hero.imageUrl}
             imageAlt={hero.title}
+            mobileActionsPlacement="after-image"
             breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Цены' }]}
             actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
-            details={[
-              `${catalog.services.length} услуг в прайсе.`,
-              'Из прайса можно сразу перейти в карточку процедуры.',
-            ]}
           />
         ) : null}
 

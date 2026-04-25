@@ -120,6 +120,10 @@ select {
   color: var(--ink);
 }
 
+.home-hero-title {
+  font-size: clamp(2.5rem, 4.35vw, 4.65rem);
+}
+
 .section-title {
   margin-top: 1rem;
   font-family: var(--font-serif), serif;
