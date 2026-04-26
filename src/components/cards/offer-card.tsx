@@ -8,12 +8,12 @@ import { Badge } from '@/components/ui/badge';
 export function OfferCard({ offer }: { offer: OfferItem }) {
   return (
     <article className="surface-card flex h-full flex-col p-6">
-      <div className="mb-5 overflow-hidden rounded-[1.5rem] border border-(--line)">
+      <div className="mb-5 aspect-[4/5] overflow-hidden rounded-[1.5rem] border border-(--line)">
         {offer.imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={offer.imageUrl} alt={offer.title} className="h-44 w-full object-cover" />
+          <img src={offer.imageUrl} alt={offer.title} className="h-full w-full object-cover" />
         ) : (
-          <div className="flex h-44 w-full items-center justify-center bg-[linear-gradient(145deg,rgba(247,241,234,0.9),rgba(255,255,255,0.98))] text-(--muted)">
+          <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(145deg,rgba(247,241,234,0.9),rgba(255,255,255,0.98))] text-(--muted)">
             <div className="text-center">
               <ImageIcon className="mx-auto h-8 w-8 text-(--accent-strong)" />
               <p className="mt-3 text-sm font-medium">Место под фото предложения</p>

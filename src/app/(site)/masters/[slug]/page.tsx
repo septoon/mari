@@ -89,7 +89,7 @@ export default async function MasterDetailPage({ params }: { params: Promise<{ s
             </div>
 
             <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(22rem,0.95fr)] lg:items-start">
-              <div className="relative overflow-hidden rounded-[2rem] border border-(--line) bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(247,241,234,0.88)_52%,rgba(232,224,215,0.8)_100%)] shadow-[0_30px_90px_rgba(69,48,29,0.08)]">
+              <div className="relative aspect-[4/5] min-h-72 overflow-hidden rounded-[2rem] border border-(--line) bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(247,241,234,0.88)_52%,rgba(232,224,215,0.8)_100%)] shadow-[0_30px_90px_rgba(69,48,29,0.08)]">
                 {master.photo?.preferredUrl || hero.imageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -98,7 +98,7 @@ export default async function MasterDetailPage({ params }: { params: Promise<{ s
                     className="h-full min-h-72 w-full object-cover"
                   />
                 ) : (
-                  <div className="flex min-h-72 flex-col items-center justify-center gap-4 px-8 text-center text-(--muted)">
+                  <div className="flex h-full min-h-72 flex-col items-center justify-center gap-4 px-8 text-center text-(--muted)">
                     <ImageIcon className="h-10 w-10 text-(--accent-strong)" />
                     <p className="font-serif text-3xl text-(--ink)">Место под фото</p>
                   </div>

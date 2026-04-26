@@ -17,7 +17,7 @@ export function EditorialVisual({
   className?: string;
 }) {
   return (
-    <div className={cn('relative isolate overflow-hidden rounded-[2rem] border border-white/70 bg-[linear-gradient(145deg,rgba(255,255,255,0.95),rgba(247,241,234,0.88)_52%,rgba(234,227,219,0.8)_100%)] p-6 shadow-[0_30px_90px_rgba(69,48,29,0.08)] md:p-8', className)}>
+    <div className={cn('relative isolate aspect-[4/5] overflow-hidden rounded-[2rem] border border-white/70 bg-[linear-gradient(145deg,rgba(255,255,255,0.95),rgba(247,241,234,0.88)_52%,rgba(234,227,219,0.8)_100%)] p-6 shadow-[0_30px_90px_rgba(69,48,29,0.08)] md:p-8', className)}>
       <div className="absolute inset-x-10 top-0 h-40 rounded-full bg-[radial-gradient(circle,rgba(176,144,112,0.18),transparent_68%)]" />
       <div className="absolute -left-10 bottom-0 h-44 w-44 rounded-full bg-[radial-gradient(circle,rgba(89,74,63,0.12),transparent_66%)]" />
       <div className="absolute right-8 top-8 text-(--accent-strong)">

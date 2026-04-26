@@ -19,12 +19,12 @@ export function MasterCard({
   return (
     <article className="surface-card flex h-full flex-col p-6">
       <div className='w-full flex justify-center'>
-        <div className="mb-5 w-1/2 overflow-hidden rounded-[1.5rem] border border-(--line)">
+        <div className="mb-5 aspect-[4/5] w-1/2 overflow-hidden rounded-[1.5rem] border border-(--line)">
           {imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={imageUrl} alt={name} className="h-52 w-full object-cover" />
+            <img src={imageUrl} alt={name} className="h-full w-full object-cover" />
           ) : (
-            <div className="flex h-52 w-full flex-col items-center justify-center gap-3 bg-[linear-gradient(145deg,rgba(247,241,234,0.9),rgba(255,255,255,0.98))] text-(--muted)">
+            <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-[linear-gradient(145deg,rgba(247,241,234,0.9),rgba(255,255,255,0.98))] text-(--muted)">
               <ImageIcon className="h-8 w-8 text-(--accent-strong)" />
               <p className="text-sm text-center font-medium">Место под фото специалиста</p>
             </div>
