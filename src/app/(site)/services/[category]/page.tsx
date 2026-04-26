@@ -103,32 +103,10 @@ export default async function ServiceCategoryPage({
           />
         ) : null}
 
-        <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-          <article className="surface-card p-6">
-            <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">Что важно</p>
-            <h2 className="mt-4 font-serif text-4xl text-(--ink)">
-              Услуги собраны по реальным задачам и комфорту.
-            </h2>
-            <p className="mt-4 text-sm leading-7 text-(--muted)">
-              Внутри категории легко сравнить процедуры, выбрать подходящий формат визита и перейти
-              к записи без лишних шагов.
-            </p>
-          </article>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            {item.services.slice(0, 4).map((service) => (
-              <div key={service.id} className="surface-card p-5">
-                <h3 className="font-serif text-3xl text-(--ink)">{service.displayName}</h3>
-                <p className="mt-3 text-sm leading-7 text-(--muted)">{service.teaser}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
         <section className="mt-16">
           <SectionHeading
             eyebrow="Услуги категории"
-            title="Выберите конкретную процедуру."
+            title="Выберите конкретную услугу."
             description="У каждой карточки есть краткое описание, длительность, ориентир по стоимости и переход к записи."
           />
           <div className="mt-8 grid gap-6 md:grid-cols-2">
