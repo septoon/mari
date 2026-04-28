@@ -1,13 +1,10 @@
-import { AlertTriangle, PhoneCall } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
+import { notFound } from 'next/navigation';
 
 import { BookingPageFlow } from '@/components/booking/BookingPageFlow';
 import { ContextNote } from '@/components/site/context-note';
-import { PageHero } from '@/components/site/page-hero';
-import { Container } from '@/components/ui/container';
-import { ButtonLink } from '@/components/ui/button';
 import { getBookingPageData } from '@/lib/booking/page-data';
 import { createPageMetadata } from '@/lib/site';
-import { resolveSitePageHero } from '@/lib/site-page-heroes';
 import { isSiteBlockVisible, SITE_BLOCK_KEYS } from '@/lib/site-visibility';
 
 export const metadata = createPageMetadata({
@@ -22,42 +19,21 @@ export default async function BookingPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const booking = await getBookingPageData(searchParams);
-  const hero = resolveSitePageHero('booking', booking.catalog.bootstrap.config.extra);
   const extra = booking.catalog.bootstrap.config.extra;
-  const showHero = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.pageHero('booking'));
+  if (!isSiteBlockVisible(extra, SITE_BLOCK_KEYS.page('booking'))) {
+    notFound();
+  }
   const showConnectivityNotice = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.bookingPage.connectivityNotice);
+  const showPanel = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.bookingPage.panel);
+  const showSchedule = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.bookingPage.schedule);
+  const showConfirmation = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.bookingPage.confirmation);
 
   return (
-    <main className="pb-14">
-      <Container>
-        {showHero ? (
-          <PageHero
-            eyebrow={hero.eyebrow}
-            title={hero.title}
-            description={hero.description}
-            imageUrl={hero.imageUrl}
-            imageAlt={hero.title}
-            breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Запись' }]}
-            actions={
-              <>
-                <ButtonLink href={booking.catalog.salon.phoneHref}>
-                  <PhoneCall className="h-4 w-4" />
-                  {booking.bookingContent.heroActions.phoneLabel}
-                </ButtonLink>
-                <ButtonLink href="/services" variant="secondary">
-                  {booking.bookingContent.heroActions.servicesLabel}
-                </ButtonLink>
-                <ButtonLink href="/contacts" variant="secondary">
-                  {booking.bookingContent.heroActions.contactsLabel}
-                </ButtonLink>
-              </>
-            }
-          />
-        ) : null}
-
+    <main className="pb-0 md:pb-14">
+      <div className="w-full md:mx-auto md:mt-8 md:max-w-6xl md:px-6 lg:px-8">
         {showConnectivityNotice &&
         (!booking.catalog.connectivity.bootstrap || !booking.catalog.connectivity.services) ? (
-          <div className="mb-8 rounded-[1.75rem] border border-[#d7b78d] bg-[#fff3e5] px-5 py-4 text-sm leading-7 text-[#6f5233]">
+          <div className="mx-4 mb-6 rounded-[1.75rem] border border-[#d7b78d] bg-[#fff3e5] px-5 py-4 text-sm leading-7 text-[#6f5233] md:mx-auto md:max-w-5xl">
             <p className="inline-flex items-center gap-2 font-medium">
               <AlertTriangle className="h-4 w-4" />
               {booking.bookingContent.connectivityNotice.title}
@@ -66,14 +42,16 @@ export default async function BookingPage({
           </div>
         ) : null}
 
-        <ContextNote
-          service={booking.context.service?.displayName}
-          master={booking.context.master?.name}
-          offer={booking.context.offer?.title}
-          phone={booking.catalog.salon.phone}
-        />
+        <div className="mx-4 md:mx-auto md:max-w-5xl">
+          <ContextNote
+            service={booking.context.service?.displayName}
+            master={booking.context.master?.name}
+            offer={booking.context.offer?.title}
+            phone={booking.catalog.salon.phone}
+          />
+        </div>
 
-        <div className="mt-12">
+        <div className="md:mx-auto md:max-w-5xl xl:max-w-6xl">
           <BookingPageFlow
             services={booking.catalog.services}
             specialists={booking.catalog.specialists}
@@ -81,9 +59,14 @@ export default async function BookingPage({
             maintenanceMessage={booking.catalog.bootstrap.config.maintenanceMessage}
             consentLabel={booking.privacyPolicy.bookingConsentLabel}
             initialSelection={booking.initialSelection}
+            visibility={{
+              panel: showPanel,
+              schedule: showSchedule,
+              confirmation: showConfirmation,
+            }}
           />
         </div>
-      </Container>
+      </div>
     </main>
   );
 }

@@ -277,7 +277,7 @@ export function ServiceStep({
                   <h3 className="text-2xl font-semibold text-(--ink)">{group.name}</h3>
                 ) : null}
 
-                <div className="grid gap-3">
+                <div className="grid min-w-0 max-w-full gap-3">
                   {group.items.map((service) => {
                     const active = selectedServiceIds.includes(service.id);
 
@@ -287,20 +287,16 @@ export function ServiceStep({
                         type="button"
                         onClick={() => onSelect(service.id)}
                         aria-pressed={active}
-                        className={`rounded-[1.6rem] border px-5 py-4 text-left transition ${
+                        className={`w-full min-w-0 max-w-full overflow-hidden rounded-[1.6rem] border px-5 py-4 text-left transition ${
                           active
                             ? 'border-(--foreground) bg-(--foreground) text-white shadow-[0_18px_48px_rgba(8,36,40,0.14)]'
                             : 'border-(--line) bg-white text-(--ink) hover:border-(--accent-strong) hover:bg-(--panel)'
                         }`}
                       >
-                        <div className="flex items-start justify-between gap-4">
+                        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
                           <div className="min-w-0">
-                            <p className="text-lg font-semibold">{service.nameOnline ?? service.name}</p>
-                            <p className={`mt-2 text-sm leading-6 ${active ? 'text-white/80' : 'text-(--muted)'}`}>
-                              {service.description?.trim() || 'Онлайн-запись доступна для этой услуги.'}
-                            </p>
-                            <p className={`mt-3 text-xs font-semibold uppercase tracking-[0.18em] ${active ? 'text-white/70' : 'text-(--muted-strong)'}`}>
-                              {active ? 'Нажмите, чтобы убрать' : 'Нажмите, чтобы добавить'}
+                            <p className="break-words text-lg font-semibold leading-snug">
+                              {service.nameOnline ?? service.name}
                             </p>
                           </div>
                           <div className={`shrink-0 text-right text-sm ${active ? 'text-white/80' : 'text-(--muted-strong)'}`}>

@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 import { Container } from '@/components/ui/container';
 import { getLiveCatalog } from '@/lib/live-catalog';
-import { siteConfig } from '@/lib/site';
+import { siteConfig, type SiteFooterNavGroup, type SiteNavItem } from '@/lib/site';
 
 type SiteFooterProps = {
   salon?: {
@@ -12,9 +12,15 @@ type SiteFooterProps = {
     email: string;
     address: string;
   };
+  footerNav?: readonly SiteFooterNavGroup[];
+  utilityNav?: readonly SiteNavItem[];
 };
 
-export async function SiteFooter({ salon: providedSalon }: SiteFooterProps) {
+export async function SiteFooter({
+  salon: providedSalon,
+  footerNav = siteConfig.footerNav,
+  utilityNav = siteConfig.footerUtilityNav,
+}: SiteFooterProps) {
   const salon = providedSalon ?? (await getLiveCatalog()).salon;
 
   return (
@@ -40,7 +46,7 @@ export async function SiteFooter({ salon: providedSalon }: SiteFooterProps) {
             </div>
           </div>
 
-          {siteConfig.footerNav.map((group) => (
+          {footerNav.map((group) => (
             <div key={group.title}>
               <p className="text-xs uppercase tracking-[0.28em] text-(--muted-strong)">
                 {group.title}
@@ -60,18 +66,11 @@ export async function SiteFooter({ salon: providedSalon }: SiteFooterProps) {
 
         <div className="mt-10 flex flex-col gap-2 border-t border-(--line) pt-6 text-sm text-(--muted) sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap gap-4">
-            <Link href="/news" className="transition hover:text-(--foreground)">
-              Новости
-            </Link>
-            <Link href="/careers" className="transition hover:text-(--foreground)">
-              Вакансии
-            </Link>
-            <Link href="/gift-cards" className="transition hover:text-(--foreground)">
-              Сертификаты
-            </Link>
-            <Link href="/privacy-policy" className="transition hover:text-(--foreground)">
-              Политика конфиденциальности
-            </Link>
+            {utilityNav.map((item) => (
+              <Link key={item.href} href={item.href} className="transition hover:text-(--foreground)">
+                {item.label}
+              </Link>
+            ))}
           </div>
         </div>
 

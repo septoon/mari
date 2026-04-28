@@ -57,6 +57,9 @@ export default async function MasterDetailPage({ params }: { params: Promise<{ s
 
   const services = catalog.services.filter((service) => master.serviceIds.includes(service.id));
   const extra = catalog.bootstrap.config.extra;
+  if (!isSiteBlockVisible(extra, SITE_BLOCK_KEYS.page('masters'))) {
+    notFound();
+  }
   const hero = resolveSitePageHero('masterDetails', catalog.bootstrap.config.extra, {
     masterSpecialty: master.specialtyLabel,
     masterName: master.name,

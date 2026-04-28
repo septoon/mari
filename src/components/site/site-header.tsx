@@ -4,12 +4,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Menu, UserRound, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useClientSession } from '@/components/client-session-provider';
 import { MobileNavDrawer } from '@/components/site/mobile-nav-drawer';
 import { cn } from '@/lib/classnames';
-import { siteConfig } from '@/lib/site';
+import type { SiteNavItem } from '@/lib/site';
 
 type SiteHeaderProps = {
   salon: {
@@ -17,13 +17,19 @@ type SiteHeaderProps = {
     phoneHref: string;
     address: string;
   };
+  navItems: SiteNavItem[];
 };
 
-export function SiteHeader({ salon }: SiteHeaderProps) {
+type SiteNavigationResponse = {
+  navItems?: SiteNavItem[];
+};
+
+export function SiteHeader({ salon, navItems }: SiteHeaderProps) {
   const headerRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
   const { session } = useClientSession();
   const [open, setOpen] = useState(false);
+  const [currentNavItems, setCurrentNavItems] = useState(navItems);
   const accountActive = pathname === '/account' || pathname.startsWith('/account/') || pathname === '/reset-password';
   const accountInitial = session.client?.name?.trim().charAt(0).toUpperCase();
   const accountLabel = session.client?.name?.trim() || session.client?.phoneE164 || 'Личный кабинет';
@@ -61,6 +67,55 @@ export function SiteHeader({ salon }: SiteHeaderProps) {
       ) : null}
     </Link>
   );
+
+  const refreshNavigation = useCallback(async () => {
+    try {
+      const response = await fetch('/api/site-navigation', {
+        cache: 'no-store',
+      });
+      if (!response.ok) {
+        return;
+      }
+
+      const payload = (await response.json()) as SiteNavigationResponse;
+      if (Array.isArray(payload.navItems)) {
+        setCurrentNavItems(payload.navItems);
+      }
+    } catch {
+      // Навигация остаётся в серверном состоянии, если свежий bootstrap временно недоступен.
+    }
+  }, []);
+
+  useEffect(() => {
+    setCurrentNavItems(navItems);
+  }, [navItems]);
+
+  useEffect(() => {
+    void refreshNavigation();
+
+    const intervalId = window.setInterval(() => {
+      void refreshNavigation();
+    }, 10000);
+
+    const handleFocus = () => {
+      void refreshNavigation();
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        void refreshNavigation();
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.clearInterval(intervalId);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [refreshNavigation]);
 
   useEffect(() => {
     const headerElement = headerRef.current;
@@ -120,7 +175,7 @@ export function SiteHeader({ salon }: SiteHeaderProps) {
             </Link>
 
             <nav aria-label="Основная навигация" className="hidden items-center gap-7 lg:flex">
-              {siteConfig.nav.map((item) => {
+              {currentNavItems.map((item) => {
                 const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
 
                 return (
@@ -184,7 +239,7 @@ export function SiteHeader({ salon }: SiteHeaderProps) {
         </div>
       </header>
 
-      <MobileNavDrawer open={open} pathname={pathname} salon={salon} onClose={() => setOpen(false)} />
+        <MobileNavDrawer open={open} pathname={pathname} salon={salon} navItems={currentNavItems} onClose={() => setOpen(false)} />
     </>
   );
 }

@@ -49,7 +49,7 @@ import {
   getSlotsKey,
   hasDateSlots
 } from '@/lib/booking/utils';
-import { getSalonDate } from '@/lib/format';
+import { formatBookingDate, getSalonDate } from '@/lib/format';
 
 type Action =
   | { type: 'select-category'; categoryId: string }
@@ -75,7 +75,28 @@ type Action =
   | { type: 'reset'; state: BookingFlowState };
 
 const BOOKING_SERVICE_STORAGE_KEY = 'mari.booking.selected-service-ids';
+const BOOKING_PROGRESS_STORAGE_KEY = 'mari.booking.progress';
 const AVAILABILITY_CACHE_TTL_MS = 30_000;
+const BOOKING_RESUMABLE_STEPS = new Set<BookingStep>([
+  'category',
+  'service',
+  'staff',
+  'date',
+  'time',
+  'client'
+]);
+
+type StoredBookingProgress = {
+  serviceIds: string[];
+  staffId: BookingStaffChoice | null;
+  date: string | null;
+  slot: BookingSlotSelection | null;
+  step: BookingStep;
+};
+
+type StoredBookingProgressPreview = {
+  summary: string;
+};
 
 type CacheEntry<T> = {
   data: T;
@@ -117,6 +138,206 @@ const setCacheValue = <T>(
     data,
     fetchedAt: Date.now()
   });
+};
+
+const parseJsonStorageValue = (value: string | null): unknown => {
+  if (!value) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
+  }
+};
+
+const getValidServiceIds = (services: Service[], value: unknown) => {
+  const rawServiceIds = Array.isArray(value)
+    ? value
+    : typeof value === 'string'
+      ? [value]
+      : [];
+  const serviceIds = new Set(services.map((service) => service.id));
+
+  return Array.from(
+    new Set(rawServiceIds.filter((item): item is string => typeof item === 'string' && serviceIds.has(item)))
+  );
+};
+
+const getValidStaffId = (
+  specialists: SpecialistCard[],
+  value: unknown
+): BookingStaffChoice | null => {
+  if (value === 'any') {
+    return 'any';
+  }
+
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  return specialists.some((specialist) => specialist.staffId === value) ? value : null;
+};
+
+const getValidSlot = (value: unknown): BookingSlotSelection | null => {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+
+  const slot = value as Partial<BookingSlotSelection>;
+  if (
+    typeof slot.staffId !== 'string' ||
+    typeof slot.staffName !== 'string' ||
+    typeof slot.startAt !== 'string' ||
+    typeof slot.endAt !== 'string'
+  ) {
+    return null;
+  }
+
+  if (!isFutureBookingSlot(slot.startAt)) {
+    return null;
+  }
+
+  return {
+    staffId: slot.staffId,
+    staffName: slot.staffName,
+    startAt: slot.startAt,
+    endAt: slot.endAt
+  };
+};
+
+const getStoredResumeStep = ({
+  step,
+  serviceIds,
+  staffId,
+  date,
+  slot
+}: {
+  step: unknown;
+  serviceIds: string[];
+  staffId: BookingStaffChoice | null;
+  date: string | null;
+  slot: BookingSlotSelection | null;
+}): BookingStep | null => {
+  if (typeof step === 'string' && BOOKING_RESUMABLE_STEPS.has(step as BookingStep)) {
+    if (step === 'client' && slot && serviceIds.length > 0 && staffId) {
+      return 'client';
+    }
+
+    if (step === 'time' && date && serviceIds.length > 0 && staffId) {
+      return 'time';
+    }
+
+    if (step === 'date' && (serviceIds.length > 0 || staffId || date)) {
+      return 'date';
+    }
+
+    if (step === 'staff' && serviceIds.length > 0) {
+      return 'staff';
+    }
+
+    if (step === 'category' || step === 'service') {
+      return step;
+    }
+  }
+
+  if (slot && serviceIds.length > 0 && staffId) {
+    return 'time';
+  }
+
+  if (date && (serviceIds.length > 0 || staffId)) {
+    return 'date';
+  }
+
+  if (serviceIds.length > 0 && staffId) {
+    return 'staff';
+  }
+
+  if (serviceIds.length > 0 || staffId) {
+    return 'service';
+  }
+
+  return date ? 'date' : null;
+};
+
+const getStoredProgressSummary = ({
+  progress,
+  services,
+  specialists
+}: {
+  progress: StoredBookingProgress;
+  services: Service[];
+  specialists: SpecialistCard[];
+}) => {
+  const parts: string[] = [];
+  const selectedServices = progress.serviceIds
+    .map((serviceId) => services.find((service) => service.id === serviceId) ?? null)
+    .filter((service): service is Service => service !== null);
+
+  if (selectedServices.length === 1) {
+    parts.push(selectedServices[0].nameOnline ?? selectedServices[0].name);
+  } else if (selectedServices.length > 1) {
+    parts.push(`${selectedServices[0].nameOnline ?? selectedServices[0].name} + ещё ${selectedServices.length - 1}`);
+  }
+
+  if (progress.staffId === 'any') {
+    parts.push('Любой специалист');
+  } else if (progress.staffId) {
+    const specialist = specialists.find((item) => item.staffId === progress.staffId);
+    if (specialist) {
+      parts.push(specialist.name);
+    }
+  }
+
+  if (progress.date) {
+    parts.push(formatBookingDate(progress.date));
+  }
+
+  return parts.join(' · ') || 'Вернуться к сохранённому выбору.';
+};
+
+const readStoredBookingProgress = ({
+  services,
+  specialists
+}: {
+  services: Service[];
+  specialists: SpecialistCard[];
+}): StoredBookingProgress | null => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  const storedProgress = parseJsonStorageValue(window.localStorage.getItem(BOOKING_PROGRESS_STORAGE_KEY));
+  const storedServiceIds = parseJsonStorageValue(window.localStorage.getItem(BOOKING_SERVICE_STORAGE_KEY));
+  const progressRecord =
+    storedProgress && typeof storedProgress === 'object'
+      ? (storedProgress as Record<string, unknown>)
+      : {};
+  const progressServiceIds = getValidServiceIds(services, progressRecord.serviceIds);
+  const serviceIds = progressServiceIds.length > 0
+    ? progressServiceIds
+    : getValidServiceIds(services, storedServiceIds);
+  const staffId = getValidStaffId(specialists, progressRecord.staffId);
+  const date = typeof progressRecord.date === 'string' ? progressRecord.date : null;
+  const slot = getValidSlot(progressRecord.slot);
+  const resumeStep = getStoredResumeStep({
+    step: progressRecord.step,
+    serviceIds,
+    staffId,
+    date,
+    slot
+  });
+
+  return resumeStep
+    ? {
+        serviceIds,
+        staffId,
+        date,
+        slot,
+        step: resumeStep
+      }
+    : null;
 };
 
 const reducer = (state: BookingFlowState, action: Action): BookingFlowState => {
@@ -453,9 +674,12 @@ export function useBookingFlow({
   const [state, dispatch] = useReducer(reducer, initialState);
   const [availabilityVersion, refreshAvailability] = useReducer((value: number) => value + 1, 0);
   const [clientAppointments, setClientAppointments] = useState<ClientAppointmentsResult['items']>([]);
+  const [storedProgress, setStoredProgress] = useState<StoredBookingProgressPreview | null>(null);
   const slotDaysCacheRef = useRef(new Map<string, CacheEntry<SlotDaysResult>>());
   const slotsCacheRef = useRef(new Map<string, CacheEntry<SlotsResult>>());
   const restoredServiceRef = useRef(false);
+  const storageInitializedRef = useRef(false);
+  const progressStorageInitializedRef = useRef(false);
 
   const clearAvailabilityCache = useCallback(() => {
     slotDaysCacheRef.current.clear();
@@ -604,6 +828,30 @@ export function useBookingFlow({
     (slot: BookingSlotSelection) => blockedClientSlotStartTimes.has(slot.startAt),
     [blockedClientSlotStartTimes]
   );
+  const refreshStoredProgress = useCallback(() => {
+    const progress = readStoredBookingProgress({
+      services,
+      specialists
+    });
+
+    setStoredProgress(
+      progress
+        ? {
+            summary: getStoredProgressSummary({
+              progress,
+              services,
+              specialists
+            })
+          }
+        : null
+    );
+
+    return progress;
+  }, [services, specialists]);
+
+  useEffect(() => {
+    refreshStoredProgress();
+  }, [refreshStoredProgress]);
 
   useEffect(() => {
     if (!session.authenticated) {
@@ -713,6 +961,14 @@ export function useBookingFlow({
   }, [initialSelection?.serviceId, initialSelection?.serviceIds, restoreStoredService, services]);
 
   useEffect(() => {
+    if (!storageInitializedRef.current) {
+      storageInitializedRef.current = true;
+
+      if (state.selectedServiceIds.length === 0) {
+        return;
+      }
+    }
+
     if (state.selectedServiceIds.length > 0) {
       window.localStorage.setItem(BOOKING_SERVICE_STORAGE_KEY, JSON.stringify(state.selectedServiceIds));
       return;
@@ -720,6 +976,65 @@ export function useBookingFlow({
 
     window.localStorage.removeItem(BOOKING_SERVICE_STORAGE_KEY);
   }, [state.selectedServiceIds]);
+
+  useEffect(() => {
+    if (!progressStorageInitializedRef.current) {
+      progressStorageInitializedRef.current = true;
+
+      if (
+        state.selectedServiceIds.length === 0 &&
+        !state.selectedStaffId &&
+        !state.selectedDate &&
+        !state.selectedSlot
+      ) {
+        return;
+      }
+    }
+
+    const hasProgress =
+      state.step !== 'success' &&
+      (state.selectedServiceIds.length > 0 ||
+        Boolean(state.selectedStaffId) ||
+        Boolean(state.selectedDate) ||
+        Boolean(state.selectedSlot));
+
+    if (!hasProgress) {
+      window.localStorage.removeItem(BOOKING_PROGRESS_STORAGE_KEY);
+      setStoredProgress(null);
+      return;
+    }
+
+    const progress: StoredBookingProgress = {
+      serviceIds: state.selectedServiceIds,
+      staffId: state.selectedStaffId,
+      date: state.selectedDate,
+      slot: state.selectedSlot,
+      step: state.step === 'overview' || state.step === 'success' ? 'service' : state.step
+    };
+
+    window.localStorage.setItem(
+      BOOKING_PROGRESS_STORAGE_KEY,
+      JSON.stringify({
+        ...progress,
+        updatedAt: Date.now()
+      })
+    );
+    setStoredProgress({
+      summary: getStoredProgressSummary({
+        progress,
+        services,
+        specialists
+      })
+    });
+  }, [
+    services,
+    specialists,
+    state.selectedDate,
+    state.selectedServiceIds,
+    state.selectedSlot,
+    state.selectedStaffId,
+    state.step
+  ]);
 
   useEffect(() => {
     if (!state.selectedStaffId) {
@@ -884,6 +1199,48 @@ export function useBookingFlow({
       })
     });
   }, [initialSelection, invalidateAvailability, services, session.client?.name, session.client?.phoneE164, startStep]);
+
+  const continueStoredProgress = useCallback(() => {
+    const progress = refreshStoredProgress();
+    if (!progress) {
+      return false;
+    }
+
+    const selectedCategoryId =
+      services.find((service) => service.id === progress.serviceIds[0])?.category.id ??
+      state.selectedCategoryId;
+    const nextState = createInitialBookingState({
+      services,
+      initialSelection,
+      startStep: 'overview',
+      sessionName: session.client?.name,
+      sessionPhone: session.client?.phoneE164
+    });
+
+    invalidateAvailability();
+    dispatch({
+      type: 'reset',
+      state: {
+        ...nextState,
+        step: progress.step,
+        selectedCategoryId,
+        selectedServiceIds: progress.serviceIds,
+        selectedStaffId: progress.staffId,
+        selectedDate: progress.date,
+        selectedSlot: progress.slot
+      }
+    });
+
+    return true;
+  }, [
+    initialSelection,
+    invalidateAvailability,
+    refreshStoredProgress,
+    services,
+    session.client?.name,
+    session.client?.phoneE164,
+    state.selectedCategoryId
+  ]);
 
   const goBack = useCallback(() => {
     if (!previousStep) {

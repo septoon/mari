@@ -1,3 +1,5 @@
+import { notFound } from 'next/navigation';
+
 import { CategoryCard } from '@/components/cards/category-card';
 import { ServiceSectionCard } from '@/components/cards/service-section-card';
 import { CtaPanel } from '@/components/site/cta-panel';
@@ -23,8 +25,14 @@ export async function generateMetadata() {
 export default async function ServicesPage() {
   const catalog = await getLiveCatalog();
   const pageContent = await getServicesPageContent();
-  const hero = resolveSitePageHero('services', catalog.bootstrap.config.extra);
-  const showHero = isSiteBlockVisible(catalog.bootstrap.config.extra, SITE_BLOCK_KEYS.pageHero('services'));
+  const extra = catalog.bootstrap.config.extra;
+  if (!isSiteBlockVisible(extra, SITE_BLOCK_KEYS.page('services'))) {
+    notFound();
+  }
+  const hero = resolveSitePageHero('services', extra);
+  const showHero = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.pageHero('services'));
+  const showCatalog = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.servicesPage.catalog);
+  const showBottomCta = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.servicesPage.bottomCta);
   const standaloneCategories = catalog.serviceCategories.filter((category) => !category.sectionId);
 
   return (
@@ -53,29 +61,31 @@ export default async function ServicesPage() {
           />
         ) : null}
 
-        <SectionHeading
-          eyebrow={pageContent.catalog.eyebrow}
-          title={pageContent.catalog.title}
-          description={pageContent.catalog.description}
-        />
-
-        <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {catalog.serviceSections.map((section) => (
-            <ServiceSectionCard
-              key={section.id}
-              section={section}
-              labels={{
-                eyebrow: pageContent.catalog.sectionCardEyebrow,
-                fallbackText: pageContent.catalog.sectionCardFallbackText,
-                serviceCountLabel: applyServicesPageTemplate(
-                  pageContent.catalog.sectionCardServiceCountTemplate,
-                  { count: section.servicesCount },
-                ),
-                actionLabel: pageContent.catalog.sectionCardActionLabel,
-              }}
+        {showCatalog ? (
+          <>
+            <SectionHeading
+              eyebrow={pageContent.catalog.eyebrow}
+              title={pageContent.catalog.title}
+              description={pageContent.catalog.description}
             />
-          ))}
-          {standaloneCategories.map((category) => (
+
+            <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {catalog.serviceSections.map((section) => (
+                <ServiceSectionCard
+                  key={section.id}
+                  section={section}
+                  labels={{
+                    eyebrow: pageContent.catalog.sectionCardEyebrow,
+                    fallbackText: pageContent.catalog.sectionCardFallbackText,
+                    serviceCountLabel: applyServicesPageTemplate(
+                      pageContent.catalog.sectionCardServiceCountTemplate,
+                      { count: section.servicesCount },
+                    ),
+                    actionLabel: pageContent.catalog.sectionCardActionLabel,
+                  }}
+                />
+              ))}
+              {standaloneCategories.map((category) => (
                 <CategoryCard
                   key={category.id}
                   category={category}
@@ -90,22 +100,26 @@ export default async function ServicesPage() {
                   }}
                 />
               ))}
-        </div>
+            </div>
+          </>
+        ) : null}
       </Container>
 
-      <CtaPanel
-        eyebrow={pageContent.bottomCta.eyebrow}
-        title={pageContent.bottomCta.title}
-        description={pageContent.bottomCta.description}
-        actions={
-          <>
-            <ButtonLink href="/booking">{pageContent.bottomCta.primaryCtaLabel}</ButtonLink>
-            <ButtonLink href="/masters" variant="secondary">
-              {pageContent.bottomCta.secondaryCtaLabel}
-            </ButtonLink>
-          </>
-        }
-      />
+      {showBottomCta ? (
+        <CtaPanel
+          eyebrow={pageContent.bottomCta.eyebrow}
+          title={pageContent.bottomCta.title}
+          description={pageContent.bottomCta.description}
+          actions={
+            <>
+              <ButtonLink href="/booking">{pageContent.bottomCta.primaryCtaLabel}</ButtonLink>
+              <ButtonLink href="/masters" variant="secondary">
+                {pageContent.bottomCta.secondaryCtaLabel}
+              </ButtonLink>
+            </>
+          }
+        />
+      ) : null}
     </main>
   );
 }

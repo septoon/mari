@@ -1,5 +1,5 @@
 import { MapPin, PhoneCall } from 'lucide-react';
-import { redirect } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 
 import { PageHero } from '@/components/site/page-hero';
 import { Container } from '@/components/ui/container';
@@ -47,6 +47,9 @@ export default async function ContactsPage({
   }
 
   const catalog = await getLiveCatalog();
+  if (!isSiteBlockVisible(catalog.bootstrap.config.extra, SITE_BLOCK_KEYS.page('contacts'))) {
+    notFound();
+  }
   const hero = resolveSitePageHero('contacts', catalog.bootstrap.config.extra);
   const showHero = isSiteBlockVisible(catalog.bootstrap.config.extra, SITE_BLOCK_KEYS.pageHero('contacts'));
 

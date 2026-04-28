@@ -7,6 +7,7 @@ import { RouteScrollReset } from '@/components/site/route-scroll-reset';
 import { SiteFooter } from '@/components/site/site-footer';
 import { SiteHeader } from '@/components/site/site-header';
 import { getLiveCatalog } from '@/lib/live-catalog';
+import { getVisibleSiteFooterNav, getVisibleSiteFooterUtilityNav, getVisibleSiteNav } from '@/lib/site';
 import { getSitePrivacyPolicyContent } from '@/lib/site-content';
 
 export const dynamic = 'force-dynamic';
@@ -22,14 +23,17 @@ export default async function SiteLayout({
     getLiveCatalog(),
     getSitePrivacyPolicyContent()
   ]);
+  const navItems = getVisibleSiteNav(catalog.bootstrap.config.extra);
+  const footerNav = getVisibleSiteFooterNav(catalog.bootstrap.config.extra);
+  const footerUtilityNav = getVisibleSiteFooterUtilityNav(catalog.bootstrap.config.extra);
 
   return (
     <ClientSessionProvider>
       <div className="min-h-screen">
         <RouteScrollReset />
-        <SiteHeader salon={catalog.salon} />
+        <SiteHeader salon={catalog.salon} navItems={navItems} />
         {children}
-        <SiteFooter salon={catalog.salon} />
+        <SiteFooter salon={catalog.salon} footerNav={footerNav} utilityNav={footerUtilityNav} />
         <FloatingContactButton phoneHref={catalog.salon.phoneHref} />
         <CookieConsentBanner
           title={privacyPolicy.cookieBannerTitle}

@@ -1,3 +1,5 @@
+import { notFound } from 'next/navigation';
+
 import { PageHero } from '@/components/site/page-hero';
 import { Container } from '@/components/ui/container';
 import { ButtonLink } from '@/components/ui/button';
@@ -17,6 +19,9 @@ export const metadata = createPageMetadata({
 export default async function PrivacyPolicyPage() {
   const [catalog, content] = await Promise.all([getLiveCatalog(), getSitePrivacyPolicyContent()]);
   const extra = catalog.bootstrap.config.extra;
+  if (!isSiteBlockVisible(extra, SITE_BLOCK_KEYS.page('privacyPolicy'))) {
+    notFound();
+  }
   const hero = resolveSitePageHero('privacyPolicy', extra);
   const operatorName =
     catalog.bootstrap.config.legalName?.trim() ||

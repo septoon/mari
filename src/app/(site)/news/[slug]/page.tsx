@@ -47,6 +47,9 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ slu
   }
 
   const bootstrap = await getClientBootstrap();
+  if (!isSiteBlockVisible(bootstrap.config.extra, SITE_BLOCK_KEYS.page('news'))) {
+    notFound();
+  }
   const hero = resolveSitePageHero('newsArticle', bootstrap.config.extra, {
     newsCategory: article.category,
     newsTitle: article.title,

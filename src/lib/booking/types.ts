@@ -79,4 +79,9 @@ export type BookingPageClientProps = {
   maintenanceMessage?: string | null;
   consentLabel: string;
   initialSelection?: BookingInitialSelection;
+  visibility?: {
+    panel: boolean;
+    schedule: boolean;
+    confirmation: boolean;
+  };
 };

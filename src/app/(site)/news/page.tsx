@@ -1,3 +1,5 @@
+import { notFound } from 'next/navigation';
+
 import { ArticleCard } from '@/components/cards/article-card';
 import { CtaPanel } from '@/components/site/cta-panel';
 import { PageHero } from '@/components/site/page-hero';
@@ -19,6 +21,9 @@ export default async function NewsPage() {
   const [articles, bootstrap] = await Promise.all([getSiteNews(), getClientBootstrap()]);
   const hero = resolveSitePageHero('news', bootstrap.config.extra);
   const extra = bootstrap.config.extra;
+  if (!isSiteBlockVisible(extra, SITE_BLOCK_KEYS.page('news'))) {
+    notFound();
+  }
   const showHero = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.pageHero('news'));
 
   return (

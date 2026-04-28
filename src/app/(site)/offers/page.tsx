@@ -1,3 +1,5 @@
+import { notFound } from 'next/navigation';
+
 import { OfferCard } from '@/components/cards/offer-card';
 import { CtaPanel } from '@/components/site/cta-panel';
 import { PageHero } from '@/components/site/page-hero';
@@ -19,6 +21,9 @@ export default async function OffersPage() {
   const [offers, bootstrap] = await Promise.all([getSiteOffers(), getClientBootstrap()]);
   const hero = resolveSitePageHero('offers', bootstrap.config.extra);
   const extra = bootstrap.config.extra;
+  if (!isSiteBlockVisible(extra, SITE_BLOCK_KEYS.page('offers'))) {
+    notFound();
+  }
   const showHero = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.pageHero('offers'));
 
   return (

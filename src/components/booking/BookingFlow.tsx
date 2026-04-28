@@ -29,6 +29,11 @@ type BookingFlowProps = {
   maintenanceMode: boolean;
   maintenanceMessage?: string | null;
   variant: 'page' | 'sheet';
+  visibility?: {
+    panel: boolean;
+    schedule: boolean;
+    confirmation: boolean;
+  };
   onClose?: () => void;
   onDone?: () => void;
 };
@@ -79,6 +84,7 @@ export function BookingFlow({
   maintenanceMode,
   maintenanceMessage,
   variant,
+  visibility,
   onClose,
   onDone
 }: BookingFlowProps) {
@@ -287,15 +293,23 @@ export function BookingFlow({
     (flow.state.loading.slotDays || flow.state.loading.slots || flow.state.loading.submit);
   const fullScreenLoaderLabel = flow.state.loading.submit
     ? 'Создаю запись...'
-    : flow.state.loading.slots
-      ? 'Загружаю доступное время...'
-      : 'Загружаю доступные даты...';
+      : flow.state.loading.slots
+        ? 'Загружаю доступное время...'
+        : 'Загружаю доступные даты...';
+  const showPanel = visibility?.panel ?? true;
+  const showSchedule = visibility?.schedule ?? true;
+  const showConfirmation = visibility?.confirmation ?? true;
+  const usesContainedLayout = variant === 'sheet' || variant === 'page';
+  const currentStepHidden =
+    (!showSchedule && (flow.state.step === 'date' || flow.state.step === 'time')) ||
+    (!showConfirmation && flow.state.step === 'client');
+  const showFooterForCurrentStep = showFooter && !currentStepHidden;
 
   return (
     <div
       className={cn(
         'flex min-h-full flex-col bg-(--background) text-(--ink)',
-        variant === 'sheet' && 'h-full min-h-0 overflow-hidden'
+        usesContainedLayout && 'h-full min-h-0 overflow-hidden'
       )}
     >
       {showFullScreenLoader && variant !== 'page' ? (
@@ -304,40 +318,42 @@ export function BookingFlow({
           scope="site"
         />
       ) : null}
-      <BookingStepHeader
-        showBack={Boolean(flow.previousStep)}
-        showClose={variant === 'sheet' && Boolean(onClose)}
-        canReset={variant === 'page' && flow.isDirty}
-        progress={progressLabel}
-        onBack={() => {
-          flow.goBack();
-        }}
-        onClose={() => {
-          onClose?.();
-        }}
-        onReset={() => {
-          flow.reset();
-        }}
-      />
+      {showPanel ? (
+        <BookingStepHeader
+          showBack={Boolean(flow.previousStep)}
+          showClose={variant === 'sheet' && Boolean(onClose)}
+          canReset={variant === 'page' && flow.isDirty}
+          progress={progressLabel}
+          onBack={() => {
+            flow.goBack();
+          }}
+          onClose={() => {
+            onClose?.();
+          }}
+          onReset={() => {
+            flow.reset();
+          }}
+        />
+      ) : null}
 
       <div
         className={cn(
           'flex min-h-0 flex-1 flex-col px-4 sm:px-6',
-          variant === 'sheet' && 'overflow-hidden'
+          usesContainedLayout && 'overflow-hidden'
         )}
       >
         <div
           className={cn(
             'min-h-0 flex-1',
-            variant === 'sheet' && (usesInnerStepScroll ? 'overflow-hidden' : 'overflow-y-auto')
+            usesContainedLayout && (usesInnerStepScroll ? 'overflow-hidden' : 'overflow-y-auto')
           )}
         >
           <div
             className={cn(
-              variant === 'sheet' ? 'flex h-full min-h-0 flex-1 flex-col pt-5' : 'pt-5'
+              usesContainedLayout ? 'flex h-full min-h-0 flex-1 flex-col pt-5' : 'pt-5'
             )}
           >
-            {showSummary ? (
+            {showPanel && showSummary ? (
               <div className="mb-4 flex flex-wrap gap-2">
                 {summaryItems.map((item) => (
                   <button
@@ -357,7 +373,7 @@ export function BookingFlow({
               </div>
             ) : null}
 
-            {meta && flow.state.step !== 'service' ? (
+            {showPanel && meta && flow.state.step !== 'service' ? (
               <div className="mb-5">
                 <h2
                   ref={headingRef}
@@ -375,7 +391,7 @@ export function BookingFlow({
             <div
               className={cn(
                 'flex min-h-0 flex-1 flex-col',
-                variant === 'sheet' && (usesInnerStepScroll ? 'overflow-hidden pb-6' : 'pb-6')
+                usesContainedLayout && (usesInnerStepScroll ? 'overflow-hidden pb-6' : 'pb-6')
               )}
             >
               {services.length === 0 ? (
@@ -427,7 +443,13 @@ export function BookingFlow({
                 />
               ) : null}
 
-              {flow.state.step === 'date' ? (
+              {!showSchedule && (flow.state.step === 'date' || flow.state.step === 'time') ? (
+                <div className="rounded-[1.5rem] border border-dashed border-(--line) bg-(--panel) px-5 py-6 text-sm text-(--muted)">
+                  Блок выбора даты и времени сейчас скрыт на сайте.
+                </div>
+              ) : null}
+
+              {showSchedule && flow.state.step === 'date' ? (
                 <DateStep
                   slotDays={flow.state.slotDays}
                   slots={flow.state.slots}
@@ -444,7 +466,7 @@ export function BookingFlow({
                 />
               ) : null}
 
-              {flow.state.step === 'time' ? (
+              {showSchedule && flow.state.step === 'time' ? (
                 <TimeStep
                   slots={flow.state.slots}
                   selectedSlot={flow.state.selectedSlot}
@@ -456,7 +478,13 @@ export function BookingFlow({
                 />
               ) : null}
 
-              {flow.state.step === 'client' ? (
+              {!showConfirmation && flow.state.step === 'client' ? (
+                <div className="rounded-[1.5rem] border border-dashed border-(--line) bg-(--panel) px-5 py-6 text-sm text-(--muted)">
+                  Блок подтверждения записи сейчас скрыт на сайте.
+                </div>
+              ) : null}
+
+              {showConfirmation && flow.state.step === 'client' ? (
                 <ClientStep
                   draft={flow.draft}
                   formErrors={flow.state.errors.form}
@@ -479,11 +507,11 @@ export function BookingFlow({
           </div>
         </div>
 
-        {showFooter ? (
+        {showFooterForCurrentStep ? (
           <div
             className={cn(
               'z-20 mt-auto shrink-0 border-t border-(--line) bg-(--background)',
-              variant === 'sheet'
+              usesContainedLayout
                 ? 'pb-4 pt-4 shadow-[0_-18px_40px_rgba(19,29,31,0.06)]'
                 : 'sticky bottom-0 pb-4 pt-4'
             )}

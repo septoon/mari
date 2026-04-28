@@ -1,3 +1,5 @@
+import { notFound } from 'next/navigation';
+
 import { CtaPanel } from '@/components/site/cta-panel';
 import { MastersBrowser } from '@/components/site/masters-browser';
 import { PageHero } from '@/components/site/page-hero';
@@ -18,6 +20,9 @@ export const metadata = createPageMetadata({
 export default async function MastersPage() {
   const [catalog, pageContent] = await Promise.all([getLiveCatalog(), getSpecialistsPageContent()]);
   const extra = catalog.bootstrap.config.extra;
+  if (!isSiteBlockVisible(extra, SITE_BLOCK_KEYS.page('masters'))) {
+    notFound();
+  }
   const hero = resolveSitePageHero('masters', catalog.bootstrap.config.extra);
   const showHero = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.pageHero('masters'));
   const showCta = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.specialistsPage.listCta);

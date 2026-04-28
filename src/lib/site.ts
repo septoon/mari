@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 
+import { isSiteBlockVisible, SITE_BLOCK_KEYS } from '@/lib/site-visibility';
+
 export const siteConfig = {
   name: 'МАРИ Салон Красоты',
   shortName: 'МАРИ',
@@ -41,7 +43,67 @@ export const siteConfig = {
       ],
     },
   ],
+  footerUtilityNav: [
+    { href: '/news', label: 'Новости' },
+    { href: '/careers', label: 'Вакансии' },
+    { href: '/gift-cards', label: 'Сертификаты' },
+    { href: '/privacy-policy', label: 'Политика конфиденциальности' },
+  ],
 } as const;
+
+export type SiteNavItem = {
+  readonly href: string;
+  readonly label: string;
+};
+
+export type SiteFooterNavGroup = {
+  readonly title: string;
+  readonly items: readonly SiteNavItem[];
+};
+
+const SITE_NAV_PAGE_KEYS: Partial<Record<string, string>> = {
+  '/services': 'services',
+  '/masters': 'masters',
+  '/prices': 'prices',
+  '/booking': 'booking',
+  '/offers': 'offers',
+  '/gallery': 'gallery',
+  '/about': 'about',
+  '/contacts': 'contacts',
+  '/gift-cards': 'giftCards',
+  '/news': 'news',
+  '/careers': 'careers',
+  '/privacy-policy': 'privacyPolicy',
+};
+
+export const isSiteNavigationItemVisible = (
+  extra: Record<string, unknown> | null | undefined,
+  href: string,
+) => {
+  const pageKey = SITE_NAV_PAGE_KEYS[href];
+  return pageKey ? isSiteBlockVisible(extra, SITE_BLOCK_KEYS.page(pageKey)) : true;
+};
+
+export const getVisibleSiteNav = (
+  extra: Record<string, unknown> | null | undefined,
+): SiteNavItem[] => siteConfig.nav.filter((item) => isSiteNavigationItemVisible(extra, item.href));
+
+export const getVisibleSiteLinks = <T extends SiteNavItem>(
+  extra: Record<string, unknown> | null | undefined,
+  items: readonly T[],
+): T[] => items.filter((item) => isSiteNavigationItemVisible(extra, item.href));
+
+export const getVisibleSiteFooterNav = (
+  extra: Record<string, unknown> | null | undefined,
+): SiteFooterNavGroup[] =>
+  siteConfig.footerNav.map((group) => ({
+    ...group,
+    items: group.items.filter((item) => isSiteNavigationItemVisible(extra, item.href)),
+  }));
+
+export const getVisibleSiteFooterUtilityNav = (
+  extra: Record<string, unknown> | null | undefined,
+): SiteNavItem[] => getVisibleSiteLinks(extra, siteConfig.footerUtilityNav);
 
 export const siteSeoConfig = {
   city: 'Симферополь',

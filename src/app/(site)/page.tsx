@@ -1,4 +1,5 @@
 import { ArrowRight, CalendarDays, ShieldCheck, Sparkles } from 'lucide-react';
+import { notFound } from 'next/navigation';
 
 import { ArticleCard } from '@/components/cards/article-card';
 import { MasterCard } from '@/components/cards/master-card';
@@ -33,6 +34,9 @@ export default async function HomePage() {
     getSiteOffers(),
   ]);
   const extra = catalog.bootstrap.config.extra;
+  if (!isSiteBlockVisible(extra, SITE_BLOCK_KEYS.page('home'))) {
+    notFound();
+  }
   const siteContent =
     extra && typeof extra === 'object' && !Array.isArray(extra) && extra.siteContent && typeof extra.siteContent === 'object' && !Array.isArray(extra.siteContent)
       ? (extra.siteContent as Record<string, unknown>)

@@ -24,6 +24,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { section } = await params;
   const catalog = await getLiveCatalog();
+  if (!isSiteBlockVisible(catalog.bootstrap.config.extra, SITE_BLOCK_KEYS.page('services'))) {
+    notFound();
+  }
   const item = catalog.serviceSections.find((entry) => entry.slug === section);
 
   if (!item) {

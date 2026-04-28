@@ -10,7 +10,7 @@ import { useClientSession } from '@/components/client-session-provider';
 import { Button, ButtonLink } from '@/components/ui/button';
 import { LoadingLabel } from '@/components/ui/loading-indicator';
 import { cn } from '@/lib/classnames';
-import { siteConfig } from '@/lib/site';
+import type { SiteNavItem } from '@/lib/site';
 
 type MobileNavDrawerProps = {
   open: boolean;
@@ -19,10 +19,11 @@ type MobileNavDrawerProps = {
     phone: string;
     phoneHref: string;
   };
+  navItems: SiteNavItem[];
   onClose: () => void;
 };
 
-export function MobileNavDrawer({ open, pathname, salon, onClose }: MobileNavDrawerProps) {
+export function MobileNavDrawer({ open, pathname, salon, navItems, onClose }: MobileNavDrawerProps) {
   const router = useRouter();
   const { session, setLoggedOut } = useClientSession();
   const isClient = useSyncExternalStore(
@@ -137,7 +138,7 @@ export function MobileNavDrawer({ open, pathname, salon, onClose }: MobileNavDra
           </div>
 
           <nav className="mt-5 grid gap-1">
-            {siteConfig.nav.map((item) => {
+            {navItems.map((item) => {
               const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
 
               return (
