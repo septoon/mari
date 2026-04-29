@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
@@ -90,6 +90,7 @@ export function BookingFlow({
 }: BookingFlowProps) {
   const pathname = usePathname();
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const [serviceChromeCompact, setServiceChromeCompact] = useState(false);
   const servicesSummary = flow.selectedServices;
   const primaryService = servicesSummary[0] ?? null;
   const progressSteps = flow.hasCategoryStep
@@ -160,6 +161,7 @@ export function BookingFlow({
   ].filter(Boolean) as Array<{ key: string; label: string; value: string; step: BookingStep }>;
   const showSummary =
     flow.state.step !== 'overview' &&
+    flow.state.step !== 'service' &&
     flow.state.step !== 'staff' &&
     flow.state.step !== 'success' &&
     summaryItems.length > 0;
@@ -196,6 +198,12 @@ export function BookingFlow({
 
   useEffect(() => {
     headingRef.current?.focus();
+  }, [flow.state.step]);
+
+  useEffect(() => {
+    if (flow.state.step !== 'service') {
+      setServiceChromeCompact(false);
+    }
   }, [flow.state.step]);
 
   const openServicesStep = () => {
@@ -354,19 +362,38 @@ export function BookingFlow({
             )}
           >
             {showPanel && showSummary ? (
-              <div className="mb-4 flex flex-wrap gap-2">
+              <div
+                className={cn(
+                  'flex flex-nowrap overflow-x-auto overflow-y-hidden overscroll-x-contain transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
+                  flow.state.step === 'service' && serviceChromeCompact
+                    ? 'mb-2 max-h-12 gap-1.5'
+                    : 'mb-4 max-h-28 gap-2'
+                )}
+              >
                 {summaryItems.map((item) => (
                   <button
                     key={item.key}
                     type="button"
                     onClick={() => flow.requestStep(item.step)}
-                    className="rounded-full border border-(--line) bg-(--panel) px-3 py-1.5 text-sm text-(--foreground) transition hover:border-(--accent-strong)"
+                    className={cn(
+                      'shrink-0 whitespace-nowrap rounded-full border border-(--line) bg-(--panel) text-(--foreground) transition-all duration-300 hover:border-(--accent-strong)',
+                      flow.state.step === 'service' && serviceChromeCompact
+                        ? 'px-2.5 py-1 text-xs'
+                        : 'px-3 py-1.5 text-sm'
+                    )}
                   >
-                    {item.label}: {item.value}
+                    {item.value}
                   </button>
                 ))}
                 {summaryPrice ? (
-                  <span className="rounded-full border border-(--line) bg-white px-3 py-1.5 text-sm font-medium text-(--foreground)">
+                  <span
+                    className={cn(
+                      'shrink-0 whitespace-nowrap rounded-full border border-(--line) bg-white font-medium text-(--foreground) transition-all duration-300',
+                      flow.state.step === 'service' && serviceChromeCompact
+                        ? 'px-2.5 py-1 text-xs'
+                        : 'px-3 py-1.5 text-sm'
+                    )}
+                  >
                     {summaryPrice}
                   </span>
                 ) : null}
@@ -391,7 +418,7 @@ export function BookingFlow({
             <div
               className={cn(
                 'flex min-h-0 flex-1 flex-col',
-                usesContainedLayout && (usesInnerStepScroll ? 'overflow-hidden pb-6' : 'pb-6')
+                usesContainedLayout && (usesInnerStepScroll ? 'overflow-hidden pb-0' : 'pb-6')
               )}
             >
               {services.length === 0 ? (
@@ -424,8 +451,11 @@ export function BookingFlow({
                   services={flow.availableServices}
                   selectedCategoryId={flow.state.selectedCategoryId}
                   selectedServiceIds={flow.state.selectedServiceIds}
-                  title={meta?.title ?? STEP_META.service.title}
-                  description={meta?.description ?? STEP_META.service.description}
+                  compact={serviceChromeCompact}
+                  onCompactChange={setServiceChromeCompact}
+                  summaryItems={summaryItems}
+                  summaryPrice={summaryPrice}
+                  onSummarySelect={flow.requestStep}
                   onSelect={flow.selectService}
                 />
               ) : null}
@@ -511,27 +541,37 @@ export function BookingFlow({
         {showFooterForCurrentStep ? (
           <div
             className={cn(
-              'z-20 mt-auto shrink-0 border-t border-(--line) bg-(--background)',
+              'sticky bottom-0 z-20 -mx-4 mt-auto shrink-0 border-t border-(--line) bg-(--background) px-4 transition-shadow duration-300 sm:-mx-6 sm:px-6',
               usesContainedLayout
-                ? 'pb-4 pt-4 shadow-[0_-18px_40px_rgba(19,29,31,0.06)]'
-                : 'sticky bottom-0 pb-4 pt-4'
+                ? 'pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 shadow-[0_-18px_40px_rgba(19,29,31,0.08)]'
+                : 'pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4'
             )}
           >
             {flow.state.step === 'success' ? (
-              <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="flex w-full flex-row gap-3">
                 {onDone ? (
-                  <Button type="button" onClick={onDone} className="sm:flex-1">
+                  <Button type="button" onClick={onDone} className="min-w-0 flex-1">
                     Готово
                   </Button>
                 ) : null}
-                <Button type="button" variant={onDone ? 'secondary' : 'primary'} onClick={flow.reset} className="sm:flex-1">
+                <Button
+                  type="button"
+                  variant={onDone ? 'secondary' : 'primary'}
+                  onClick={flow.reset}
+                  className="min-w-0 flex-1"
+                >
                   Записать ещё
                 </Button>
               </div>
             ) : (
-              <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="flex w-full flex-row gap-3">
                 {flow.previousStep ? (
-                  <Button type="button" variant="secondary" onClick={flow.goBack} className="sm:w-auto">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={flow.goBack}
+                    className="w-[34%] min-w-24 flex-none px-4"
+                  >
                     Назад
                   </Button>
                 ) : null}
@@ -542,7 +582,7 @@ export function BookingFlow({
                     onClick={() => {
                       void handlePrimaryAction();
                     }}
-                    className="sm:flex-1"
+                    className="min-w-0 flex-1"
                   >
                     {flow.state.step === 'client' && flow.state.loading.submit ? (
                       <LoadingLabel label="Создаю запись..." />

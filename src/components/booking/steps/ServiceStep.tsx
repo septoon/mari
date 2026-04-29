@@ -5,13 +5,18 @@ import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } f
 
 import type { Service } from '@/lib/api/contracts';
 import { formatDuration, formatPriceRange } from '@/lib/format';
+import type { BookingStep } from '@/lib/booking/types';
+import { cn } from '@/lib/classnames';
 
 type ServiceStepProps = {
   services: Service[];
   selectedCategoryId: string | null;
   selectedServiceIds: string[];
-  title: string;
-  description: string;
+  compact: boolean;
+  onCompactChange: (compact: boolean) => void;
+  summaryItems: Array<{ key: string; value: string; step: BookingStep }>;
+  summaryPrice: string | null;
+  onSummarySelect: (step: BookingStep) => void;
   onSelect: (serviceId: string) => void;
 };
 
@@ -19,13 +24,18 @@ export function ServiceStep({
   services,
   selectedCategoryId,
   selectedServiceIds,
-  title,
-  description,
+  compact,
+  onCompactChange,
+  summaryItems,
+  summaryPrice,
+  onSummarySelect,
   onSelect
 }: ServiceStepProps) {
   const [query, setQuery] = useState('');
+  const [searchFocused, setSearchFocused] = useState(false);
   const deferredQuery = useDeferredValue(query.trim().toLowerCase());
   const rootRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const categoryRailRef = useRef<HTMLDivElement>(null);
   const listScrollRef = useRef<HTMLDivElement>(null);
   const sectionRefs = useRef(new Map<string, HTMLElement>());
@@ -154,6 +164,13 @@ export function ServiceStep({
     setActiveCategoryId((current) => (current === nextCategoryId ? current : nextCategoryId));
   }, [getSectionScrollTop, groupedServices]);
 
+  const handleListScroll = useCallback(() => {
+    const scrollContainer = listScrollRef.current;
+
+    syncActiveCategory();
+    onCompactChange(Boolean(scrollContainer && scrollContainer.scrollTop > 18));
+  }, [onCompactChange, syncActiveCategory]);
+
   useEffect(() => {
     const frameId = window.requestAnimationFrame(syncActiveCategory);
     window.addEventListener('resize', syncActiveCategory);
@@ -206,26 +223,96 @@ export function ServiceStep({
     });
   }, [getSectionScrollTop]);
 
+  const searchCollapsed = compact && !searchFocused && query.trim().length === 0;
+  const renderSummaryChips = () => (
+    <div className="flex min-w-0 flex-1 flex-nowrap gap-2 overflow-x-auto overflow-y-hidden overscroll-x-contain">
+      {summaryItems.map((item) => (
+        <button
+          key={item.key}
+          type="button"
+          onClick={() => onSummarySelect(item.step)}
+          className={cn(
+            'shrink-0 whitespace-nowrap rounded-full border border-(--line) bg-(--panel) text-(--foreground) transition-all duration-300 hover:border-(--accent-strong)',
+            compact ? 'px-2.5 py-1 text-xs' : 'px-3 py-1.5 text-sm'
+          )}
+        >
+          {item.value}
+        </button>
+      ))}
+      {summaryPrice ? (
+        <span
+          className={cn(
+            'shrink-0 whitespace-nowrap rounded-full border border-(--line) bg-white font-medium text-(--foreground) transition-all duration-300',
+            compact ? 'px-2.5 py-1 text-xs' : 'px-3 py-1.5 text-sm'
+          )}
+        >
+          {summaryPrice}
+        </span>
+      ) : null}
+    </div>
+  );
+  const renderSearchControl = () => (
+    searchCollapsed ? (
+      <button
+        type="button"
+        aria-label="Открыть поиск"
+        className="relative block h-12 w-12 shrink-0 rounded-full border border-(--line) bg-(--panel) text-(--muted-strong) transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-(--accent-strong)"
+        onClick={() => {
+          setSearchFocused(true);
+          window.requestAnimationFrame(() => {
+            searchInputRef.current?.focus();
+          });
+        }}
+      >
+        <Search className="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2" />
+      </button>
+    ) : (
+      <label
+        className="relative block h-14 w-full shrink-0 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+        onClick={() => {
+          searchInputRef.current?.focus();
+        }}
+      >
+        <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--muted-strong) transition-all duration-300" />
+        <input
+          ref={searchInputRef}
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          onFocus={() => setSearchFocused(true)}
+          onBlur={() => setSearchFocused(false)}
+          placeholder="Найти услугу"
+          className="h-full w-full rounded-full border border-(--line) bg-(--panel) py-3 pl-11 pr-4 text-sm text-(--ink) outline-none transition-all duration-300 placeholder:text-(--muted-strong) focus:border-(--accent-strong)"
+        />
+      </label>
+    )
+  );
+
   return (
     <div
       ref={rootRef}
-      className="flex h-full min-h-0 max-w-full flex-1 flex-col space-y-4 overflow-x-hidden"
+      className="flex h-full min-h-0 max-w-full flex-1 flex-col overflow-x-hidden"
     >
-      <div className="z-10 max-w-full shrink-0 space-y-3 overflow-x-hidden bg-(--background) pb-4">
-        <label className="relative block">
-          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--muted-strong)" />
-          <input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Найти услугу"
-            className="w-full rounded-full border border-(--line) bg-(--panel) py-3 pl-11 pr-4 text-sm outline-none transition focus:border-(--accent-strong)"
-          />
-        </label>
+      <div
+        className={`z-10 max-w-full shrink-0 space-y-3 overflow-x-hidden bg-(--background) transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          compact ? 'pb-3' : 'pb-4'
+        }`}
+      >
+        {searchCollapsed ? (
+          <div className="flex min-w-0 items-center gap-2">
+            {renderSearchControl()}
+            {renderSummaryChips()}
+          </div>
+        ) : (
+          <>
+            {summaryItems.length || summaryPrice ? renderSummaryChips() : null}
+            {renderSearchControl()}
+          </>
+        )}
 
         {groupedServices.length > 1 ? (
           <div
             ref={categoryRailRef}
-            className="max-w-full overflow-x-auto overscroll-x-contain pb-1 touch-pan-x"
+            className="max-w-full overflow-x-auto overscroll-x-contain pb-0 touch-pan-x"
           >
             <div className="flex min-w-max gap-2 pr-4">
               {groupedServices.map((group) => {
@@ -238,7 +325,7 @@ export function ServiceStep({
                     type="button"
                     onClick={() => scrollToCategory(group.id)}
                     aria-pressed={active}
-                    className={`rounded-full border px-4 py-2 text-sm transition ${
+                    className={`rounded-full border px-4 py-1 text-sm transition ${
                       active
                         ? 'border-(--foreground) bg-(--foreground) text-white'
                         : 'border-(--line) bg-white text-(--ink) hover:border-(--accent-strong) hover:bg-(--panel)'
@@ -256,17 +343,10 @@ export function ServiceStep({
       {groupedServices.length ? (
         <div
           ref={listScrollRef}
-          onScroll={syncActiveCategory}
-          className="min-h-0 max-w-full flex-1 overflow-y-auto overflow-x-hidden overscroll-x-none pb-2 touch-pan-y"
+          onScroll={handleListScroll}
+          className="min-h-0 max-w-full flex-1 overflow-y-auto overflow-x-hidden overscroll-x-none pb-0 touch-pan-y"
         >
-          <div className="min-w-0 max-w-full space-y-6 overflow-x-hidden">
-            <div className="space-y-2 pb-2">
-              <h2 className="font-serif text-3xl leading-tight text-(--ink) sm:text-4xl">
-                {title}
-              </h2>
-              <p className="text-sm leading-6 text-(--muted)">{description}</p>
-            </div>
-
+          <div className="min-w-0 max-w-full space-y-6 overflow-x-hidden pt-0">
             {groupedServices.map((group) => (
               <section
                 key={group.id}
