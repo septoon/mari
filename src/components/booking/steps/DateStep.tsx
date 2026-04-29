@@ -12,6 +12,7 @@ type DateStepProps = {
   selectedSlot: BookingSlotSelection | null;
   loading: boolean;
   slotsLoading: boolean;
+  showSlots: boolean;
   error: string | null;
   slotsError: string | null;
   hasBlockedSlots: boolean;
@@ -22,6 +23,28 @@ type DateStepProps = {
 
 const weekdayFormatter = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'];
 
+const getMondayFirstWeekdayIndex = (date: string) => {
+  const [year, month, day] = date.split('-').map(Number);
+  const sundayFirstIndex = new Date(Date.UTC(year, month - 1, day)).getUTCDay();
+
+  return (sundayFirstIndex + 6) % 7;
+};
+
+const getPreviousCalendarDays = (date: string, count: number) => {
+  const [year, month, day] = date.split('-').map(Number);
+  const firstDate = new Date(Date.UTC(year, month - 1, day));
+
+  return Array.from({ length: count }, (_, index) => {
+    const value = new Date(firstDate);
+    value.setUTCDate(firstDate.getUTCDate() - count + index);
+
+    return {
+      date: value.toISOString().slice(0, 10),
+      day: value.getUTCDate()
+    };
+  });
+};
+
 export function DateStep({
   slotDays,
   slots,
@@ -29,6 +52,7 @@ export function DateStep({
   selectedSlot,
   loading,
   slotsLoading,
+  showSlots,
   error,
   slotsError,
   hasBlockedSlots,
@@ -67,6 +91,8 @@ export function DateStep({
 
   const firstAvailable = slotDays.items.find((item) => item.hasSlots)?.date ?? null;
   const groupedSlots = groupSlotsByTimeOfDay(slots);
+  const firstDayOffset = getMondayFirstWeekdayIndex(slotDays.items[0].date);
+  const previousCalendarDays = getPreviousCalendarDays(slotDays.items[0].date, firstDayOffset);
 
   return (
     <div className="space-y-5">
@@ -77,6 +103,17 @@ export function DateStep({
       </div>
 
       <div className="grid grid-cols-7 gap-2">
+        {previousCalendarDays.map((item) => (
+          <button
+            key={item.date}
+            type="button"
+            disabled
+            className="cursor-not-allowed rounded-[1rem] border border-(--line) bg-(--panel) px-2 py-3 text-center text-(--muted-strong) opacity-60"
+          >
+            <span className="block text-base font-semibold">{item.day}</span>
+          </button>
+        ))}
+
         {slotDays.items.map((item) => {
           const active = item.date === selectedDate;
 
@@ -126,7 +163,7 @@ export function DateStep({
         </div>
       )}
 
-      {selectedDate ? (
+      {selectedDate && showSlots ? (
         <div className="space-y-5">
           {slotsLoading ? (
             <>

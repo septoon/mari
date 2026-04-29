@@ -25,7 +25,13 @@ import type {
   SlotsResult,
   SpecialistCard
 } from '@/lib/api/contracts';
-import { createAppointment, fetchClientAppointments, fetchSlotDays, fetchSlots } from '@/lib/booking/client';
+import {
+  createAppointment,
+  fetchClientAppointments,
+  fetchScheduleDays,
+  fetchSlotDays,
+  fetchSlots
+} from '@/lib/booking/client';
 import { fromPhoneE164, toPhoneE164 } from '@/lib/booking/phone';
 import type {
   BookingClientForm,
@@ -44,7 +50,6 @@ import {
   getFirstAvailableDate,
   isFutureBookingSlot,
   getPreviousStep,
-  getSchedulePreviewContext,
   getSlotDaysKey,
   getSlotsKey,
   hasDateSlots
@@ -718,31 +723,32 @@ export function useBookingFlow({
     () => getAvailableSpecialists(specialists, state.selectedServiceIds),
     [specialists, state.selectedServiceIds]
   );
-  const schedulePreviewContext = useMemo(
-    () =>
-      getSchedulePreviewContext({
-        selectedServiceIds: state.selectedServiceIds,
-        selectedStaffId: state.selectedStaffId,
-        specialists
-      }),
-    [specialists, state.selectedServiceIds, state.selectedStaffId]
-  );
   const shouldLoadSlotDays =
-    Boolean(state.selectedServiceIds.length > 0 && state.selectedStaffId) || state.step === 'date';
+    Boolean(state.selectedStaffId) &&
+    (state.selectedServiceIds.length > 0 || state.step === 'date');
   const slotDaysEffectInput = useMemo(() => {
-    const serviceIds = schedulePreviewContext?.serviceIds ?? [];
-    const staffId = schedulePreviewContext?.staffId ?? null;
+    const staffId = state.selectedStaffId;
 
-    if (!shouldLoadSlotDays || serviceIds.length === 0 || !staffId) {
+    if (!shouldLoadSlotDays || !staffId) {
       return null;
     }
 
+    if (state.selectedServiceIds.length === 0) {
+      return {
+        mode: 'schedule' as const,
+        key: `schedule:${staffId}`,
+        serviceIds: [],
+        staffId
+      };
+    }
+
     return {
-      key: `${serviceIds.slice().sort().join(',')}:${staffId}`,
-      serviceIds,
+      mode: 'slots' as const,
+      key: `${state.selectedServiceIds.slice().sort().join(',')}:${staffId}`,
+      serviceIds: state.selectedServiceIds,
       staffId
     };
-  }, [schedulePreviewContext?.serviceIds, schedulePreviewContext?.staffId, shouldLoadSlotDays]);
+  }, [shouldLoadSlotDays, state.selectedServiceIds, state.selectedStaffId]);
   const slotsEffectInput = useMemo(() => {
     const date = state.selectedDate;
 
@@ -750,36 +756,17 @@ export function useBookingFlow({
       return null;
     }
 
-    if (state.selectedServiceIds.length > 0 && state.selectedStaffId) {
-      return {
-        key: `${state.selectedServiceIds.slice().sort().join(',')}:${state.selectedStaffId}:${date}`,
-        serviceIds: state.selectedServiceIds,
-        staffId: state.selectedStaffId,
-        date
-      };
-    }
-
-    const serviceIds = schedulePreviewContext?.serviceIds ?? [];
-    const staffId = schedulePreviewContext?.staffId ?? null;
-
-    if (state.step !== 'date' || serviceIds.length === 0 || !staffId) {
+    if (state.selectedServiceIds.length === 0 || !state.selectedStaffId) {
       return null;
     }
 
     return {
-      key: `${serviceIds.slice().sort().join(',')}:${staffId}:${date}`,
-      serviceIds,
-      staffId,
+      key: `${state.selectedServiceIds.slice().sort().join(',')}:${state.selectedStaffId}:${date}`,
+      serviceIds: state.selectedServiceIds,
+      staffId: state.selectedStaffId,
       date
     };
-  }, [
-    schedulePreviewContext?.serviceIds,
-    schedulePreviewContext?.staffId,
-    state.selectedDate,
-    state.selectedServiceIds,
-    state.selectedStaffId,
-    state.step
-  ]);
+  }, [state.selectedDate, state.selectedServiceIds, state.selectedStaffId]);
   const canChooseAnyStaff = availableSpecialists.length > 1;
   const hasCategoryStep = categories.length > 1;
   const previousStep = getPreviousStep({
@@ -1091,11 +1078,14 @@ export function useBookingFlow({
       return;
     }
 
-    const { serviceIds, staffId } = slotDaysEffectInput;
+    const { mode, serviceIds, staffId } = slotDaysEffectInput;
     const requestFrom = new Date();
     requestFrom.setMinutes(requestFrom.getMinutes() - requestFrom.getTimezoneOffset());
     const from = requestFrom.toISOString().slice(0, 10);
-    const cacheKey = getSlotDaysKey({ serviceIds, staffId, from });
+    const cacheKey =
+      mode === 'schedule'
+        ? [mode, staffId, from].join(':')
+        : getSlotDaysKey({ serviceIds, staffId, from });
 
     if (!cacheKey) {
       return;
@@ -1114,12 +1104,21 @@ export function useBookingFlow({
     const controller = new AbortController();
     dispatch({ type: 'slot-days-request' });
 
-    void fetchSlotDays({
-      from,
-      serviceIds,
-      staffId,
-      signal: controller.signal
-    })
+    const request =
+      mode === 'schedule'
+        ? fetchScheduleDays({
+            from,
+            staffId,
+            signal: controller.signal
+          })
+        : fetchSlotDays({
+            from,
+            serviceIds,
+            staffId,
+            signal: controller.signal
+          });
+
+    void request
       .then((result) => {
         setCacheValue(slotDaysCacheRef.current, cacheKey, result);
         dispatch({

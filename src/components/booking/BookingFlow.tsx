@@ -457,6 +457,7 @@ export function BookingFlow({
                   selectedSlot={flow.state.selectedSlot}
                   loading={flow.state.loading.slotDays}
                   slotsLoading={flow.state.loading.slots}
+                  showSlots={flow.state.selectedServiceIds.length > 0}
                   error={flow.state.errors.slotDays}
                   slotsError={flow.state.errors.slots}
                   hasBlockedSlots={flow.hasBlockedSlotsOnSelectedDate}

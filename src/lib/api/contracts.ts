@@ -325,6 +325,13 @@ export const slotDaysQuerySchema = z.object({
   anyStaff: z.boolean().optional()
 });
 
+export const scheduleDaysQuerySchema = z.object({
+  from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  days: z.number().int().min(1).max(31).default(31),
+  staffId: z.string().uuid().optional(),
+  anyStaff: z.boolean().optional()
+});
+
 export const slotDaysResultSchema = z.object({
   from: z.string(),
   days: z.number().int().positive(),
@@ -339,6 +346,8 @@ export const slotDaysResultSchema = z.object({
     })
   )
 });
+
+export const scheduleDaysResultSchema = slotDaysResultSchema;
 
 export const slotsResultSchema = z.object({
   date: z.string(),

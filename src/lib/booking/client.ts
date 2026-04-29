@@ -3,6 +3,7 @@
 import {
   appointmentCreatedSchema,
   clientAppointmentsSchema,
+  scheduleDaysResultSchema,
   slotDaysResultSchema,
   slotsResultSchema,
   type ClientAppointmentsResult,
@@ -26,7 +27,7 @@ export const fetchSlotDays = async ({
 }) => {
   const searchParams = new URLSearchParams({
     from,
-    days: '21',
+    days: '31',
     serviceIds: serviceIds.join(','),
     anyStaff: String(staffId === 'any')
   });
@@ -42,6 +43,35 @@ export const fetchSlotDays = async ({
   });
 
   const payload = await readApiOk(response, slotDaysResultSchema);
+  return filterSlotDaysResult(payload) as SlotDaysResult;
+};
+
+export const fetchScheduleDays = async ({
+  from,
+  staffId,
+  signal
+}: {
+  from: string;
+  staffId: string | 'any';
+  signal?: AbortSignal;
+}) => {
+  const searchParams = new URLSearchParams({
+    from,
+    days: '31',
+    anyStaff: String(staffId === 'any')
+  });
+
+  if (staffId !== 'any') {
+    searchParams.set('staffId', staffId);
+  }
+
+  const response = await fetch(`/api/schedule-days?${searchParams.toString()}`, {
+    method: 'GET',
+    cache: 'no-store',
+    signal
+  });
+
+  const payload = await readApiOk(response, scheduleDaysResultSchema);
   return filterSlotDaysResult(payload) as SlotDaysResult;
 };
 
