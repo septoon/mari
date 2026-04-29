@@ -326,7 +326,7 @@ export function BookingFlow({
           scope="site"
         />
       ) : null}
-      {showPanel ? (
+      {/* {showPanel ? (
         <BookingStepHeader
           showBack={Boolean(flow.previousStep)}
           showClose={variant === 'sheet' && Boolean(onClose)}
@@ -342,7 +342,7 @@ export function BookingFlow({
             flow.reset();
           }}
         />
-      ) : null}
+      ) : null} */}
 
       <div
         className={cn(
