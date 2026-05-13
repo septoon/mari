@@ -1,61 +1,30 @@
-import { GalleryCard } from '@/components/cards/gallery-card';
-import { CtaPanel } from '@/components/site/cta-panel';
-import { PageHero } from '@/components/site/page-hero';
-import { Container } from '@/components/ui/container';
-import { ButtonLink } from '@/components/ui/button';
+import { notFound } from 'next/navigation';
+
+import { GalleryCarousel } from '@/components/site/gallery-carousel';
 import { getClientBootstrap } from '@/lib/api/backend';
-import { resolveSitePageHero } from '@/lib/site-page-heroes';
-import { getGalleryMoments } from '@/content/queries';
+import { getGalleryPageContent } from '@/lib/gallery-page-content';
 import { createPageMetadata } from '@/lib/site';
 import { isSiteBlockVisible, SITE_BLOCK_KEYS } from '@/lib/site-visibility';
 
 export const metadata = createPageMetadata({
   title: 'Галерея',
-  description: 'Галерея МАРИ: моменты услуг, интерьера и moodboard бренда.',
+  description: 'Галерея МАРИ: фотографии интерьера и экстерьера салона.',
   path: '/gallery',
 });
 
 export default async function GalleryPage() {
-  const moments = getGalleryMoments();
-  const bootstrap = await getClientBootstrap();
-  const hero = resolveSitePageHero('gallery', bootstrap.config.extra);
-  const showHero = isSiteBlockVisible(bootstrap.config.extra, SITE_BLOCK_KEYS.pageHero('gallery'));
+  const [bootstrap, gallery] = await Promise.all([
+    getClientBootstrap(),
+    getGalleryPageContent()
+  ]);
+
+  if (!isSiteBlockVisible(bootstrap.config.extra, SITE_BLOCK_KEYS.page('gallery'))) {
+    notFound();
+  }
 
   return (
-    <main className="pb-14">
-      <Container>
-        {showHero ? (
-          <PageHero
-            eyebrow={hero.eyebrow}
-            title={hero.title}
-            description={hero.description}
-            imageUrl={hero.imageUrl}
-            imageAlt={hero.title}
-            breadcrumbs={[{ label: 'Главная', href: '/' }, { label: 'Галерея' }]}
-            actions={<ButtonLink href="/booking">Записаться</ButtonLink>}
-          />
-        ) : null}
-
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {moments.map((moment) => (
-            <GalleryCard key={moment.slug} moment={moment} />
-          ))}
-        </div>
-      </Container>
-
-      <CtaPanel
-        eyebrow="После вдохновения"
-        title="Если настроение найдено, переходите к услугам и записи."
-        description="После галереи можно выбрать направление, мастера или сразу подобрать время визита."
-        actions={
-          <>
-            <ButtonLink href="/services">Смотреть услуги</ButtonLink>
-            <ButtonLink href="/booking" variant="secondary">
-              Записаться
-            </ButtonLink>
-          </>
-        }
-      />
+    <main>
+      <GalleryCarousel gallery={gallery} />
     </main>
   );
 }

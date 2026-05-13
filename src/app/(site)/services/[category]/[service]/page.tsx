@@ -192,7 +192,7 @@ export default async function ServiceDetailPage({
               title="Другие услуги этой категории."
               description="Если хотите сравнить варианты, начните с похожих процедур в этом же направлении."
             />
-            <div className="mt-8 grid gap-6 md:grid-cols-2">
+            <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-5">
               {relatedServices.map((item) => (
                 <ServiceCard
                   key={item.id}

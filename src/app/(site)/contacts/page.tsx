@@ -129,6 +129,16 @@ export default async function ContactsPage({
             </div>
           </article>
         </section>
+
+        <section className="mt-6 overflow-hidden rounded-[1.75rem] border border-(--line) bg-white shadow-[0_24px_70px_rgba(19,29,31,0.08)]">
+          <iframe
+            src="https://yandex.ru/map-widget/v1/?z=12&ol=biz&oid=36627385481"
+            title="Карта проезда к салону МАРИ"
+            className="block h-[20rem] w-full md:h-[25rem]"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
+        </section>
       </Container>
     </main>
   );

@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import { UsersRound } from 'lucide-react';
+import { Star, UsersRound } from 'lucide-react';
 
 import type { SpecialistCard } from '@/lib/api/contracts';
 import { fetchSlotDays, fetchSlots } from '@/lib/booking/client';
@@ -61,6 +61,31 @@ const SelectionIndicator = ({ active }: { active: boolean }) => (
     }`}
   />
 );
+
+const SpecialistRating = ({ specialist }: { specialist: SpecialistCard }) => {
+  const average = specialist.rating.average;
+
+  if (!average || specialist.rating.count === 0) {
+    return <span className="mt-2 block text-sm leading-6 text-(--muted)">Нет оценок</span>;
+  }
+
+  const roundedRating = Math.round(average);
+
+  return (
+    <span className="mt-2 flex flex-wrap items-center gap-1.5 text-sm leading-6 text-(--muted)">
+      <span className="inline-flex items-center gap-0.5 text-[#b9822f]" aria-label={`Рейтинг ${average.toFixed(1)} из 5`}>
+        {Array.from({ length: 5 }, (_, index) => (
+          <Star
+            key={index}
+            className={`h-4 w-4 ${index < roundedRating ? 'fill-current' : 'fill-transparent'}`}
+          />
+        ))}
+      </span>
+      <span>{average.toFixed(1)}</span>
+      <span className="text-(--muted-strong)">({specialist.rating.count})</span>
+    </span>
+  );
+};
 
 const formatPreviewDate = (date: string) => `${weekdayLabel(date).replace('.', '')}, ${formatBookingDate(date)}`;
 
@@ -382,6 +407,7 @@ export function StaffStep({
                   <span className="mt-2 block text-base leading-6 text-(--muted)">
                     {specialist.specialty?.trim() || 'Специалист салона'}
                   </span>
+                  <SpecialistRating specialist={specialist} />
                   {specialist.info?.trim() ? (
                     <span className="mt-1 block text-sm leading-6 text-(--muted)">
                       {specialist.info.trim()}

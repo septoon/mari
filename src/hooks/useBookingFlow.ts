@@ -54,7 +54,7 @@ import {
   getSlotsKey,
   hasDateSlots
 } from '@/lib/booking/utils';
-import { formatBookingDate, getSalonDate } from '@/lib/format';
+import { getSalonDate } from '@/lib/format';
 
 type Action =
   | { type: 'select-category'; categoryId: string }
@@ -97,10 +97,6 @@ type StoredBookingProgress = {
   date: string | null;
   slot: BookingSlotSelection | null;
   step: BookingStep;
-};
-
-type StoredBookingProgressPreview = {
-  summary: string;
 };
 
 type CacheEntry<T> = {
@@ -264,42 +260,6 @@ const getStoredResumeStep = ({
   }
 
   return date ? 'date' : null;
-};
-
-const getStoredProgressSummary = ({
-  progress,
-  services,
-  specialists
-}: {
-  progress: StoredBookingProgress;
-  services: Service[];
-  specialists: SpecialistCard[];
-}) => {
-  const parts: string[] = [];
-  const selectedServices = progress.serviceIds
-    .map((serviceId) => services.find((service) => service.id === serviceId) ?? null)
-    .filter((service): service is Service => service !== null);
-
-  if (selectedServices.length === 1) {
-    parts.push(selectedServices[0].nameOnline ?? selectedServices[0].name);
-  } else if (selectedServices.length > 1) {
-    parts.push(`${selectedServices[0].nameOnline ?? selectedServices[0].name} + ещё ${selectedServices.length - 1}`);
-  }
-
-  if (progress.staffId === 'any') {
-    parts.push('Любой специалист');
-  } else if (progress.staffId) {
-    const specialist = specialists.find((item) => item.staffId === progress.staffId);
-    if (specialist) {
-      parts.push(specialist.name);
-    }
-  }
-
-  if (progress.date) {
-    parts.push(formatBookingDate(progress.date));
-  }
-
-  return parts.join(' · ') || 'Вернуться к сохранённому выбору.';
 };
 
 const readStoredBookingProgress = ({
@@ -679,7 +639,6 @@ export function useBookingFlow({
   const [state, dispatch] = useReducer(reducer, initialState);
   const [availabilityVersion, refreshAvailability] = useReducer((value: number) => value + 1, 0);
   const [clientAppointments, setClientAppointments] = useState<ClientAppointmentsResult['items']>([]);
-  const [storedProgress, setStoredProgress] = useState<StoredBookingProgressPreview | null>(null);
   const slotDaysCacheRef = useRef(new Map<string, CacheEntry<SlotDaysResult>>());
   const slotsCacheRef = useRef(new Map<string, CacheEntry<SlotsResult>>());
   const restoredServiceRef = useRef(false);
@@ -816,24 +775,10 @@ export function useBookingFlow({
     [blockedClientSlotStartTimes]
   );
   const refreshStoredProgress = useCallback(() => {
-    const progress = readStoredBookingProgress({
+    return readStoredBookingProgress({
       services,
       specialists
     });
-
-    setStoredProgress(
-      progress
-        ? {
-            summary: getStoredProgressSummary({
-              progress,
-              services,
-              specialists
-            })
-          }
-        : null
-    );
-
-    return progress;
   }, [services, specialists]);
 
   useEffect(() => {
@@ -987,7 +932,6 @@ export function useBookingFlow({
 
     if (!hasProgress) {
       window.localStorage.removeItem(BOOKING_PROGRESS_STORAGE_KEY);
-      setStoredProgress(null);
       return;
     }
 
@@ -1006,13 +950,6 @@ export function useBookingFlow({
         updatedAt: Date.now()
       })
     );
-    setStoredProgress({
-      summary: getStoredProgressSummary({
-        progress,
-        services,
-        specialists
-      })
-    });
   }, [
     services,
     specialists,
@@ -1485,6 +1422,7 @@ export function useBookingFlow({
     goBack,
     requestClose,
     reset,
+    continueStoredProgress,
     submit
   };
 }

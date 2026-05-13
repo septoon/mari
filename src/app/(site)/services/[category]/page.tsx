@@ -112,7 +112,7 @@ export default async function ServiceCategoryPage({
             title="Выберите конкретную услугу."
             description="У каждой карточки есть краткое описание, длительность, ориентир по стоимости и переход к записи."
           />
-          <div className="mt-8 grid gap-6 md:grid-cols-2">
+          <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-5">
             {item.services.map((service) => (
               <ServiceCard
                 key={service.id}

@@ -96,7 +96,7 @@ export default async function ServiceSectionPage({
           description="После категории откроется страница со списком услуг этого направления."
         />
 
-        <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-5">
           {item.categories.map((category) => (
             <CategoryCard
               key={category.id}

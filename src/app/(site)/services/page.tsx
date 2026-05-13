@@ -69,7 +69,7 @@ export default async function ServicesPage() {
               description={pageContent.catalog.description}
             />
 
-            <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <div className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-5">
               {catalog.serviceSections.map((section) => (
                 <ServiceSectionCard
                   key={section.id}

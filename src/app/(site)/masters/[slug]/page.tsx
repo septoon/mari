@@ -175,7 +175,7 @@ export default async function MasterDetailPage({ params }: { params: Promise<{ s
               title={pageContent.detailPage.servicesTitle}
               description={pageContent.detailPage.servicesDescription}
             />
-            <div className="mt-8 grid gap-6 md:grid-cols-2">
+            <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-5">
               {services.map((service) => (
                 <ServiceCard
                   key={service.id}
