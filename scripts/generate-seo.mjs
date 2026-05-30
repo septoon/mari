@@ -1,5 +1,46 @@
+import { existsSync, readFileSync } from 'node:fs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+
+const unquoteEnvValue = (value) => {
+  const trimmed = value.trim();
+  const quote = trimmed[0];
+
+  if ((quote === '"' || quote === "'") && trimmed.endsWith(quote)) {
+    return trimmed.slice(1, -1);
+  }
+
+  return trimmed;
+};
+
+const loadEnvFiles = () => {
+  const envValues = new Map();
+
+  for (const fileName of ['.env', '.env.local']) {
+    const envPath = resolve(process.cwd(), fileName);
+    if (!existsSync(envPath)) {
+      continue;
+    }
+
+    for (const line of readFileSync(envPath, 'utf8').split(/\r?\n/)) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) {
+        continue;
+      }
+
+      const match = trimmed.match(/^([A-Za-z_][A-Za-z0-9_]*)=(.*)$/);
+      if (match) {
+        envValues.set(match[1], unquoteEnvValue(match[2]));
+      }
+    }
+  }
+
+  for (const [key, value] of envValues) {
+    process.env[key] ??= value;
+  }
+};
+
+loadEnvFiles();
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://maribeauty.ru').replace(/\/+$/, '');
 const backendBaseUrl = (process.env.MARI_SERVER_URL ?? 'http://localhost:3000').replace(/\/+$/, '');
@@ -21,6 +62,32 @@ const excludedRoutes = new Set([
   '/manifest.webmanifest',
   '/reset-password'
 ]);
+
+const redirectOnlyRoutes = new Set(['/locations']);
+const redirectOnlyRoutePrefixes = ['/locations/'];
+
+const routePageKeys = new Map([
+  ['/', 'home'],
+  ['/about', 'about'],
+  ['/booking', 'booking'],
+  ['/careers', 'careers'],
+  ['/contacts', 'contacts'],
+  ['/gallery', 'gallery'],
+  ['/gift-cards', 'giftCards'],
+  ['/masters', 'masters'],
+  ['/news', 'news'],
+  ['/offers', 'offers'],
+  ['/prices', 'prices'],
+  ['/privacy-policy', 'privacyPolicy'],
+  ['/services', 'services'],
+]);
+
+const routePrefixPageKeys = [
+  ['/masters/', 'masters'],
+  ['/news/', 'news'],
+  ['/offers/', 'offers'],
+  ['/services/', 'services'],
+];
 
 const isPublicRoute = (route) =>
   route &&
@@ -118,6 +185,53 @@ const slugify = (value) =>
     .replace(/^-+|-+$/g, '')
     .replace(/-{2,}/g, '-');
 
+const asObjectRecord = (value) => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return {};
+  }
+
+  return value;
+};
+
+const readSiteHiddenBlockKeys = (extra) => {
+  const siteVisibility = asObjectRecord(asObjectRecord(extra).siteVisibility);
+  const hiddenBlockKeys = siteVisibility.hiddenBlockKeys;
+
+  if (!Array.isArray(hiddenBlockKeys)) {
+    return new Set();
+  }
+
+  return new Set(
+    hiddenBlockKeys
+      .filter((item) => typeof item === 'string')
+      .map((item) => item.trim())
+      .filter(Boolean),
+  );
+};
+
+const isSiteBlockVisible = (hiddenBlockKeys, blockKey) => !hiddenBlockKeys.has(blockKey);
+
+const isRedirectOnlyRoute = (route) =>
+  redirectOnlyRoutes.has(route) || redirectOnlyRoutePrefixes.some((prefix) => route.startsWith(prefix));
+
+const getRoutePageKey = (route) => {
+  const exactPageKey = routePageKeys.get(route);
+  if (exactPageKey) {
+    return exactPageKey;
+  }
+
+  return routePrefixPageKeys.find(([prefix]) => route.startsWith(prefix))?.[1] ?? null;
+};
+
+const isIndexableRoute = (route, hiddenBlockKeys) => {
+  if (isRedirectOnlyRoute(route)) {
+    return false;
+  }
+
+  const pageKey = getRoutePageKey(route);
+  return pageKey ? isSiteBlockVisible(hiddenBlockKeys, `page:${pageKey}`) : true;
+};
+
 const buildUniqueSlugs = (items, pickValue) => {
   const counts = new Map();
 
@@ -208,13 +322,14 @@ const readApiPayload = async (path) => {
   return payload?.data ?? null;
 };
 
-const getDynamicCatalogRoutes = async () => {
+const getSitemapSource = async () => {
   try {
     const [bootstrap, servicesPayload] = await Promise.all([
       readApiPayload('/client-front/bootstrap?platform=web'),
       readApiPayload('/services/public'),
     ]);
 
+    const hiddenBlockKeys = readSiteHiddenBlockKeys(bootstrap?.config?.extra);
     const services = Array.isArray(servicesPayload?.items) ? servicesPayload.items : [];
     const specialists = Array.isArray(bootstrap?.specialists) ? bootstrap.specialists : [];
     const visibleSpecialists = specialists.filter(
@@ -288,18 +403,24 @@ const getDynamicCatalogRoutes = async () => {
       (item, index) => `/masters/${specialistSlugs[index] ?? slugify(item.name)}`,
     );
 
-    return [...sectionRoutes, ...categoryRoutes, ...serviceRoutes, ...masterRoutes];
+    return {
+      dynamicCatalogRoutes: [...sectionRoutes, ...categoryRoutes, ...serviceRoutes, ...masterRoutes],
+      hiddenBlockKeys,
+    };
   } catch (error) {
     console.warn('[generate:seo] dynamic routes fetch skipped');
     console.warn(error instanceof Error ? error.message : error);
-    return [];
+    return {
+      dynamicCatalogRoutes: [],
+      hiddenBlockKeys: new Set(),
+    };
   }
 };
 
 const main = async () => {
   const routesManifest = await readJson(resolve(nextDir, 'routes-manifest.json'), { staticRoutes: [] });
   const prerenderManifest = await readJson(resolve(nextDir, 'prerender-manifest.json'), { routes: {} });
-  const dynamicCatalogRoutes = await getDynamicCatalogRoutes();
+  const { dynamicCatalogRoutes, hiddenBlockKeys } = await getSitemapSource();
 
   const staticRoutes = (routesManifest.staticRoutes ?? [])
     .map((item) => normalizeRoute(item.page))
@@ -311,6 +432,7 @@ const main = async () => {
 
   const routes = [...new Set([...staticRoutes, ...prerenderRoutes, ...dynamicCatalogRoutes])]
     .filter(isPublicRoute)
+    .filter((route) => isIndexableRoute(route, hiddenBlockKeys))
     .sort(sortRoutes);
 
   await mkdir(publicDir, { recursive: true });

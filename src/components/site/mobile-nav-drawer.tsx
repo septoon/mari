@@ -81,7 +81,7 @@ export function MobileNavDrawer({ open, pathname, salon, navItems, onClose }: Mo
     };
   }, [isClient, onClose, open]);
 
-  if (!isClient) {
+  if (!isClient || !open) {
     return null;
   }
 
@@ -100,11 +100,7 @@ export function MobileNavDrawer({ open, pathname, salon, navItems, onClose }: Mo
 
   return createPortal(
     <div
-      className={cn(
-        'fixed inset-0 z-[90] transition-opacity duration-300 lg:hidden',
-        open ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0',
-      )}
-      aria-hidden={!open}>
+      className="fixed inset-0 z-[90] transition-opacity duration-300 lg:hidden">
       <button
         type="button"
         className="absolute inset-0 bg-[rgba(21,18,15,0.46)] backdrop-blur-[8px]"
@@ -115,7 +111,7 @@ export function MobileNavDrawer({ open, pathname, salon, navItems, onClose }: Mo
       <aside
         className={cn(
           'absolute inset-y-0 right-0 z-[91] flex w-[min(24rem,88vw)] flex-col border-l border-[rgba(72,54,39,0.08)] shadow-[-24px_0_60px_rgba(12,27,31,0.22)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
-          open ? 'translate-x-0' : 'translate-x-full',
+          'translate-x-0',
         )}
         style={{
           backgroundColor: 'var(--background)',

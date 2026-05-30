@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { ImageIcon, Sparkles } from 'lucide-react';
 
 import { cn } from '@/lib/classnames';
@@ -6,6 +7,8 @@ export function EditorialVisual({
   title,
   imageUrl,
   imageAlt,
+  priority = false,
+  sizes = '(max-width: 1023px) calc(100vw - 5rem), 45vw',
   className
 }: {
   label: string;
@@ -14,6 +17,8 @@ export function EditorialVisual({
   imageUrl?: string | null;
   imageAlt?: string;
   monogram?: string;
+  priority?: boolean;
+  sizes?: string;
   className?: string;
 }) {
   return (
@@ -25,10 +30,12 @@ export function EditorialVisual({
       </div>
 
       {imageUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <Image
           src={imageUrl}
           alt={imageAlt || title}
+          fill
+          priority={priority}
+          sizes={sizes}
           className="absolute inset-0 h-full w-full object-cover"
         />
       ) : null}

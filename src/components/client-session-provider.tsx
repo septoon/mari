@@ -38,7 +38,7 @@ const defaultSession: ClientSession = {
 export function ClientSessionProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [session, setSession] = useState<ClientSession>(defaultSession);
-  const [status, setStatus] = useState<'loading' | 'ready'>('loading');
+  const [status, setStatus] = useState<'loading' | 'ready'>('ready');
 
   const refreshSession = useCallback(async (withLoading = true) => {
     if (withLoading) {

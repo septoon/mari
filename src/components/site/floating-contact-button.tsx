@@ -1,12 +1,6 @@
 'use client';
 
-import InstagramIcon from '@mui/icons-material/Instagram';
-import PhoneIcon from '@mui/icons-material/Phone';
-import TelegramIcon from '@mui/icons-material/Telegram';
-import WhatsAppIcon from '@mui/icons-material/WhatsApp';
-import { faVk } from '@fortawesome/free-brands-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { MessageCircleMore, X } from 'lucide-react';
+import { Instagram, MessageCircle, MessageCircleMore, Phone, Send, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useState, useSyncExternalStore, type ReactNode } from 'react';
 
@@ -24,31 +18,31 @@ type ContactAction = {
   external?: boolean;
 };
 
-const iconClassName = 'text-[1.45rem]';
+const iconClassName = 'h-5 w-5';
 
 const actions: ContactAction[] = [
   {
     name: 'WhatsApp',
     href: 'https://wa.me/+79786778130',
-    icon: <WhatsAppIcon fontSize="inherit" className={iconClassName} />,
+    icon: <MessageCircle className={iconClassName} />,
     external: true
   },
   {
     name: 'Telegram',
     href: 'https://t.me/maribeauty2025',
-    icon: <TelegramIcon fontSize="inherit" className={iconClassName} />,
+    icon: <Send className={iconClassName} />,
     external: true
   },
   {
     name: 'Instagram',
     href: 'https://www.instagram.com/mari_beauty_simf',
-    icon: <InstagramIcon fontSize="inherit" className={iconClassName} />,
+    icon: <Instagram className={iconClassName} />,
     external: true
   },
   {
     name: 'VK',
     href: 'https://vk.com/mari_beauty_simf',
-    icon: <FontAwesomeIcon icon={faVk} className={iconClassName} />,
+    icon: <span className="text-sm font-bold tracking-[-0.02em]">VK</span>,
     external: true
   }
 ];
@@ -79,7 +73,7 @@ function FloatingContactButtonInner({ phoneHref }: FloatingContactButtonProps) {
     {
       name: 'Позвонить',
       href: phoneHref,
-      icon: <PhoneIcon fontSize="inherit" className={iconClassName} />
+      icon: <Phone className={iconClassName} />
     },
     ...actions
   ];
@@ -105,6 +99,7 @@ function FloatingContactButtonInner({ phoneHref }: FloatingContactButtonProps) {
             target={action.external ? '_blank' : undefined}
             rel={action.external ? 'noreferrer noopener' : undefined}
             aria-label={action.name}
+            tabIndex={open ? undefined : -1}
             onClick={() => setOpen(false)}
             className="group inline-flex items-center"
           >

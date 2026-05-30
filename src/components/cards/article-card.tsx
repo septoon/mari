@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowRight, ImageIcon } from 'lucide-react';
 
 import type { NewsArticle } from '@/content/types';
@@ -6,10 +7,15 @@ import type { NewsArticle } from '@/content/types';
 export function ArticleCard({ article }: { article: NewsArticle }) {
   return (
     <article className="surface-card flex h-full flex-col p-6">
-      <div className="mb-5 aspect-[4/5] overflow-hidden rounded-[1.5rem] border border-(--line)">
+      <div className="relative mb-5 aspect-[4/5] overflow-hidden rounded-[1.5rem] border border-(--line)">
         {article.imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={article.imageUrl} alt={article.title} className="h-full w-full object-cover" />
+          <Image
+            src={article.imageUrl}
+            alt={article.title}
+            fill
+            sizes="(max-width: 767px) calc(100vw - 5rem), (max-width: 1279px) 50vw, 33vw"
+            className="h-full w-full object-cover"
+          />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(145deg,rgba(247,241,234,0.9),rgba(255,255,255,0.98))] text-(--muted)">
             <div className="text-center">

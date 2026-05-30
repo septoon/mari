@@ -5,7 +5,6 @@ import { formatCurrency } from '@/lib/format';
 export function PriceRow({
   href,
   name,
-  tagline,
   durationMinutes,
   priceFrom,
 }: {

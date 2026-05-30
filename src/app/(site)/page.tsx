@@ -1,18 +1,14 @@
-import { ArrowRight, CalendarDays, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { notFound } from 'next/navigation';
 
 import { ArticleCard } from '@/components/cards/article-card';
-import { MasterCard } from '@/components/cards/master-card';
 import { OfferCard } from '@/components/cards/offer-card';
-import { ServiceCard } from '@/components/cards/service-card';
 import { CtaPanel } from '@/components/site/cta-panel';
 import { EditorialVisual } from '@/components/site/editorial-visual';
 import { Container } from '@/components/ui/container';
 import { SectionHeading } from '@/components/ui/section-heading';
 import { ButtonLink } from '@/components/ui/button';
-import { fetchPopularServices } from '@/lib/api/backend';
 import { buildBeautySalonJsonLd } from '@/lib/home-seo';
-import { formatCurrency } from '@/lib/format';
 import { getHomePageContent } from '@/lib/home-page-content';
 import { getSiteNews, getSiteOffers } from '@/lib/site-content';
 import { createPageMetadata, siteSeoConfig } from '@/lib/site';
@@ -44,31 +40,13 @@ export default async function HomePage() {
   const configuredOffers = Array.isArray(siteContent.offers) ? siteContent.offers : [];
   const homeOffers = configuredOffers.length > 0 ? offers : [];
   const homeNews = news.slice(0, homePageContent.news.itemsLimit);
-  const categoriesServicesLimit = homePageContent.categories.itemsLimit;
-  const popularServices = await fetchPopularServices(categoriesServicesLimit).catch(() => []);
-  const popularHomeServices =
-    popularServices
-      .map((service) => catalog.servicesById.get(service.id) ?? null)
-      .filter((service): service is NonNullable<typeof service> => service !== null)
-      .slice(0, categoriesServicesLimit);
-  const masters = catalog.specialists.slice(0, 4);
-  const fallbackPopularHomeServices = catalog.services.slice(0, categoriesServicesLimit);
-  const featuredServices = catalog.services.slice(0, 4);
-  const priceHighlightServices = (
-    popularHomeServices.length > 0 ? popularHomeServices : fallbackPopularHomeServices
-  ).slice(0, 4);
   const beautySalonJsonLd = buildBeautySalonJsonLd({
     phone: catalog.salon.phone,
     mapUrl: catalog.salon.mapUrl,
   });
   const showHero = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.homePage.hero);
   const showNews = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.homePage.news);
-  const showCategories = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.homePage.categories);
   const showValuePillars = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.homePage.valuePillars);
-  const showFeaturedServices = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.homePage.featuredServices);
-  const showFeaturedSpecialists = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.homePage.featuredSpecialists);
-  const showContacts = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.homePage.contacts);
-  const showHighlights = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.homePage.highlights);
   const showBottomCta = isSiteBlockVisible(extra, SITE_BLOCK_KEYS.homePage.bottomCta);
 
   return (
@@ -90,15 +68,6 @@ export default async function HomePage() {
                   {homePageContent.hero.description}
                 </p>
 
-                <EditorialVisual
-                  label={homePageContent.hero.visualLabel}
-                  title={homePageContent.hero.visualTitle}
-                  subtitle={homePageContent.hero.visualSubtitle}
-                  imageUrl={homePageContent.hero.visualImageUrl}
-                  imageAlt="Интерьер салона красоты МАРИ в Симферополе"
-                  className="mt-8 aspect-[4/5] lg:hidden"
-                />
-
                 <div className="mt-8 flex flex-wrap gap-3">
                   <ButtonLink href="/booking">
                     {homePageContent.hero.primaryCtaLabel}
@@ -116,7 +85,8 @@ export default async function HomePage() {
                 subtitle={homePageContent.hero.visualSubtitle}
                 imageUrl={homePageContent.hero.visualImageUrl}
                 imageAlt="Интерьер салона красоты МАРИ в Симферополе"
-                className="hidden aspect-[4/5] lg:block"
+                priority
+                className="aspect-[4/5]"
               />
             </section>
           </Container>

@@ -10,7 +10,6 @@ import type { Service } from '@/lib/api/contracts';
 import { formatBookingDate, formatPriceRange } from '@/lib/format';
 import type { BookingStep } from '@/lib/booking/types';
 
-import { BookingStepHeader } from '@/components/booking/BookingStepHeader';
 import { CategoryStep } from '@/components/booking/steps/CategoryStep';
 import { ClientStep } from '@/components/booking/steps/ClientStep';
 import { DateStep } from '@/components/booking/steps/DateStep';
@@ -85,18 +84,14 @@ export function BookingFlow({
   maintenanceMessage,
   variant,
   visibility,
-  onClose,
   onDone
 }: BookingFlowProps) {
   const pathname = usePathname();
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const [serviceChromeCompact, setServiceChromeCompact] = useState(false);
+  const [serviceChromeCompactPreference, setServiceChromeCompact] = useState(false);
+  const serviceChromeCompact = flow.state.step === 'service' && serviceChromeCompactPreference;
   const servicesSummary = flow.selectedServices;
   const primaryService = servicesSummary[0] ?? null;
-  const progressSteps = flow.hasCategoryStep
-    ? (['category', 'service', 'staff', 'date', 'time', 'client'] as BookingStep[])
-    : (['service', 'staff', 'date', 'time', 'client'] as BookingStep[]);
-  const progressIndex = Math.max(progressSteps.indexOf(flow.state.step), 0) + 1;
   const permanentDiscount = flow.session.client?.discount.permanentPercent ?? null;
   const hasPermanentDiscount = Boolean(
     flow.session.authenticated && permanentDiscount && permanentDiscount > 0 && servicesSummary.length > 0
@@ -200,12 +195,6 @@ export function BookingFlow({
     headingRef.current?.focus();
   }, [flow.state.step]);
 
-  useEffect(() => {
-    if (flow.state.step !== 'service') {
-      setServiceChromeCompact(false);
-    }
-  }, [flow.state.step]);
-
   const openServicesStep = () => {
     flow.requestStep('service');
   };
@@ -290,12 +279,6 @@ export function BookingFlow({
   const showFooter = services.length > 0 && flow.state.step !== 'overview';
   const showPrimaryAction = flow.state.step !== 'client' || flow.session.authenticated;
   const usesInnerStepScroll = flow.state.step === 'service';
-  const progressLabel =
-    flow.state.step === 'overview'
-      ? 'Онлайн-запись'
-      : flow.state.step === 'success'
-        ? 'Готово'
-        : `Шаг ${progressIndex} из ${progressSteps.length}`;
   const showFullScreenLoader =
     pathname !== '/booking' &&
     (flow.state.loading.slotDays || flow.state.loading.slots || flow.state.loading.submit);
@@ -326,24 +309,6 @@ export function BookingFlow({
           scope="site"
         />
       ) : null}
-      {/* {showPanel ? (
-        <BookingStepHeader
-          showBack={Boolean(flow.previousStep)}
-          showClose={variant === 'sheet' && Boolean(onClose)}
-          canReset={variant === 'page' && flow.isDirty}
-          progress={progressLabel}
-          onBack={() => {
-            flow.goBack();
-          }}
-          onClose={() => {
-            onClose?.();
-          }}
-          onReset={() => {
-            flow.reset();
-          }}
-        />
-      ) : null} */}
-
       <div
         className={cn(
           'flex min-h-0 flex-1 flex-col px-4 sm:px-6',
