@@ -45,10 +45,13 @@ export function ClientSessionProvider({ children }: { children: ReactNode }) {
       setStatus('loading');
     }
 
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 15_000);
     try {
       const response = await fetch('/api/auth/session', {
         method: 'GET',
-        cache: 'no-store'
+        cache: 'no-store',
+        signal: controller.signal
       });
       const payload = await response.json();
       const parsedError = apiErrorSchema.safeParse(payload);
@@ -70,9 +73,10 @@ export function ClientSessionProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error('[SESSION_REFRESH_FAILED]', error);
       startTransition(() => {
-        setSession(defaultSession);
         setStatus('ready');
       });
+    } finally {
+      window.clearTimeout(timeout);
     }
   }, []);
 
